@@ -1,9 +1,12 @@
 package com.example.solfamidasback.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -35,6 +38,16 @@ public class User {
 
     @Column(name = "superadministrador")
     private Boolean superadmin;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="user")
+    @JsonIgnore
+    private List<Material> materialList;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="user")
+    @JsonIgnore
+    private List<Absence> abeenceList;
 
 
 }
