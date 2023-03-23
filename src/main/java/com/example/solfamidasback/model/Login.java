@@ -5,8 +5,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.stereotype.Repository;
 
 @Entity
 @Table(name = "cupon")
@@ -14,5 +12,6 @@ import org.springframework.stereotype.Repository;
 @Setter
 @AllArgsConstructor
 public class Login {
+
 
 }
