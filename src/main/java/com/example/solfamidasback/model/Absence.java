@@ -35,15 +35,14 @@ public class Absence {
     private User user;
 
 
-    /*
+
     @ManyToOne
     @JoinColumn(name = "id_calendar")
     @JsonIgnore
     @JsonIgnoreProperties(value = "absence")
-    private Calendar calendar;
+    private CalendarEvent calendar;
 
 
-     */
 
 
 
