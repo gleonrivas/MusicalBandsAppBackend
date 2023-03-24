@@ -28,10 +28,14 @@ public class MusicSheet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_formation")
     private Formation formation;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_role")
-    private Role role;
+
+
+    //cambiar id role por el id de la tabla triple tambien en bbdd
+//    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "id_role")
+//    private Role role;
+
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;
 

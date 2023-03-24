@@ -48,10 +48,9 @@ public class Formation {
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
     private List<Material> materialList;
-    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="formation")
-    @JsonIgnore
-    private List<MusicSheet> musicSheets;
+
+    //va con la tabla triple relacionada one to many
+
 
 
 }

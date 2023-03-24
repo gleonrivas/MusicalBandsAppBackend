@@ -55,12 +55,11 @@ public class User {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
     @JsonIgnore
-    private List<Absence> abeenceList;
+    private List<Absence> abesenceList;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
-    @JsonIgnore
-    private List<MusicSheet> musicSheets;
+//    relacion a la tabla triple y esta a las partituras
+
+    // falta relacion con la tabla formacion
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
