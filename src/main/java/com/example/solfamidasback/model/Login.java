@@ -22,6 +22,7 @@ public class Login {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 10)
     private Integer id;
+
     @Column(name = "token", nullable = false, length = 600)
     private String token;
 

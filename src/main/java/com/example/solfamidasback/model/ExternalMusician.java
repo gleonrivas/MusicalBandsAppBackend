@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Calendar;
+
 import java.util.List;
 
 @Entity
@@ -24,13 +24,13 @@ public class ExternalMusician {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-/*
+
     @ManyToOne
     @JoinColumn(name = "id_calendar")
     @JsonIgnore
     @JsonIgnoreProperties(value = "external_musician")
     private Calendar calendar;
-*/
+
 
     @Column(name = "name", length = 150)
     private String name;
