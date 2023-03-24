@@ -26,21 +26,22 @@ public class Formation {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "nombre", length = 150)
+    @Column(name = "name", length = 150)
     private String name;
 
-    @Column(name = "designacion", length = 150)
+    @Column(name = "designation", length = 150)
     private String designation;
-    @Column(name = "tipo", length = 150)
+
+    @Column(name = "type", length = 150)
     private String type;
 
-    @Column(name = "año_fundacion")
+    @Column(name = "foundation_year")
     private LocalDateTime fundationDate;
 
     @Column(name = "logo", length = 400)
     private String logo;
 
-    @Column(name = "activo")
+    @Column(name = "active")
     private Boolean active;
 
     @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)

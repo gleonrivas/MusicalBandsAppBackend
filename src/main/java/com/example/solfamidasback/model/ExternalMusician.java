@@ -12,6 +12,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+
+
 @Entity
 @Table(name = "wxternal_musician")
 @Getter
@@ -29,7 +31,7 @@ public class ExternalMusician {
     @JoinColumn(name = "id_calendar")
     @JsonIgnore
     @JsonIgnoreProperties(value = "external_musician")
-    private Calendar calendar;
+    private CalendarEvent calendar;
 
 
     @Column(name = "name", length = 150)

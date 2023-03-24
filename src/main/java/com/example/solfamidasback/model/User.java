@@ -21,23 +21,31 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "nombre", length = 150)
+    @Column(name = "name", length = 150)
     private String name;
 
-    @Column(name = "apellidos", length = 150)
+    @Column(name = "surname", length = 150)
     private String surName;
 
     @Column(name = "email", length = 150)
     private String email;
 
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "birthdate")
     private LocalDateTime birthDate;
 
     @Column(name = "dni", length = 15)
     private String dni;
 
-    @Column(name = "superadministrador")
+    @Column(name = "superadministrator")
     private Boolean superadmin;
+
+    @Column(name = "active")
+    private Boolean active;
+
+    @Column(name = "password", length = 400)
+    private String password;
+
+
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
