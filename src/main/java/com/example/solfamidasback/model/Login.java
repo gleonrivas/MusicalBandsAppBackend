@@ -8,11 +8,11 @@ import lombok.Setter;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.stereotype.Repository;
 
-@Entity
-@Table(name = "cupon")
-@Getter
-@Setter
-@AllArgsConstructor
-public class Login {
-
-}
+//@Entity
+//@Table(name = "cupon")
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//public class Login {
+//
+//}
