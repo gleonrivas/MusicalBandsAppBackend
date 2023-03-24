@@ -49,8 +49,13 @@ public class User {
     @JsonIgnore
     private List<Absence> abeenceList;
 
-    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="formation")
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="user")
     @JsonIgnore
     private List<MusicSheet> musicSheets;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="user")
+    @JsonIgnore
+    private List<Login> login;
 }
