@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class musicSheet {
+public class MusicSheet {
 
 
     @Id
@@ -26,11 +26,11 @@ public class musicSheet {
     private User user;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "id_formation")
+    @JoinColumn(name = "id_formation")
     private Formation formation;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "id_role")
+    @JoinColumn(name = "id_role")
     private Role role;
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;

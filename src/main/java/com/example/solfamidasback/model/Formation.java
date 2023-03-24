@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "formacion")
@@ -46,4 +47,10 @@ public class Formation {
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
     private List<Material> materialList;
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<MusicSheet> musicSheets;
+
+
 }

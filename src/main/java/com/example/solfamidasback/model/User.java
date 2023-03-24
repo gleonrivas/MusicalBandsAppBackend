@@ -49,5 +49,8 @@ public class User {
     @JsonIgnore
     private List<Absence> abeenceList;
 
-
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<MusicSheet> musicSheets;
 }
