@@ -1,18 +1,37 @@
 package com.example.solfamidasback.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "cupon")
+@Table(name = "login")
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Login {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", length = 10)
+    private Integer id;
+
+    @Column(name = "token", nullable = false, length = 600)
+    private String token;
+
+    @Column(name = "expiration_date", nullable = false)
+    private LocalDate expirationDate;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user")
+    private User user;
+
 
 }
