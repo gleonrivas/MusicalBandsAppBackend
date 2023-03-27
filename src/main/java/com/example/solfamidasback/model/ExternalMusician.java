@@ -15,7 +15,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "wxternal_musician")
+@Table(name = "external_musician")
 @Getter
 @Setter
 @AllArgsConstructor

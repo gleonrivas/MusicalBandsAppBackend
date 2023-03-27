@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "formacion")
+@Table(name = "formation")
 @Getter
 @Setter
 @AllArgsConstructor
