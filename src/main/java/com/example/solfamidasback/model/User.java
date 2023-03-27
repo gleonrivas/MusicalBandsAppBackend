@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -35,6 +35,9 @@ public class User {
 
     @Column(name = "dni", length = 15)
     private String dni;
+
+    @Column(name = "active", length = 15)
+    private Boolean active = true;
 
     @Column(name = "superadministrador")
     private Boolean superadmin;

@@ -11,7 +11,7 @@ import net.minidev.json.annotate.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "formacion")
+@Table(name = "material")
 @Getter
 @Setter
 @AllArgsConstructor
