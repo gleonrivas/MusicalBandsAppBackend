@@ -55,7 +55,7 @@ public class User {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
     @JsonIgnore
-    private List<Absence> abeenceList;
+    private List<Absence> absenceList;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
