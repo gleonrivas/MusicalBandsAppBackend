@@ -37,4 +37,9 @@ public class Role {
     @JsonIgnore
     private List<MusicSheet> musicSheets;
 
+    @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="role")
+    @JsonIgnore
+    private List<userFormationRole> userFormationRole;
+
 }

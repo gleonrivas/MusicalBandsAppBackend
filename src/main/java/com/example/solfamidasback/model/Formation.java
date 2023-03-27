@@ -49,7 +49,11 @@ public class Formation {
     @JsonIgnore
     private List<Material> materialList;
 
-    //va con la tabla triple relacionada one to many
+
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<userFormationRole> userFormationRole;
 
 
 

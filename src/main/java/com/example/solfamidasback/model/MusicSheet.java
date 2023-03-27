@@ -20,21 +20,15 @@ public class MusicSheet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 10)
     private Integer id;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
-    private User user;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_formation")
-    private Formation formation;
 
 
-    //cambiar id role por el id de la tabla triple tambien en bbdd
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "id_role")
-//    private Role role;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user_formation_role")
+    private userFormationRole userFormationRole;
+
+
 
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;

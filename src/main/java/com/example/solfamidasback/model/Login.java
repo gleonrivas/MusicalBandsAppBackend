@@ -28,6 +28,7 @@ public class Login {
 
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user")
