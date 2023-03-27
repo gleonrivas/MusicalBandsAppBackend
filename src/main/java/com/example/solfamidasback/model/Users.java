@@ -45,24 +45,29 @@ public class Users {
     @Column(name = "password", length = 400)
     private String password;
 
-//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value="user")
-//    @JsonIgnore
-//    private List<Material> materialList;
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<Material> materialList;
 //
-//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value="user")
-//    @JsonIgnore
-//    private List<Absence> abesenceList;
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<Absence> abesenceList;
 
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<Login> login;
 
-//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value="user")
-//    @JsonIgnore
-//    private List<UserFormationRole> userFormationRole;
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<UnsubscribeFormation> unsubscribeFormations;
+
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<UserFormationRole> userFormationRole;
 }

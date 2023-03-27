@@ -31,7 +31,7 @@ public class Login {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_users")
-    private Users user;
+    private Users users;
 
 
 }
