@@ -1,6 +1,7 @@
 package com.example.solfamidasback.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,19 +23,15 @@ public class MusicSheet {
     private Integer id;
 
 
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user_formation_role")
-    private userFormationRole userFormationRole;
-
-
-
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;
 
     @Column(name = "instrument_type", nullable = false)
     private Integer instrumentType;
 
-
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user_formation_role")
+    @JsonIgnoreProperties(value = "music_sheet")
+    private UserFormationRole userFormationRole;
 }

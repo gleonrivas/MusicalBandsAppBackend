@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "user")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -57,9 +57,7 @@ public class User {
     @JsonIgnore
     private List<Absence> abesenceList;
 
-//    relacion a la tabla triple y esta a las partituras
 
-    // falta relacion con la tabla formacion
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
@@ -69,5 +67,5 @@ public class User {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="user")
     @JsonIgnore
-    private List<userFormationRole> userFormationRole;
+    private List<UserFormationRole> userFormationRole;
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "wxternal_musician")
+@Table(name = "external_musician")
 @Getter
 @Setter
 @AllArgsConstructor

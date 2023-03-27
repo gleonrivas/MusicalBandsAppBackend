@@ -2,7 +2,6 @@ package com.example.solfamidasback.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.javafaker.Bool;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +10,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "formacion")
+@Table(name = "formation")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -53,7 +51,7 @@ public class Formation {
     @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
-    private List<userFormationRole> userFormationRole;
+    private List<UserFormationRole> userFormationRole;
 
 
 

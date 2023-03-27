@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,11 +34,6 @@ public class Role {
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="role")
     @JsonIgnore
-    private List<MusicSheet> musicSheets;
-
-    @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="role")
-    @JsonIgnore
-    private List<userFormationRole> userFormationRole;
+    private List<UserFormationRole> userFormationRole;
 
 }
