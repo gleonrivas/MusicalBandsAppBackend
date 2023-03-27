@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,18 +45,15 @@ public class User {
     @Column(name = "password", length = 400)
     private String password;
 
-
-
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
-    @JsonIgnore
-    private List<Material> materialList;
-
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
-    @JsonIgnore
-    private List<Absence> abesenceList;
-
+//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties(value="user")
+//    @JsonIgnore
+//    private List<Material> materialList;
+//
+//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties(value="user")
+//    @JsonIgnore
+//    private List<Absence> abesenceList;
 
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
@@ -64,8 +61,8 @@ public class User {
     @JsonIgnore
     private List<Login> login;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
-    @JsonIgnore
-    private List<UserFormationRole> userFormationRole;
+//    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties(value="user")
+//    @JsonIgnore
+//    private List<UserFormationRole> userFormationRole;
 }

@@ -1,6 +1,5 @@
 package com.example.solfamidasback.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,8 +30,8 @@ public class Login {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
-    private User user;
+    @JoinColumn(name = "id_users")
+    private Users user;
 
 
 }
