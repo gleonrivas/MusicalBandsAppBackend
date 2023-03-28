@@ -45,10 +45,23 @@ public class Formation {
     @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
+    private List<UnsubscribeFormation> unsubscribeFormations;
+
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
     private List<Material> materialList;
 
-    //va con la tabla triple relacionada one to many
 
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<UserFormationRole> userFormationRole;
+
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<CalendarEvent> calendarEvents;
 
 
 }

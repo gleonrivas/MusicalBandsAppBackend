@@ -32,7 +32,7 @@ public class Absence {
     @JoinColumn(name = "id_user")
     @JsonIgnore
     @JsonIgnoreProperties(value = "absence")
-    private User user;
+    private Users users;
 
     @ManyToOne
     @JoinColumn(name = "id_calendar")

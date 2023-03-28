@@ -1,6 +1,5 @@
 package com.example.solfamidasback.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,10 +27,11 @@ public class Login {
 
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
-    private User user;
+    @JoinColumn(name = "id_users")
+    private Users users;
 
 
 }

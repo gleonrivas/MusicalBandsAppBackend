@@ -18,7 +18,7 @@ public class UnsubscribeFormation {
 
     @ManyToOne()
     @JoinColumn(name = "id_user")
-    private User user;
+    private Users users;
 
    @ManyToOne()
    @JoinColumn(name = "id_formation")
@@ -30,10 +30,6 @@ public class UnsubscribeFormation {
 
     @JoinColumn(name = "full_date")
     private LocalDate date;
-
-
-
-
 
 
 
