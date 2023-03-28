@@ -1,7 +1,6 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.model.Formation;
-import com.example.solfamidasback.model.User;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-@Controller
+@Controller+
 @RequestMapping("formation")
 public class FormationController {
 
@@ -24,9 +23,10 @@ public class FormationController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/formationlist/{user}")
-    public @ResponseBody List<Formation> listFormationByUserAndActive(@PathVariable User user) throws JsonProcessingException {
-        return formationRepository.findAllByUserAndActiveIsTrue(user.getId());
+    @GetMapping("/listByUser/{user_id}")
+    public @ResponseBody List<Formation> listFormationByUserAndActive(@PathVariable Integer user_id) throws JsonProcessingException {
+
+        return formationRepository.findAllByUserAndActiveIsTrue(user_id);
     }
 
 
