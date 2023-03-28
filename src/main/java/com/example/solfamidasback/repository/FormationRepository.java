@@ -1,8 +1,6 @@
 package com.example.solfamidasback.repository;
 
 import com.example.solfamidasback.model.Formation;
-import com.example.solfamidasback.model.Material;
-import com.example.solfamidasback.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +11,20 @@ import java.util.List;
 @Repository
 public interface FormationRepository extends JpaRepository<Formation,Integer> {
 
-    @Query(value = "select * from formation f join music_sheet ms \n" +
-            "on ms.id_formation = f.id where ms.id_user = ? and f.activo =true ", nativeQuery = true)
+    @Query(value = "select f.* from formation f join user_formation_role ufr \n" +
+            "on ufr.id_formation = f.id where ufr.id_user = ? \n" +
+            "and f.active =true", nativeQuery = true)
     List<Formation> findAllByUserAndActiveIsTrue(@Param("id_user") Integer id);
+
+    Formation findFormationByIdAndActiveIsTrue(Integer id);
+    @Query(value = "insert into user_formation_role (id_formation, id_role, id_user)" +
+            " values(?,?) ", nativeQuery = true)
+    void insertMiddleTable(@Param("id_user") Integer id_user,
+                           @Param("id_formation") Integer id_formation);
+
+
+    @Query(value = "select f.id from formation f order by id desc limit 1 ", nativeQuery = true)
+    Integer findLastFormation();
+
+
 }
