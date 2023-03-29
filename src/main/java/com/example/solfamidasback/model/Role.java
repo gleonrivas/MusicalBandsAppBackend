@@ -31,9 +31,9 @@ public class Role {
     @Column(name = "type", length = 150)
     private Integer type;
 
-//    @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value="role")
-//    @JsonIgnore
-//    private List<UserFormationRole> userFormationRole;
+    @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="role")
+    @JsonIgnore
+    private List<UserFormationRole> userFormationRole;
 
 }
