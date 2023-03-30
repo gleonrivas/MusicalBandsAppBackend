@@ -16,13 +16,13 @@ public class UnsubscribeFormation {
     @JoinColumn(name = "id")
     private Integer id;
 
-//    @ManyToOne()
-//    @JoinColumn(name = "id_user")
-//    private User;
+    @ManyToOne()
+    @JoinColumn(name = "id_user")
+    private Users users;
 
-//    @ManyToOne()
-//    @JoinColumn(name = "id_formation")
-//    private Formation;
+   @ManyToOne()
+   @JoinColumn(name = "id_formation")
+    private Formation formation;
 
 
     @JoinColumn(name = "reason")
@@ -30,7 +30,6 @@ public class UnsubscribeFormation {
 
     @JoinColumn(name = "full_date")
     private LocalDate date;
-
 
 
 

@@ -10,7 +10,7 @@ import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
+
 
 @Entity
 @Table(name = "absence")
@@ -32,18 +32,15 @@ public class Absence {
     @JoinColumn(name = "id_user")
     @JsonIgnore
     @JsonIgnoreProperties(value = "absence")
-    private User user;
+    private Users users;
 
-
-    /*
     @ManyToOne
     @JoinColumn(name = "id_calendar")
     @JsonIgnore
     @JsonIgnoreProperties(value = "absence")
-    private Calendar calendar;
+    private CalendarEvent calendar;
 
 
-     */
 
 
 

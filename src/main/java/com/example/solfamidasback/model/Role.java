@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,9 +22,6 @@ public class Role {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "instumentalist_type", length = 150)
-    private Integer fullDate;
-
     @Column(name = "active", length = 150)
     private boolean active;
 
@@ -35,6 +31,6 @@ public class Role {
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="role")
     @JsonIgnore
-    private List<MusicSheet> musicSheets;
+    private List<UserFormationRole> userFormationRole;
 
 }

@@ -43,7 +43,7 @@ public class Material {
     @JoinColumn(name = "id_user")
     @JsonIgnore
     @JsonIgnoreProperties(value = "material")
-    private User user;
+    private Users users;
 
 
 

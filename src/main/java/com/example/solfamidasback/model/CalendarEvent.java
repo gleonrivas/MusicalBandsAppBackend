@@ -1,12 +1,19 @@
 package com.example.solfamidasback.model;
-import jakarta.persistence.*;
-import lombok.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
-@Table(name = "Calendar")
+@Table(name = "calendar")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -44,13 +51,19 @@ public class CalendarEvent {
     @JoinColumn(name = "consideration_bolus")
     private Double considerationBolus;
 
-    //    @ManyToOne()
-//    @JoinColumn(name = "id_formation")
-//    private Formation;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_formation")
+    private Formation formation;
 
 
-//    @OneToMany(mappedBy = "calendar",fetch = FetchType.LAZY)
-//    @JsonIgnoreProperties(value="calendar")
-//    @JsonIgnore
-//    private List<ExternalMusician> extenalMusicianList;
+    @OneToMany(mappedBy = "calendar",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="calendar")
+    @JsonIgnore
+    private List<ExternalMusician> extenalMusicianList;
+
+    @OneToMany(mappedBy = "calendar",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="calendar")
+    @JsonIgnore
+    private List<Absence> absenceList;
 }
