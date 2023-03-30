@@ -22,9 +22,6 @@ public class Role {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "instumentalist_type", length = 150)
-    private Integer fullDate;
-
     @Column(name = "active", length = 150)
     private boolean active;
 
