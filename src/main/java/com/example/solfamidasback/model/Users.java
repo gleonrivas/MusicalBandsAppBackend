@@ -70,4 +70,9 @@ public class Users {
     @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<UserFormationRole> userFormationRole;
+
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<Formation> formationList;
 }

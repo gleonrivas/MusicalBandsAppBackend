@@ -1,13 +1,14 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.FormationDTO;
+import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,43 +34,53 @@ public class FormationController {
     }
 
     @GetMapping("/listById/{formation_id}")
-    public @ResponseBody Formation formationById (@PathVariable Integer formation_id) throws JsonProcessingException{
+    public @ResponseBody Formation formationById(@PathVariable Integer formation_id) throws JsonProcessingException {
         return formationRepository.findFormationByIdAndActiveIsTrue(formation_id);
     }
 
     @PostMapping("/create")
-    public String createFormation (@RequestBody FormationDTO formationDTO){
-
-        //Formation DTO
-        //buscar usuario, si esxiste, crea formacion
-        if(!userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user())){
-            return "this user doesn't exist";
-        }else{
-            //crear nueva formacion
-            Formation formation = new Formation();
-            formation.setActive(true);
-            formation.setLogo(formationDTO.getLogo());
-            formation.setName(formationDTO.getName());
-            formation.setDesignation(formationDTO.getDesignation());
-            formation.setType(formationDTO.getType());
-            formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
-            formationRepository.save(formation);
-            //bucar la formación para coger el id
-            Integer id_formation = formationRepository.findLastFormation();
-            //insertar en la tabla intermedia los valores
-            formationRepository.insertMiddleTable(formationDTO.getId_user(), id_formation);
-            return "User created";
-        }
-
+    public String createFormation(@RequestBody FormationDTO formationDTO) {
+        Users user = userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user());
+        Formation formation = new Formation();
+        formation.setActive(true);
+        formation.setLogo(formationDTO.getLogo());
+        formation.setName(formationDTO.getName());
+        formation.setDesignation(formationDTO.getDesignation());
+        formation.setType(formationDTO.getType());
+        formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
+        formation.setUsers(user);
+        formationRepository.save(formation);
+        //bucar la formación para coger el id
+        return "Formation created";
     }
 
-    @DeleteMapping("/delete/{id_formation}")
-    public String deleteFormation (@PathVariable Integer id_formation){
+    @PostMapping("/update")
+    public String updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
 
-       Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(id_formation);
-       formation.setActive(false);
-       formationRepository.save(formation);
-       return "formation deleted";
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
+        Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId());
+        formation.setActive(true);
+        formation.setLogo(formationupdateDTO.getLogo());
+        formation.setName(formationupdateDTO.getName());
+        formation.setDesignation(formationupdateDTO.getDesignation());
+        formation.setType(formationupdateDTO.getType());
+        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate()));
+        formation.setUsers(user);
+
+        formationRepository.save(formation);
+        //bucar la formación para coger el id
+        return "Formation created";
+    }
+
+
+
+    @DeleteMapping("/delete/{id_formation}")
+    public String deleteFormation(@PathVariable Integer id_formation) {
+
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(id_formation);
+        formation.setActive(false);
+        formationRepository.save(formation);
+        return "formation deleted";
 
     }
 

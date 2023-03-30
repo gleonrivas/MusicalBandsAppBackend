@@ -22,14 +22,12 @@ public class Role {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "instumentalist_type", length = 150)
-    private Integer fullDate;
-
     @Column(name = "active", length = 150)
     private boolean active;
 
     @Column(name = "type", length = 150)
-    private Integer type;
+    private String type;
+
 
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="role")

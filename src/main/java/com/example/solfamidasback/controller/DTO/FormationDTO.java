@@ -7,12 +7,13 @@ import lombok.Setter;
 @Setter
 public class FormationDTO {
  private Integer id_user;
- private Integer id;
  private String name;
  private String designation;
  private String type;
  private String fundationDate;
  private String logo;
+
+
 
 
 

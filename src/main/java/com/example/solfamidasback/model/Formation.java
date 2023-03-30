@@ -63,5 +63,10 @@ public class Formation {
     @JsonIgnore
     private List<CalendarEvent> calendarEvents;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_owner")
+    private Users users;
+
 
 }
