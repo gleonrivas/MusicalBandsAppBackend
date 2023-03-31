@@ -2,6 +2,7 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
+import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -41,12 +43,14 @@ public class FormationController {
     @PostMapping("/create")
     public String createFormation(@RequestBody FormationDTO formationDTO) {
         Users user = userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user());
+
         Formation formation = new Formation();
         formation.setActive(true);
         formation.setLogo(formationDTO.getLogo());
         formation.setName(formationDTO.getName());
         formation.setDesignation(formationDTO.getDesignation());
         formation.setType(formationDTO.getType());
+      //aquí va el formation type que tengo que castearlo al enum
         formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
         formation.setUsers(user);
         formationRepository.save(formation);
@@ -57,14 +61,16 @@ public class FormationController {
     @PostMapping("/update")
     public String updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
-        Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId());
+        Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
         formation.setLogo(formationupdateDTO.getLogo());
         formation.setName(formationupdateDTO.getName());
         formation.setDesignation(formationupdateDTO.getDesignation());
         formation.setType(formationupdateDTO.getType());
-        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate()));
+        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate().replace(" ", "T"), formatter));
         formation.setUsers(user);
 
         formationRepository.save(formation);

@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller.DTO;
 
+import com.example.solfamidasback.model.Enums.EnumFormationType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,7 @@ public class FormationDTO {
  private Integer id_user;
  private String name;
  private String designation;
- private String type;
+ private EnumFormationType type;
  private String fundationDate;
  private String logo;
 
