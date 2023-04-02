@@ -21,44 +21,53 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "nombre", length = 150)
+    @Column(name = "name", length = 150)
     private String name;
 
-    @Column(name = "apellidos", length = 150)
+    @Column(name = "surname", length = 150)
     private String surName;
 
     @Column(name = "email", length = 150)
     private String email;
 
-    @Column(name = "fecha_nacimiento")
+    @Column(name = "birthdate")
     private LocalDateTime birthDate;
 
     @Column(name = "dni", length = 15)
     private String dni;
 
-    @Column(name = "active", length = 15)
+    @Column(name = "active")
     private Boolean active = true;
 
-    @Column(name = "superadministrador")
+    @Column(name = "password", length = 250)
+    private String password ;
+
+    @Column(name = "superadministrator")
     private Boolean superadmin;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<Material> materialList;
-
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
+    //
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
     @JsonIgnore
-    private List<Absence> abeenceList;
+    private List<Absence> abesenceList;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
-    @JsonIgnore
-    private List<MusicSheet> musicSheets;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user")
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<Login> login;
+
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<UnsubscribeFormation> unsubscribeFormations;
+
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<UserFormationRole> userFormationRole;
 }

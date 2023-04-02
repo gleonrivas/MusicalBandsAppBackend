@@ -25,7 +25,7 @@ public class Role {
     @Column(name = "active", length = 150)
     private boolean active;
 
-    @Column(name = "type", length = 150)
+    @Column(name = "type")
     private Integer type;
 
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)
