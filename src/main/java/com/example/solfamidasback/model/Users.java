@@ -1,20 +1,26 @@
 package com.example.solfamidasback.model;
 
+import com.example.solfamidasback.model.Enums.EnumRolAuth;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
+@Builder
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Users {
+public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +50,9 @@ public class Users {
 
     @Column(name = "password", length = 400)
     private String password;
+
+    @Enumerated(EnumType.ORDINAL)
+    private EnumRolAuth enumRolAuth;
 
     @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="users")
@@ -75,4 +84,39 @@ public class Users {
     @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<Formation> formationList;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(enumRolAuth.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public String getPassword(){
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequestMapping("user")
 public class UserController {
 
@@ -42,7 +42,7 @@ public class UserController {
     public String registerUser(@RequestBody Users user){
 
 
-        boolean exist = userRepository.findUserByEmail(user.getEmail());
+        boolean exist = userRepository.existsByEmail(user.getEmail());
         if(exist){
             return "this email is not available";
         }else {

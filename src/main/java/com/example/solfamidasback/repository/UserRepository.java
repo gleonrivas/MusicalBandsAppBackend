@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<Users,Integer> {
 
@@ -12,9 +14,13 @@ public interface UserRepository extends JpaRepository<Users,Integer> {
 
     Users findAllByNameAndActiveIsTrue(String name);
 
-    boolean findUserByEmail(String email);
+   Optional<Users> findByEmail(String email);
 
     Users findByIdAndActiveIsTrue(Integer id);
+
+  boolean existsByEmail(String email);
+
+
 
 
 
