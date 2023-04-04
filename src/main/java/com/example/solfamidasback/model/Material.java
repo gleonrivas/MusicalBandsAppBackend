@@ -1,5 +1,6 @@
 package com.example.solfamidasback.model;
 
+import com.example.solfamidasback.model.Enums.EnumMaterialType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,9 @@ public class Material {
 
     @Column(name = "transferred_material", length = 150)
     private String transferredMaterial;
+
+    @Column(name = "material_type")
+    private EnumMaterialType materialType;
 
     @Column(name = "active")
     private boolean active;
