@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -44,11 +45,6 @@ public class Users {
 
     @Column(name = "password", length = 400)
     private String password;
-
-    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="users")
-    @JsonIgnore
-    private List<Material> materialList;
 //
     @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="users")
@@ -75,4 +71,12 @@ public class Users {
     @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private List<Formation> formationList;
+    @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private List<UserFormationInstrument> userFormationInstruments;
+    @ManyToMany(mappedBy = "usersList",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="users")
+    @JsonIgnore
+    private Set<Material> materialList;
 }
