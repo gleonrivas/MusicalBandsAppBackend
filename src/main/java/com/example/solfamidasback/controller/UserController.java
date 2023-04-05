@@ -32,7 +32,7 @@ public class UserController {
         List<Users> listUsers = userRepository.findAllByActiveIsTrue();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(listUsers,headers, HttpStatus.OK);
+        return new ResponseEntity(listUsers,headers, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

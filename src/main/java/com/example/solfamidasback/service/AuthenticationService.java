@@ -33,8 +33,11 @@ public class AuthenticationService {
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
+        String mostrar = "Usuario registrado con éxito";
+        String token = "Logueate para ver tu token";
         return AuthenticationResponses.builder()
-                .token(jwtToken)
+                .resultado(mostrar)
+                .token(token)
                 .build();
     }
 
@@ -48,12 +51,12 @@ public class AuthenticationService {
        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
+        String mostrar = "Autenticado con éxito";
         return AuthenticationResponses.builder()
                 .token(jwtToken)
+                .resultado(mostrar)
                 .build();
         } else {
-
-
 
            return AuthenticationResponses.builder().build();
        }

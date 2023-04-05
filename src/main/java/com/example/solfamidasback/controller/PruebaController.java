@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/prueba-controller")
+@RequestMapping("/login/prueba-controller")
 public class PruebaController {
     @GetMapping
     public ResponseEntity<String> sayHello(){
-        return ResponseEntity.ok("Hello from secured endpoint");
+        return ResponseEntity.ok("Controlador de prueba funcionando");
     }
 
 
