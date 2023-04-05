@@ -28,6 +28,7 @@ public class AuthenticationService {
                 .surName(request.getSecondname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .active(true)
                 .enumRolAuth(EnumRolAuth.USER)
                 .build();
         userRepository.save(user);

@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +68,47 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponses> authenticate(
             @RequestBody AuthenticationRequests request
     ){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        var users = userRepository.findByEmail(request.getEmail());
+
+        if (!validPassword(request.getPassword())){
+            String mensaje = "La contraseña tiene que tener al menos 8 caracteres y contener al menos un dígito, una letra minúscula y una letra mayúscula";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        if (!request.getEmail().contains("@") || !request.getEmail().contains(".")){
+            String mensaje = "Formato de email no válido";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        if (request.getEmail().isBlank() || request.getPassword().isBlank()) {
+            String mensaje = "Campos mal puestos o email no válido";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+        if (!userRepository.existsByEmail(request.getEmail())) {
+            String mensaje = "El email no existe";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+
+
+
+        if (!encoder.matches(request.getPassword(), users.get().getPassword())){
+            String mensaje = "La contraseña es incorrecta para el email usado";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+
+        }
+
         return ResponseEntity.ok(authenticationService.authenticate(request));
 
     }
