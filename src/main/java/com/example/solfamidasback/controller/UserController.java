@@ -5,15 +5,18 @@ import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 
-@Controller
-@RequestMapping("user")
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
 
@@ -25,10 +28,16 @@ public class UserController {
 
 
     @GetMapping("/list")
-    public @ResponseBody List<Users> listUsers() throws JsonProcessingException {
+    public ResponseEntity<List<Users>>  listUsers() {
+        List<Users> listUsers = userRepository.findAllByActiveIsTrue();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(listUsers,headers, HttpStatus.OK);
+    }
 
-        return Collections.singletonList(userRepository.findAllByActiveIsTrue());
-
+    @GetMapping("/listAll")
+    public ResponseEntity<String> todosLosUser(){
+        return ResponseEntity.ok("Se verian todos los usuarios");
     }
 
     @GetMapping("/list/{name}")
@@ -42,7 +51,7 @@ public class UserController {
     public String registerUser(@RequestBody Users user){
 
 
-        boolean exist = userRepository.findUserByEmail(user.getEmail());
+        boolean exist = userRepository.existsByEmail(user.getEmail());
         if(exist){
             return "this email is not available";
         }else {

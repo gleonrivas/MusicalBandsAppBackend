@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -45,6 +44,10 @@ public class Users {
 
     @Column(name = "password", length = 400)
     private String password;
+
+    @Enumerated(EnumType.ORDINAL)
+    private EnumRolAuth enumRolAuth;
+
 //
     @OneToMany(mappedBy = "users",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="users")
@@ -79,4 +82,39 @@ public class Users {
     @JsonIgnoreProperties(value="users")
     @JsonIgnore
     private Set<Material> materialList;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(enumRolAuth.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public String getPassword(){
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
