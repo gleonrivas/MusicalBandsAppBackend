@@ -1,5 +1,7 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.model.DTO.IUserConverter;
+import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.User;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.UserService;
@@ -21,6 +23,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    IUserConverter userConverter;
+
 
     @GetMapping("/list")
     public @ResponseBody List<User> listUsers() throws JsonProcessingException {
@@ -37,13 +42,13 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user){
+    public String registerUser(@RequestBody UserDTO userDTO){
 
 
-        if(userRepository.findUserByEmailAndActiveIsTrue(user.getEmail())!=null){
+        if(userRepository.findUserByEmailAndActiveIsTrue(userDTO.getEmail())!=null){
             return  "this email is not available";
         }else {
-            userRepository.save(user);
+            userRepository.save(userConverter.toEntity(userDTO));
             return "user created successfully";
         }
 
