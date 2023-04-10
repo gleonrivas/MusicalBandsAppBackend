@@ -1,9 +1,7 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
-import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -13,12 +11,10 @@ import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
