@@ -1,17 +1,24 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.model.Role;
+import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
+import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,37 +36,50 @@ public class FormationController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/listByUser/{user_id}")
-    public @ResponseBody List<Formation> listFormationByUserAndActive(@PathVariable Integer user_id) throws JsonProcessingException {
+    @Autowired
+    RoleService roleService;
+    @Autowired
+    private RoleRepository roleRepository;
 
-        return formationRepository.findAllByUserAndActiveIsTrue(user_id);
+    @GetMapping("/listByUser/{user_id}")
+    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
+        List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
+        return ResponseEntity.ok(formationList);
+
     }
 
     @GetMapping("/listById/{formation_id}")
-    public @ResponseBody Formation formationById(@PathVariable Integer formation_id) throws JsonProcessingException {
-        return formationRepository.findFormationByIdAndActiveIsTrue(formation_id);
+    public ResponseEntity<Formation> formationById(@PathVariable Integer formation_id) {
+        return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formation_id));
     }
 
     @PostMapping("/create")
-    public String createFormation(@RequestBody FormationDTO formationDTO) {
+    public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO) {
+        //buscar el user
         Users user = userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user());
-
+        //crear el rol de propietario de formacion
+        Role role = roleService.createRoleFormationAdministrator();
+        //guardar el nuevo rol
+        roleRepository.save(role);
+        //crear la formacion
         Formation formation = new Formation();
         formation.setActive(true);
         formation.setLogo(formationDTO.getLogo());
         formation.setName(formationDTO.getName());
         formation.setDesignation(formationDTO.getDesignation());
         formation.setType(formationDTO.getType());
-      //aquí va el formation type que tengo que castearlo al enum
         formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
         formation.setUsers(user);
         formationRepository.save(formation);
-        //bucar la formación para coger el id
-        return "Formation created";
+        //bucar la formación
+        Formation formationCreated = formationRepository.findLastFormation();
+        //crear relación user_formation_role
+        UserFormationRole userFormationRole = new UserFormationRole(user, formationCreated, role);
+        return ResponseEntity.ok(formation);
     }
 
     @PostMapping("/update")
-    public String updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
+    public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -75,19 +95,19 @@ public class FormationController {
 
         formationRepository.save(formation);
         //bucar la formación para coger el id
-        return "Formation created";
+
+        return ResponseEntity.ok(formation);
     }
 
 
 
     @DeleteMapping("/delete/{id_formation}")
-    public String deleteFormation(@PathVariable Integer id_formation) {
+    public ResponseEntity<String> deleteFormation(@PathVariable Integer id_formation) {
 
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(id_formation);
         formation.setActive(false);
         formationRepository.save(formation);
-        return "formation deleted";
-
+        return ResponseEntity.ok("formation deleted");
     }
 
 }

@@ -69,5 +69,10 @@ public class Formation {
     @JoinColumn(name = "id_owner")
     private Users users;
 
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private List<UserFormationInstrument> userFormationInstruments;
+
 
 }

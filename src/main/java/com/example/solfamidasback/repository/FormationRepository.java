@@ -11,10 +11,9 @@ import java.util.List;
 @Repository
 public interface FormationRepository extends JpaRepository<Formation,Integer> {
 
-    @Query(value = "select f.* from formation f join user_formation_role ufr \n" +
-            "on ufr.id_formation = f.id where ufr.id_user = ? \n" +
+    @Query(value = "select * from formation f where id_owner = ? \n" +
             "and f.active =true", nativeQuery = true)
-    List<Formation> findAllByUserAndActiveIsTrue(@Param("id_user") Integer id);
+    List<Formation> getAllByUserAndActiveIsTrue(@Param("id_user") Integer id);
 
     Formation findFormationByIdAndActiveIsTrue(Integer id);
     @Query(value = "insert into user_formation_role (id_formation, id_role, id_user)" +
@@ -23,8 +22,9 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
                            @Param("id_formation") Integer id_formation);
 
 
-    @Query(value = "select f.id from formation f order by id desc limit 1 ", nativeQuery = true)
-    Integer findLastFormation();
+    @Query(value = "select * from formation f order by id desc limit 1 ", nativeQuery = true)
+    Formation findLastFormation();
+
 
 
 }
