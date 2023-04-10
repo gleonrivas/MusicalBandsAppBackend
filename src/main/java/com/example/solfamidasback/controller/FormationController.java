@@ -15,6 +15,9 @@ import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
-@RequestMapping("formation")
+@RequestMapping("/formation")
 public class FormationController {
 
     @Autowired
@@ -41,10 +44,14 @@ public class FormationController {
     @Autowired
     private RoleRepository roleRepository;
 
+
+
     @GetMapping("/listByUser/{user_id}")
     public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
         List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
-        return ResponseEntity.ok(formationList);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formationList,headers, HttpStatus.OK);
 
     }
 
