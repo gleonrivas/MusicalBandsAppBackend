@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-
 @Entity
 @Table(name = "external_musician")
 @Getter
@@ -32,19 +31,21 @@ public class ExternalMusician {
 
     @Column(name = "name", length = 150)
     private String name;
-
     @Column(name = "surname", length = 150)
     private String surname;
-
     @Column(name = "dni", length = 150)
     private String dni;
-
+    @Column(name = "email", length = 50)
+    private String email;
+    @Column(name = "phone", length = 12)
+    private String phone;
+    @Column(name = "bank_account", length = 20)
+    private String bankAccount;
     @Column(name = "amount", length = 150)
     private Integer amount;
 
     @Column(name = "active", length = 150)
     private boolean active;
-
 
 
 }

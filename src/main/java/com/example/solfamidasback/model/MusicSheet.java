@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
 
+import java.util.List;
+
 @Entity
 @Table(name = "music_sheet")
 @Getter
@@ -26,12 +28,14 @@ public class MusicSheet {
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;
 
-    @Column(name = "instrument_type", nullable = false)
-    private Integer instrumentType;
 
     @ManyToOne
     @JoinColumn(name = "id_user_formation_role")
     @JsonIgnore
     @JsonIgnoreProperties(value = "music_sheet")
     private UserFormationRole userFormationRole;
+
+    @OneToMany(mappedBy = "musicSheet",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="music_sheet")
+    private List<UserFormationInstrument> userFormationInstruments;
 }
