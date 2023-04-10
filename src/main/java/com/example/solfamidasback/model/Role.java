@@ -1,5 +1,7 @@
 package com.example.solfamidasback.model;
 
+import com.example.solfamidasback.model.Enums.EnumRolUser;
+import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -25,8 +27,8 @@ public class Role {
     @Column(name = "active", length = 150)
     private boolean active;
 
-    @Column(name = "type", length = 150)
-    private String type;
+    @Column(name = "type")
+    private EnumRolUserFormation type;
 
 
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY)

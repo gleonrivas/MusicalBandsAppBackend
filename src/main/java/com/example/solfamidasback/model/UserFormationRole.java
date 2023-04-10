@@ -43,4 +43,9 @@ public class UserFormationRole {
     @JsonIgnore
     private Set<MusicSheet> musicSheets;
 
+    public UserFormationRole(Users users, Formation formation, Role role) {
+        this.users = users;
+        this.formation = formation;
+        this.role = role;
+    }
 }
