@@ -1,19 +1,29 @@
 package com.example.solfamidasback.repository;
 
-import com.example.solfamidasback.model.User;
+import com.example.solfamidasback.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
+public interface UserRepository extends JpaRepository<Users,Integer> {
 
-    List<User> findAllByActiveIsTrue();
+    List<Users> findAllByActiveIsTrue();
 
-    List<User> findAllByNameAndActiveIsTrue(String name);
+    Users findAllByNameAndActiveIsTrue(String name);
 
-    User findUserByEmailAndActiveIsTrue(String email);
+   Optional<Users> findByEmail(String email);
+
+    Users findByIdAndActiveIsTrue(Integer id);
+
+  boolean existsByEmail(String email);
+
+
+
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.solfamidasback.model;
 
+import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -31,7 +32,7 @@ public class Formation {
     private String designation;
 
     @Column(name = "type", length = 150)
-    private String type;
+    private EnumFormationType type;
 
     @Column(name = "foundation_year")
     private LocalDateTime fundationDate;
@@ -62,6 +63,11 @@ public class Formation {
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
     private List<CalendarEvent> calendarEvents;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_owner")
+    private Users users;
 
 
 }
