@@ -1,6 +1,6 @@
 package com.example.solfamidasback.model.DTO;
 
-import com.example.solfamidasback.model.User;
+import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.service.UserService;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -22,7 +22,7 @@ public abstract class UserConverter  {
     @Mapping(source = "active", target = "active")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "superadmin", target = "superadmin")
-    public abstract User toEntity(UserDTO userDTO);
+    public abstract Users toEntity(UserDTO userDTO);
 
     @Mapping(source = "name", target = "name")
     @Mapping(source = "surName", target = "surName")
@@ -33,7 +33,7 @@ public abstract class UserConverter  {
     @Mapping(source = "password", target = "password")
     @Mapping(source = "superadmin", target = "superadmin")
     @Mapping(source = "name", target = "name")
-    public abstract UserDTO toDTO(User user);
+    public abstract UserDTO toDTO(Users user);
 
     @Named("LocalDateTimeToString")
     public String mapLocalDateTimeToString(LocalDateTime localDateTime){return LocalDateTime.MIN.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));}

@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Users>>  listUsers() {
-        List<Users> listUsers = userRepository.findAllByActiveIsTrue();
+        List<Users> listUsers = userRepository.findAllByActiveTrue();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(listUsers,headers, HttpStatus.OK);
