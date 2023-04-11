@@ -3,8 +3,15 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.configSecurity.AuthenticationRequests;
 import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.configSecurity.RegisterRequest;
+import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@Tag(name = "Login", description = "Login crud")
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
@@ -30,7 +39,13 @@ public class AuthenticationController {
         String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
         return password.matches(pattern);
     }
-
+    @Operation(summary = "Register new user",
+            description = "Register new user by ",
+            tags = {"firstname","secondname","email","password"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponses> register(
             @RequestBody RegisterRequest request) {
@@ -63,7 +78,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
-
+    @Operation(summary = "Login by email and password",
+            description = "Authenticate by email and password and response jswon with token",
+            tags = {"email","password"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/auth")
     public ResponseEntity<AuthenticationResponses> authenticate(
             @RequestBody AuthenticationRequests request
