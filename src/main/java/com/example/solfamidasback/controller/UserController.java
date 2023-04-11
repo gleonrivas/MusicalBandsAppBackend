@@ -1,9 +1,13 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.model.DTO.UserConverter;
+import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,8 +24,15 @@ import java.util.List;
 public class UserController {
 
 
+    private final String HEADER = "Authorization";
+    private final String PREFIX = "Bearer ";
+    @Autowired
+    private JwtService jwtService;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserConverter userConverter;
 
     @Autowired
     UserService userService;
@@ -60,6 +71,20 @@ public class UserController {
         }
 
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Users> profile(HttpServletRequest request){
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UserDTO userDTO = userConverter.toDTO(user);
+        return new ResponseEntity(userDTO,headers, HttpStatus.OK);
+
+    }
+
+
 
 
 

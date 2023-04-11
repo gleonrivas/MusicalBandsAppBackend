@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UserDTO {
 
-    private Integer id;
 
     private String name;
 
@@ -22,11 +21,6 @@ public class UserDTO {
 
     private String dni;
 
-    private final Boolean active = true;
-
-    private String password ;
-
-    private Boolean superadmin;
 
 
 }
