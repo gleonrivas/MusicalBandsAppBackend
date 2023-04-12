@@ -1,23 +1,20 @@
 package com.example.solfamidasback.model;
 
+import com.example.solfamidasback.model.Enums.InstrumentType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Set;
-
 @Entity
-@Table(name = "user_formation_role")
+@Table(name = "user_formation_instrument")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserFormationRole {
+public class UserFormationInstrument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 10)
@@ -35,17 +32,9 @@ public class UserFormationRole {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_role")
-    private Role role;
+    @JoinColumn(name = "id_music_sheet")
+    private MusicSheet musicSheet;
+    @Column(name = "instrument_type", nullable = false)
+    private InstrumentType instrumentType;
 
-    @OneToMany(mappedBy = "userFormationRole",fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value="user_formation_role")
-    @JsonIgnore
-    private Set<MusicSheet> musicSheets;
-
-    public UserFormationRole(Users users, Formation formation, Role role) {
-        this.users = users;
-        this.formation = formation;
-        this.role = role;
-    }
 }
