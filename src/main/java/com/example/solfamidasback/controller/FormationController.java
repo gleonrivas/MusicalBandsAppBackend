@@ -1,15 +1,14 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
-import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
+import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
@@ -27,10 +26,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Tag(name = "Formation", description = "Formation crud")
 @RestController
 @RequestMapping("/formation")
@@ -50,16 +52,30 @@ public class FormationController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private UserFormationRoleRepository userFormationRoleRepository;
+
+
     @Operation(summary = "Retrieve a list of formation by user id",
-                description = "The response is a list of Formation Objects",
-                tags = {"user_id"})
+            description = "The response is a list of Formation Objects",
+            tags = {"user_id"})
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/listByUser/{user_id}")
-    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
-        List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
+    @GetMapping("/listByUser/{userId}")
+    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer userId) {
+        Set<Formation> formationSet = new HashSet<>(formationRepository.getAllByUserAndActiveIsTrue(userId));
+        List<Formation> formationList = new ArrayList<>(formationSet);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formationList,httpHeaders, HttpStatus.OK);
+
+    }
+    @GetMapping("/listByOwner/{useId}")
+    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer userId) {
+        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(userId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,headers, HttpStatus.OK);
@@ -72,10 +88,11 @@ public class FormationController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/listById/{formation_id}")
-    public ResponseEntity<Formation> formationById(@PathVariable Integer formation_id) {
-        return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formation_id));
+    @GetMapping("/listById/{formationId}")
+    public ResponseEntity<Formation> formationById(@PathVariable Integer formationId) {
+        return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formationId));
     }
+
 
 
     @Operation(summary = "Create a formation",
@@ -107,6 +124,8 @@ public class FormationController {
         Formation formationCreated = formationRepository.findLastFormation();
         //crear relación user_formation_role
         UserFormationRole userFormationRole = new UserFormationRole(user, formationCreated, role);
+        userFormationRoleRepository.save(userFormationRole);
+
         return ResponseEntity.ok(formation);
     }
     @Operation(summary = "Update a formation by id",
@@ -116,11 +135,9 @@ public class FormationController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
         Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
@@ -128,11 +145,9 @@ public class FormationController {
         formation.setName(formationupdateDTO.getName());
         formation.setDesignation(formationupdateDTO.getDesignation());
         formation.setType(formationupdateDTO.getType());
-        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate().replace(" ", "T"), formatter));
+        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate(), formatter));
         formation.setUsers(user);
-
         formationRepository.save(formation);
-        //bucar la formación para coger el id
 
         return ResponseEntity.ok(formation);
     }
@@ -145,10 +160,10 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 
-    @DeleteMapping("/delete/{id_formation}")
-    public ResponseEntity<String> deleteFormation(@PathVariable Integer id_formation) {
+    @DeleteMapping("/delete/{idFormation}")
+    public ResponseEntity<String> deleteFormation(@PathVariable Integer idFormation) {
 
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(id_formation);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
         formation.setActive(false);
         formationRepository.save(formation);
         return ResponseEntity.ok("formation deleted");
