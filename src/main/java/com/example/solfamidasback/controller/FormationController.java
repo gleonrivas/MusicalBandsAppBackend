@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/formation")
@@ -46,26 +49,28 @@ public class FormationController {
 
 
 
-    @GetMapping("/listByUser/{user_id}")
-    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
-        List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
+    @GetMapping("/listByUser/{userId}")
+    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer userId) {
+        Set<Formation> formationSet = new HashSet<>(formationRepository.getAllByUserAndActiveIsTrue(userId));
+        List<Formation> formationList = new ArrayList<>(formationSet);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,httpHeaders, HttpStatus.OK);
 
     }
-    @GetMapping("/listByOwner/{user_id}")
-    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer user_id) {
-        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(user_id);
+    @GetMapping("/listByOwner/{useId}")
+    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer userId) {
+        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(userId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,headers, HttpStatus.OK);
 
     }
 
-    @GetMapping("/listById/{formation_id}")
-    public ResponseEntity<Formation> formationById(@PathVariable Integer formation_id) {
-        return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formation_id));
+    @GetMapping("/listById/{formationId}")
+    public ResponseEntity<Formation> formationById(@PathVariable Integer formationId) {
+        return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formationId));
     }
 
 
@@ -96,7 +101,7 @@ public class FormationController {
         return ResponseEntity.ok(formation);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
@@ -115,10 +120,10 @@ public class FormationController {
 
 
 
-    @DeleteMapping("/delete/{id_formation}")
-    public ResponseEntity<String> deleteFormation(@PathVariable Integer id_formation) {
+    @DeleteMapping("/delete/{idFormation}")
+    public ResponseEntity<String> deleteFormation(@PathVariable Integer idFormation) {
 
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(id_formation);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
         formation.setActive(false);
         formationRepository.save(formation);
         return ResponseEntity.ok("formation deleted");
