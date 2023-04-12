@@ -98,9 +98,7 @@ public class FormationController {
 
     @PostMapping("/update")
     public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
         Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
@@ -108,11 +106,9 @@ public class FormationController {
         formation.setName(formationupdateDTO.getName());
         formation.setDesignation(formationupdateDTO.getDesignation());
         formation.setType(formationupdateDTO.getType());
-        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate().replace(" ", "T"), formatter));
+        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate(), formatter));
         formation.setUsers(user);
-
         formationRepository.save(formation);
-        //bucar la formación para coger el id
 
         return ResponseEntity.ok(formation);
     }
