@@ -1,19 +1,17 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
-import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
+import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -44,11 +41,22 @@ public class FormationController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private UserFormationRoleRepository userFormationRoleRepository;
+
 
 
     @GetMapping("/listByUser/{user_id}")
     public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
         List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formationList,httpHeaders, HttpStatus.OK);
+
+    }
+    @GetMapping("/listByOwner/{user_id}")
+    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer user_id) {
+        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(user_id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,headers, HttpStatus.OK);
@@ -59,6 +67,7 @@ public class FormationController {
     public ResponseEntity<Formation> formationById(@PathVariable Integer formation_id) {
         return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formation_id));
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO) {
@@ -82,14 +91,14 @@ public class FormationController {
         Formation formationCreated = formationRepository.findLastFormation();
         //crear relación user_formation_role
         UserFormationRole userFormationRole = new UserFormationRole(user, formationCreated, role);
+        userFormationRoleRepository.save(userFormationRole);
+
         return ResponseEntity.ok(formation);
     }
 
     @PostMapping("/update")
     public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
         Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
@@ -97,11 +106,9 @@ public class FormationController {
         formation.setName(formationupdateDTO.getName());
         formation.setDesignation(formationupdateDTO.getDesignation());
         formation.setType(formationupdateDTO.getType());
-        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate().replace(" ", "T"), formatter));
+        formation.setFundationDate(LocalDateTime.parse(formationupdateDTO.getFundationDate(), formatter));
         formation.setUsers(user);
-
         formationRepository.save(formation);
-        //bucar la formación para coger el id
 
         return ResponseEntity.ok(formation);
     }
