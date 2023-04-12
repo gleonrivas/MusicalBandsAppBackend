@@ -1,17 +1,20 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.UserUpdateDTO;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +30,11 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+
+
 
     @GetMapping("/list")
     public ResponseEntity<List<Users>>  listUsers() {
@@ -35,6 +43,44 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(listUsers,headers, HttpStatus.OK);
     }
+
+
+//    @PutMapping("/update")
+//    public ResponseEntity<Users> updateUser(@RequestBody UserUpdateDTO userUpdateDTO){
+//
+//        Users user = userRepository.findByIdAndActiveIsTrue(userUpdateDTO.getId());
+//
+//        DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//
+//        if (userUpdateDTO.getId() == null){
+//            String mensaje = "Id de usuario no válido";
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.TEXT_PLAIN);
+//            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+//        }
+//
+//
+//        user.setName(userUpdateDTO.getName());
+//        user.setSurName(userUpdateDTO.getSurName());
+//        user.setEmail(userUpdateDTO.getEmail());
+//        user.setBirthDate(LocalDateTime.parse(userUpdateDTO.getBirthDate().replace(" ", "T"), formater));
+//        user.setDni(userUpdateDTO.getDni());
+//        user.setSuperadmin(userUpdateDTO.getSuperadmin());
+//
+//        if (userUpdateDTO.getPassword() != null) {
+//            user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
+//        }
+//
+//        userRepository.save(user);
+//
+//
+//        String mensaje = "Usuario cambiado con éxito";
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.TEXT_PLAIN);
+//        return new ResponseEntity(mensaje, headers, HttpStatus.OK);
+//
+//    }
+
 
 
     @GetMapping("/listAll")
