@@ -49,9 +49,9 @@ public class FormationController {
     @GetMapping("/listByUser/{user_id}")
     public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer user_id) {
         List<Formation> formationList = formationRepository.getAllByUserAndActiveIsTrue(user_id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(formationList,headers, HttpStatus.OK);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formationList,httpHeaders, HttpStatus.OK);
 
     }
     @GetMapping("/listByOwner/{user_id}")
