@@ -8,6 +8,7 @@ import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
+import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
@@ -40,6 +41,9 @@ public class FormationController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private UserFormationRoleRepository userFormationRoleRepository;
+
 
 
     @GetMapping("/listByUser/{user_id}")
@@ -50,11 +54,20 @@ public class FormationController {
         return new ResponseEntity(formationList,headers, HttpStatus.OK);
 
     }
+    @GetMapping("/listByOwner/{user_id}")
+    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer user_id) {
+        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(user_id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formationList,headers, HttpStatus.OK);
+
+    }
 
     @GetMapping("/listById/{formation_id}")
     public ResponseEntity<Formation> formationById(@PathVariable Integer formation_id) {
         return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formation_id));
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO) {
@@ -78,6 +91,8 @@ public class FormationController {
         Formation formationCreated = formationRepository.findLastFormation();
         //crear relación user_formation_role
         UserFormationRole userFormationRole = new UserFormationRole(user, formationCreated, role);
+        userFormationRoleRepository.save(userFormationRole);
+
         return ResponseEntity.ok(formation);
     }
 
