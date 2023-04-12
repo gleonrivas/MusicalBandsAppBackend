@@ -17,7 +17,7 @@ public class UserDTO {
 
     private String email;
 
-    private LocalDateTime birthDate;
+    private String birthDate;
 
     private String dni;
 

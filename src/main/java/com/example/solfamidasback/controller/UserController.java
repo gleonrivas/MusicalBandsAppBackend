@@ -58,17 +58,13 @@ public class UserController {
 
     }
 
-    @PostMapping("/register")
-    public String registerUser(@RequestBody Users user){
+    @PostMapping("/editProfile")
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO user){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-
-        boolean exist = userRepository.existsByEmail(user.getEmail());
-        if(exist){
-            return "this email is not available";
-        }else {
-            userRepository.save(user);
-            return "user created successfully";
-        }
+        userRepository.save(userConverter.toEntity(user));
+        return new ResponseEntity("user created successfully",headers, HttpStatus.OK);
 
     }
 
@@ -81,6 +77,19 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/deleteProfile")
+    public ResponseEntity<String> DeleteProfile(HttpServletRequest request){
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        user.setActive(false);
+        userRepository.save(user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity("user deleted successfully",headers, HttpStatus.OK);
 
     }
 
