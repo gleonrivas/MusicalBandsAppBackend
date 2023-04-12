@@ -50,9 +50,6 @@ public class FormationController {
     @Autowired
     private RoleRepository roleRepository;
 
-
-
-
     @Operation(summary = "Retrieve a list of formation by user id",
                 description = "The response is a list of Formation Objects",
                 tags = {"user_id"})

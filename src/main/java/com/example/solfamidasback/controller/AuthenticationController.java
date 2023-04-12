@@ -25,9 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-
 public class AuthenticationController {
-
 
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
@@ -37,10 +35,10 @@ public class AuthenticationController {
         return password.matches(pattern);
     }
     @Operation(summary = "Register new user",
-            description = "Register new user by ",
+            description = "Register new user by firstname , secondname and password ",
             tags = {"firstname","secondname","email","password"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/register")
@@ -79,7 +77,7 @@ public class AuthenticationController {
             description = "Authenticate by email and password and response jswon with token",
             tags = {"email","password"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/auth")
