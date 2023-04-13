@@ -44,10 +44,10 @@ public class Users implements UserDetails {
     private String dni;
 
     @Column(name = "superadministrator")
-    private Boolean superadmin;
+    private Boolean superadmin = false;
 
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
 
     @Column(name = "password", length = 400)
     private String password;

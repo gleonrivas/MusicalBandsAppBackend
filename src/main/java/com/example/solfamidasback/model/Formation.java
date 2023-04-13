@@ -41,7 +41,7 @@ public class Formation {
     private String logo;
 
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="formation")

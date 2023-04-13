@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
 import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.Users;
@@ -81,7 +82,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteProfile")
-    public ResponseEntity<String> DeleteProfile(HttpServletRequest request){
+    public ResponseEntity<String> deleteProfile(HttpServletRequest request){
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
@@ -94,6 +95,28 @@ public class UserController {
     }
 
 
+    @PostMapping("/createAdmin")
+    public ResponseEntity<String> registerAdmin(@RequestBody SuperAdminDTO user){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        userRepository.save(userConverter.fromAdmintoEntity(user));
+        return new ResponseEntity("admin created successfully",headers, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/deleteAdmin")
+    public ResponseEntity<String> deleteAdminProfile(HttpServletRequest request){
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
+        user.setActive(false);
+        userRepository.save(user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity("admin deleted successfully",headers, HttpStatus.OK);
+
+    }
 
 
 

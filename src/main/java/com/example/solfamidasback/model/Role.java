@@ -25,7 +25,7 @@ public class Role {
     private Integer id;
 
     @Column(name = "active", length = 150)
-    private boolean active;
+    private boolean active = true;
 
     @Column(name = "type")
     private EnumRolUserFormation type;

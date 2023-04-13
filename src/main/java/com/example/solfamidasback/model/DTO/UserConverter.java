@@ -35,5 +35,19 @@ public class UserConverter  {
         return users;
     }
 
+    public Users fromAdmintoEntity(SuperAdminDTO user){
+
+        Users users = new Users();
+
+        users.setName(user.getName());
+        users.setEmail(user.getEmail());
+        users.setSurName(user.getSurName());
+        users.setDni(user.getDni());
+        users.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
+        users.setSuperadmin(user.isSuperAdmin());
+
+        return users;
+    }
+
 
 }
