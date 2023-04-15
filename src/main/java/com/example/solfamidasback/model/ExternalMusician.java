@@ -45,7 +45,7 @@ public class ExternalMusician {
     private Integer amount;
 
     @Column(name = "active", length = 150)
-    private boolean active;
+    private boolean active = true;
 
 
 }
