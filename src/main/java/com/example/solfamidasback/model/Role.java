@@ -36,4 +36,8 @@ public class Role {
     @JsonIgnore
     private List<UserFormationRole> userFormationRole;
 
+    public Role(boolean active, EnumRolUserFormation type) {
+        this.active = active;
+        this.type = type;
+    }
 }

@@ -10,21 +10,22 @@ import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +56,11 @@ public class FormationController {
     @Autowired
     private UserFormationRoleRepository userFormationRoleRepository;
 
+    private final String HEADER = "Authorization";
+    private final String PREFIX = "Bearer ";
+    @Autowired
+    private JwtService jwtService;
+
 
     @Operation(summary = "Retrieve a list of formation by user id",
             description = "The response is a list of Formation Objects",
@@ -63,19 +69,25 @@ public class FormationController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/listByUser/{userId}")
-    public ResponseEntity<List<Formation>> listFormationByUserAndActive(@PathVariable Integer userId) {
-        Set<Formation> formationSet = new HashSet<>(formationRepository.getAllByUserAndActiveIsTrue(userId));
-        List<Formation> formationList = new ArrayList<>(formationSet);
+    @GetMapping("/listByUser")
+    public ResponseEntity<List<Formation>> listFormationByUserAndActive(HttpServletRequest request) {
 
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Set<Formation> formationSet = new HashSet<>(formationRepository.getAllByUserAndActiveIsTrue(user.getId()));
+        List<Formation> formationList = new ArrayList<>(formationSet);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,httpHeaders, HttpStatus.OK);
 
     }
-    @GetMapping("/listByOwner/{useId}")
-    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(@PathVariable Integer userId) {
-        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(userId);
+    @GetMapping("/listByOwner")
+    public ResponseEntity<List<Formation>> listFormationByOwnerUserAndActive(HttpServletRequest request) {
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        List<Formation> formationList = formationRepository.getAllByUserOwnerAndActiveIsTrue(user.getId());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formationList,headers, HttpStatus.OK);
