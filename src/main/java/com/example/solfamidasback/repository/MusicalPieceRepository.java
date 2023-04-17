@@ -16,5 +16,8 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
             "on rmp.musical_piece_id =mp.id \n" +
             "where rmp.repertoire_id =? and mp.active =true ", nativeQuery = true)
     List<MusicalPiece> musicalPieceByIdRepertoireAndActiveTrue(@Param("repertoire_id") Long repertoireId);
+    @Query(value = "select mp.* from musical_piece mp \n" +
+            "where mp.name like ? and mp.active =true ", nativeQuery = true)
+    List<MusicalPiece> getByNameLikeAndActiveTrue(String name);
 
 }

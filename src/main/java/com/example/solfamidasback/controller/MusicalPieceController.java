@@ -72,4 +72,27 @@ public class MusicalPieceController {
         return new ResponseEntity(musicalPieceDTOList,httpHeaders, HttpStatus.OK);
 
     }
+
+    @Operation(summary = "Retrieve a musical Piece by name",
+            description = "The response is a list of Musical Piece",
+            tags = {"name"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<MusicalPieceDTO>> musicalPieceActiveByName(@PathVariable String name) {
+
+        Set<MusicalPiece> musicalPieceSet = new HashSet<>(musicalPieceRepository.getByNameLikeAndActiveTrue(name));
+        List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
+        List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
+        for(MusicalPiece musicalPiece: musicalPieceList){
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength()));
+        }
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(musicalPieceDTOList,httpHeaders, HttpStatus.OK);
+
+    }
+
 }
