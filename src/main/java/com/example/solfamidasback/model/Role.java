@@ -1,6 +1,5 @@
 package com.example.solfamidasback.model;
 
-import com.example.solfamidasback.model.Enums.EnumRolUser;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
