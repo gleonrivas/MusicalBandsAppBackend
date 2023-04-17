@@ -3,6 +3,8 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.controller.DTO.FormationDTO;
 import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
+import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
+import com.example.solfamidasback.controller.DTO.LoginDTO;
 import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
@@ -11,9 +13,11 @@ import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.FormationService;
 import com.example.solfamidasback.service.RoleService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,6 +47,9 @@ public class FormationController {
     RoleService roleService;
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    FormationService formationService;
 
 
 
@@ -115,6 +122,16 @@ public class FormationController {
         formation.setActive(false);
         formationRepository.save(formation);
         return ResponseEntity.ok("formation deleted");
+    }
+
+
+    @PostMapping("/deleteUser")
+    public ResponseEntity<String> deleteUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
+        String result = formationService.deleteUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(result,headers, HttpStatus.OK);
+
     }
 
 }
