@@ -1,10 +1,13 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.model.Users;
+import com.example.solfamidasback.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final String SECRET_KEY = "452948404D635166546A576E5A7234753778214125442A462D4A614E64526755";
+
+    @Autowired
+    UserRepository userRepository;
 
 
     public String extractUsername(String token) {
@@ -38,9 +44,11 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ){
+        String id = ((Users) userDetails).getId().toString();
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
+                .claim("id",id)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
