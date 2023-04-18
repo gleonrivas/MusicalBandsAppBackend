@@ -1,7 +1,7 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.FormationDTO;
-import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
+import com.example.solfamidasback.model.DTO.FormationDTO;
+import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;

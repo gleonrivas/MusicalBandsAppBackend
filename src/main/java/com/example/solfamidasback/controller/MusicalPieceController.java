@@ -1,9 +1,8 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.FormationDTO;
-import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.MusicalPieceDTO;
+import com.example.solfamidasback.model.DTO.MusicalPieceUpdateDTO;
 import com.example.solfamidasback.repository.MusicalPieceRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -125,7 +122,7 @@ public class MusicalPieceController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema())}),
     })
     @PostMapping("/create")
-    public ResponseEntity<MusicalPiece> createMusicalPiece(@RequestBody com.example.solfamidasback.controller.DTO.MusicalPieceDTO musicalPieceDTO) {
+    public ResponseEntity<MusicalPiece> createMusicalPiece(@RequestBody MusicalPieceDTO musicalPieceDTO) {
         MusicalPiece musicalPiece = new MusicalPiece();
         musicalPiece.setName(musicalPieceDTO.getName());
         musicalPiece.setAuthor(musicalPieceDTO.getAuthor());
@@ -145,7 +142,7 @@ public class MusicalPieceController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PutMapping("/update")
-    public ResponseEntity<MusicalPiece> updateMusicalPiece(@RequestBody com.example.solfamidasback.controller.DTO.MusicalPieceUpdateDTO musicalPieceUpdateDTO) {
+    public ResponseEntity<MusicalPiece> updateMusicalPiece(@RequestBody MusicalPieceUpdateDTO musicalPieceUpdateDTO) {
         MusicalPiece musicalPiece = musicalPieceRepository.findByIdAndActiveIsTrue(musicalPieceUpdateDTO.getId());
         musicalPiece.setName(musicalPieceUpdateDTO.getName());
         musicalPiece.setAuthor(musicalPieceUpdateDTO.getAuthor());
