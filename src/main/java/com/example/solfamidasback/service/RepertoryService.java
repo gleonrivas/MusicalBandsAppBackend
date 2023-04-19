@@ -23,13 +23,62 @@ public class RepertoryService {
     FormationRepository formationRepository;
     public List<RepertoryDTO> findByIdFormation (Integer idFormation){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
-        Set<Repertory> repertoryList = repertoryRepository.findAllByFormationAndActiveIsTrue(formation);
+        Set<Repertory> repertoryList = formation.getRepertorySet();
+        List<Repertory> repertories = new ArrayList<>(repertoryList);
         List<RepertoryDTO> repertoryDTOList = new ArrayList<>();
-        for(Repertory repertory: repertoryList){
-            repertoryConverter.toDTO(repertory);
-            repertoryList.add(repertory);
+        for(Repertory repertory: repertories){
+            repertoryDTOList.add(repertoryConverter.toDTO(repertory));
         }
         return repertoryDTOList;
+    }
+
+    public List<RepertoryDTO> findById(){
+        Set<Repertory> repertoryList = repertoryRepository.findAllByActiveIsTrue();
+        List<Repertory> repertories = new ArrayList<>(repertoryList);
+        List<RepertoryDTO> repertoryDTOList = new ArrayList<>();
+        for(Repertory repertory: repertories){
+            repertoryDTOList.add(repertoryConverter.toDTO(repertory));
+        }
+
+        return repertoryDTOList;
+    }
+    public RepertoryDTO findUniqueById(Integer id){
+        Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(id);
+        RepertoryDTO repertoryDTO = new RepertoryDTO();
+        if(repertory !=null){
+            repertoryDTO= repertoryConverter.toDTO(repertory);
+        }
+
+        return repertoryDTO;
+    }
+
+    public Repertory createUpdate(RepertoryDTO repertoryDTO){
+        Repertory repertory = new Repertory();
+        if(repertoryDTO.getId() == null){
+            repertory = repertoryConverter.toEntity(repertoryDTO);
+        }else{
+            repertory = repertoryRepository.findByIdAndActiveIsTrue(repertoryDTO.getId());
+            repertory.setName(repertoryDTO.getName());
+            repertory.setDescription(repertoryDTO.getDescription());
+        }
+
+        repertoryRepository.save(repertory);
+        return repertory;
+    }
+
+    public String modifyActive(Integer id){
+        Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(id);
+        String active = "";
+        if(repertory!=null){
+            repertory.setActive(false);
+            repertoryRepository.save(repertory);
+            active = "deleted";
+
+        }else{
+            active= "null";
+        }
+
+       return active;
     }
 
 

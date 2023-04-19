@@ -8,8 +8,8 @@ import lombok.Setter;
 public class RepertoryDTO {
 
     private Integer id;
-
     private String name;
     private String description;
+    private Integer idFormation;
 
 }

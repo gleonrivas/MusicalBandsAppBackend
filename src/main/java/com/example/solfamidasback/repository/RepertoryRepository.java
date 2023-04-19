@@ -13,4 +13,8 @@ public interface RepertoryRepository extends JpaRepository<Repertory,Integer> {
 
     Set<Repertory> findAllByFormationAndActiveIsTrue(Formation formation);
 
+    Set<Repertory> findAllByActiveIsTrue();
+
+    Repertory findByIdAndActiveIsTrue(Integer id);
+
 }
