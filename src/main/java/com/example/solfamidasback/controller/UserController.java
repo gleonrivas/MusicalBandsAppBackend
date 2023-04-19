@@ -1,10 +1,12 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.PasswordDTO;
 import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
 import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.AuthenticationService;
 import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,8 +16,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +42,11 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuthenticationService authenticateService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @GetMapping("/list")
@@ -60,12 +70,20 @@ public class UserController {
     }
 
     @PostMapping("/editProfile")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO user){
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users userSession = userRepository.findByEmailAndActiveTrue(mail);
+        userSession.setName(user.getName());
+        userSession.setSurName(user.getSurName());
+        userSession.setEmail(user.getEmail());
+        userSession.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
+        userSession.setDni(user.getDni());
 
-        userRepository.save(userConverter.toEntity(user));
-        return new ResponseEntity("user created successfully",headers, HttpStatus.OK);
+        userRepository.save(userSession);
+        return new ResponseEntity("user edited successfully",headers, HttpStatus.OK);
 
     }
 
@@ -115,6 +133,28 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity("admin deleted successfully",headers, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody PasswordDTO passwordDTO, HttpServletRequest request){
+        HttpHeaders headers = new HttpHeaders();
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        if(authenticateService.authenticatePassword(passwordDTO.getOldPassword(),request)){
+            if (passwordDTO.getNewPassword1().equals(passwordDTO.getNewPassword2())){
+                user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword1()));
+                userRepository.save(user);
+                return new ResponseEntity("password changed successfully",headers, HttpStatus.OK);
+            }else {
+                return new ResponseEntity("new passwords are not the same",headers, HttpStatus.OK);
+            }
+        }else {
+            return new ResponseEntity("old passwords are not the same",headers, HttpStatus.OK);
+        }
+
 
     }
 
