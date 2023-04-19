@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,11 +69,19 @@ public class UserController {
     }
 
     @PostMapping("/editProfile")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO user){
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users userSession = userRepository.findByEmailAndActiveTrue(mail);
+        userSession.setName(user.getName());
+        userSession.setSurName(user.getSurName());
+        userSession.setEmail(user.getEmail());
+        userSession.setBirthDate(LocalDateTime.parse(user.getBirthDate()));
+        userSession.setDni(user.getDni());
 
-        userRepository.save(userConverter.toEntity(user));
+        userRepository.save(userSession);
         return new ResponseEntity("user created successfully",headers, HttpStatus.OK);
 
     }
