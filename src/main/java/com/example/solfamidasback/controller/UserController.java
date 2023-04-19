@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -78,11 +79,11 @@ public class UserController {
         userSession.setName(user.getName());
         userSession.setSurName(user.getSurName());
         userSession.setEmail(user.getEmail());
-        userSession.setBirthDate(LocalDateTime.parse(user.getBirthDate()));
+        userSession.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
         userSession.setDni(user.getDni());
 
         userRepository.save(userSession);
-        return new ResponseEntity("user created successfully",headers, HttpStatus.OK);
+        return new ResponseEntity("user edited successfully",headers, HttpStatus.OK);
 
     }
 
