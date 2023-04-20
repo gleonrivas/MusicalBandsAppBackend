@@ -116,9 +116,12 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/create")
-    public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO) {
+    public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO,
+                                                     HttpServletRequest request) {
         //buscar el user
-        Users user = userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user());
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
         //crear el rol de propietario de formacion
         Role role = roleService.createRoleFormationAdministrator();
         //guardar el nuevo rol
@@ -149,10 +152,13 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PutMapping("/update")
-    public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
+    public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO,
+                                                     HttpServletRequest request) {
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
-        Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
         formation.setLogo(formationupdateDTO.getLogo());
         formation.setName(formationupdateDTO.getName());

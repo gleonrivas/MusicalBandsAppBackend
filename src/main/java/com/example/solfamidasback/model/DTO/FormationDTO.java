@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FormationDTO {
- private Integer id_user;
+
  private String name;
  private String designation;
  private EnumFormationType type;
