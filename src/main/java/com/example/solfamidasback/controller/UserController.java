@@ -9,7 +9,6 @@ import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.AuthenticationService;
 import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.UserService;
-import com.example.solfamidasback.utils.Utilities;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,15 +50,14 @@ public class UserController {
 
     @Autowired
     AuthenticationService authenticateService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
 
     @GetMapping("/list")
     public ResponseEntity<List<Users>>  listUsers(){
         List<Users> listUsers = userRepository.findAllByActiveTrue();
         String authentication = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users  users = userRepository.findByEmailAndActiveIsTrue(authentication);
+        Users  users = userRepository.findByEmailAndActiveTrue(authentication);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(listUsers,headers, HttpStatus.OK);
