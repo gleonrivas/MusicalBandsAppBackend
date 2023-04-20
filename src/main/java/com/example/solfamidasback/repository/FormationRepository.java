@@ -15,7 +15,7 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
 
     @Query(value = "select * from formation f where id_owner = ? \n" +
             "and f.active =true", nativeQuery = true)
-    List<Formation> getAllByUserAndActiveIsTrue(@Param("id_user") Integer id);
+    List<Formation> getAllByUserOwnerAndActiveIsTrue(@Param("id_user") Integer id);
 
     Formation findFormationByIdAndActiveIsTrue(Integer id);
 
@@ -27,6 +27,11 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
 
     @Query(value = "select * from formation f order by id desc limit 1 ", nativeQuery = true)
     Formation findLastFormation();
+
+    @Query(value = "select f.* from formation f join user_formation_role ufr\n" +
+            "on f.id = ufr.id_formation \n" +
+            "join users u on u.id =ufr.id_user where u.id = ? and f.active =true", nativeQuery = true)
+    List<Formation> getAllByUserAndActiveIsTrue(Integer id);
 
 
 

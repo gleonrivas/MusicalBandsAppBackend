@@ -10,5 +10,7 @@ public interface RoleRepository extends JpaRepository<Role,Integer> {
     @Query(value = "select * from role order by id desc limit 1 ", nativeQuery = true)
     Role findFirstOrderByIdDesc();
 
+    Role findByActiveIsTrueAndId(Integer id);
+
 
 }

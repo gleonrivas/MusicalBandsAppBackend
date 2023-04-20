@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "formation")
@@ -41,7 +42,7 @@ public class Formation {
     private String logo;
 
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value="formation")
@@ -73,6 +74,11 @@ public class Formation {
     @JsonIgnoreProperties(value="formation")
     @JsonIgnore
     private List<UserFormationInstrument> userFormationInstruments;
+
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private Set<Repertory> repertorySet;
 
 
 }

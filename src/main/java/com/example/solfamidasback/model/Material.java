@@ -34,7 +34,7 @@ public class Material {
     private EnumMaterialType materialType;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
     @Column(name = "full_date", length = 150)
     private LocalDateTime fullDate;

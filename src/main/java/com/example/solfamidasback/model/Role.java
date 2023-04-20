@@ -1,6 +1,5 @@
 package com.example.solfamidasback.model;
 
-import com.example.solfamidasback.model.Enums.EnumRolUser;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,7 +24,7 @@ public class Role {
     private Integer id;
 
     @Column(name = "active", length = 150)
-    private boolean active;
+    private boolean active = true;
 
     @Column(name = "type")
     private EnumRolUserFormation type;
@@ -36,4 +35,8 @@ public class Role {
     @JsonIgnore
     private List<UserFormationRole> userFormationRole;
 
+    public Role(boolean active, EnumRolUserFormation type) {
+        this.active = active;
+        this.type = type;
+    }
 }

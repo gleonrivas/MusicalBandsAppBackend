@@ -6,6 +6,7 @@ import com.example.solfamidasback.configSecurity.RegisterRequest;
 import com.example.solfamidasback.model.Enums.EnumRolAuth;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    private final String HEADER = "Authorization";
+    private final String PREFIX = "Bearer ";
 
     public AuthenticationResponses register(RegisterRequest request) {
 
@@ -61,6 +65,20 @@ public class AuthenticationService {
            return AuthenticationResponses.builder().build();
        }
 
+    }
+
+    public Boolean authenticatePassword(String password, HttpServletRequest request) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users users = userRepository.findByEmailAndActiveTrue(mail);
+
+        if (encoder.matches(password, users.getPassword())){
+            return true;
+        } else {
+            return false;
+        }
 
     }
 

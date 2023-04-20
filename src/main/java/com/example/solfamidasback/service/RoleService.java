@@ -1,6 +1,5 @@
 package com.example.solfamidasback.service;
 
-import com.example.solfamidasback.model.Enums.EnumRolUser;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;

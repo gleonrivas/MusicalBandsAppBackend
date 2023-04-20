@@ -10,17 +10,21 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<Users,Integer> {
 
-    List<Users> findAllByActiveIsTrue();
+    List<Users> findAllByActiveTrue();
+
+
 
     Users findAllByNameAndActiveIsTrue(String name);
 
    Optional<Users> findByEmail(String email);
 
-   Users findByEmailAndActiveIsTrue(String email);
+
+    Users findByEmailAndActiveTrue(String email);
+    Users findByEmailAndActiveTrueAndSuperadminTrue(String email);
 
     Users findByIdAndActiveIsTrue(Integer id);
 
-  boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
 
 
