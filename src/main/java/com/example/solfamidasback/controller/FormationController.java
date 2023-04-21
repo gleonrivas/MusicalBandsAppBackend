@@ -213,6 +213,15 @@ public class FormationController {
 
     }
 
+    @GetMapping("/searchByName/{name}")
+    public ResponseEntity<List<Formation>> searchByNameLike(@PathVariable String name){
+        List<Formation> formations = formationRepository.findFormationsByLike(name);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formations,headers, HttpStatus.OK);
+
+    }
+
 
 
 }
