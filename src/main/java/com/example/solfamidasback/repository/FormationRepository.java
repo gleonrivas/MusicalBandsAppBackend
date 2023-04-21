@@ -33,8 +33,9 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
             "join users u on u.id =ufr.id_user where u.id = ? and f.active =true", nativeQuery = true)
     List<Formation> getAllByUserAndActiveIsTrue(Integer id);
 
-    @Query(value = "select * from formation where name like ‘%nombre%’", nativeQuery = true)
-    List<Formation> findFormationsByLike(@Param("nombre") String name);
+    @Query(value = "select * from formation where name like CONCAT('%', ?,'%');", nativeQuery = true)
+    List<Formation> findFormationsByLike(String nameFormation);
+
 
 
 

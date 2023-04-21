@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -213,9 +214,9 @@ public class FormationController {
 
     }
 
-    @GetMapping("/searchByName/{name}")
-    public ResponseEntity<List<Formation>> searchByNameLike(@PathVariable String name){
-        List<Formation> formations = formationRepository.findFormationsByLike(name);
+    @PostMapping("/searchByName")
+    public ResponseEntity<List<Formation>> searchByNameLike(@NotNull @RequestBody FormationLikeDTO formationLikeDTO){
+        List<Formation> formations = formationRepository.findFormationsByLike(formationLikeDTO.getNameFormation());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formations,headers, HttpStatus.OK);
