@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.repository.CalendarEventRepository;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,9 +49,11 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("MyEvents")
-    public ResponseEntity<CalendarEvent> createCalendarEvent(HttpServletRequest request){
+    @GetMapping("CreateEvents")
+    public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
         CalendarEvent calendarEvent = new CalendarEvent();
+
+
 
 
 
@@ -57,11 +61,6 @@ public class CalendarEventController {
 
         return ResponseEntity.ok(calendarEvent);
     }
-
-
-
-
-
     @Operation(summary = "Retrieve a list of calendar events for the user",
             description = "The response is a list of Formation Objects",
             tags = {"token"})
