@@ -4,6 +4,7 @@ import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.repository.CalendarEventRepository;
+import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Tag(name = "Calendar_Event", description = "Calendar crud")
@@ -35,6 +37,9 @@ public class CalendarEventController {
 
     @Autowired
     CalendarEventService calendarEventService;
+
+    @Autowired
+    FormationRepository formationRepository;
 
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
@@ -53,10 +58,15 @@ public class CalendarEventController {
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
         CalendarEvent calendarEvent = new CalendarEvent();
 
-
-
-
-
+        var formation = formationRepository.findById(calendarEventDTO.getIdFormation());
+        calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
+        calendarEvent.setDate(calendarEventDTO.getDate());
+        calendarEvent.setAmount(calendarEventDTO.getAmount());
+        calendarEvent.setDescription(calendarEventDTO.getDescription());
+        calendarEvent.setPaid(calendarEventDTO.isPaid());
+        calendarEvent.setPlace(calendarEventDTO.getPlace());
+        calendarEvent.setTitle(calendarEventDTO.getTitle());
+        calendarEvent.setFormation(formation.get());
 
 
         return ResponseEntity.ok(calendarEvent);
