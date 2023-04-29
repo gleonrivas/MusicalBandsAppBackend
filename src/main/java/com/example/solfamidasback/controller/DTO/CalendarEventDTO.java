@@ -8,12 +8,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class CalendarEventDTO {
-    private Integer idFormation;
-    private EnumTypeActuation enumTypeActuation;
+    private String idFormation;  //Integer
+    private String enumTypeActuation; //EnumTypeActuation
     private String title;
     private String place;
-    private boolean paid;
+    private String paid; //boolean
     private String description;
-    private LocalDate date;
-    private Double amount;
+    private String date;  //LocalDate
+    private String amount;  //Double
 }

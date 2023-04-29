@@ -17,10 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,25 +48,32 @@ public class CalendarEventController {
             description = "The calendar event is for one formation and is created by director, president or assistance controller",
             tags = {"token"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("CreateEvents")
+    @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
         CalendarEvent calendarEvent = new CalendarEvent();
+        if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
 
-        var formation = formationRepository.findById(calendarEventDTO.getIdFormation());
-        calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
-        calendarEvent.setDate(calendarEventDTO.getDate());
-        calendarEvent.setAmount(calendarEventDTO.getAmount());
-        calendarEvent.setDescription(calendarEventDTO.getDescription());
-        calendarEvent.setPaid(calendarEventDTO.isPaid());
-        calendarEvent.setPlace(calendarEventDTO.getPlace());
-        calendarEvent.setTitle(calendarEventDTO.getTitle());
-        calendarEvent.setFormation(formation.get());
+//            var formation = formationRepository.findById(calendarEventDTO.getIdFormation());
+//            calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
+//            calendarEvent.setDate(calendarEventDTO.getDate());
+//            calendarEvent.setAmount(calendarEventDTO.getAmount());
+//            calendarEvent.setDescription(calendarEventDTO.getDescription());
+//            calendarEvent.setPaid(calendarEventDTO.isPaid());
+//            calendarEvent.setPlace(calendarEventDTO.getPlace());
+//            calendarEvent.setTitle(calendarEventDTO.getTitle());
+//            calendarEvent.setFormation(formation.get());
 
 
-        return ResponseEntity.ok(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        }else{
+            String mensaje = "Campos mal puestos";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
     }
     @Operation(summary = "Retrieve a list of calendar events for the user",
             description = "The response is a list of Formation Objects",
