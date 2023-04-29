@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,11 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
+    /*
+    *
+    * FALTA EL AUTH
+    *
+    * */
     @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
         CalendarEvent calendarEvent = new CalendarEvent();
@@ -87,14 +93,9 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("MyEvents")
-    public ResponseEntity<List<CalendarEvent>> listMyEvents(HttpServletRequest request){
-        List<CalendarEvent> calendarEventList = new ArrayList<>();
-        HttpHeaders httpHeaders = new HttpHeaders();
+    public ResponseEntity<List<CalendarEvent>> listMyEvents(@RequestParam Integer formationId){
 
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-
-        return new ResponseEntity(calendarEventList,httpHeaders, HttpStatus.OK);
+        return ResponseEntity.ok(calendarEventRepository.findAll().stream().filter(idformation->idformation.getFormation().getId().equals(formationId)).toList());
     }
 
 }
