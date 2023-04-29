@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.configSecurity.RegisterRequest;
 import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
@@ -19,6 +20,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,21 +57,23 @@ public class CalendarEventController {
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
         CalendarEvent calendarEvent = new CalendarEvent();
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
+            boolean pagado = false;
+            if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;};
 
-//            var formation = formationRepository.findById(calendarEventDTO.getIdFormation());
-//            calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
-//            calendarEvent.setDate(calendarEventDTO.getDate());
-//            calendarEvent.setAmount(calendarEventDTO.getAmount());
-//            calendarEvent.setDescription(calendarEventDTO.getDescription());
-//            calendarEvent.setPaid(calendarEventDTO.isPaid());
-//            calendarEvent.setPlace(calendarEventDTO.getPlace());
-//            calendarEvent.setTitle(calendarEventDTO.getTitle());
-//            calendarEvent.setFormation(formation.get());
+            var formation = formationRepository.findById(Integer.valueOf(calendarEventDTO.getIdFormation()));
+            calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
+            calendarEvent.setDate(LocalDate.parse(calendarEventDTO.getDate()));
+            calendarEvent.setAmount(Double.parseDouble(calendarEventDTO.getAmount()));
+            calendarEvent.setDescription(calendarEventDTO.getDescription());
+            calendarEvent.setPaid(pagado);
+            calendarEvent.setPlace(calendarEventDTO.getPlace());
+            calendarEvent.setTitle(calendarEventDTO.getTitle());
+            calendarEvent.setFormation(formation.get());
 
-
+            calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }else{
-            String mensaje = "Campos mal puestos";
+            String mensaje = "Hay errores en el formulario";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_PLAIN);
             return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
