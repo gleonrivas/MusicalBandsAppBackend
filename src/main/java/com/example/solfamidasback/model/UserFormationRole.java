@@ -43,6 +43,9 @@ public class UserFormationRole {
     @JsonIgnore
     private Set<MusicSheet> musicSheets;
 
+    @Column(name = "active")
+    private boolean active;
+
     public UserFormationRole(Users users, Formation formation, Role role) {
         this.users = users;
         this.formation = formation;

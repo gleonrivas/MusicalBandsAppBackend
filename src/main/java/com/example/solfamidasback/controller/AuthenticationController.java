@@ -3,8 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.configSecurity.AuthenticationRequests;
 import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.configSecurity.RegisterRequest;
-import com.example.solfamidasback.controller.DTO.LoginDTO;
-import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.model.DTO.LoginDTO;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,9 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Tag(name = "Login", description = "Login crud")

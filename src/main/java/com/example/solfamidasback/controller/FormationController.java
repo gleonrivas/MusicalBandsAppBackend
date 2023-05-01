@@ -1,7 +1,9 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.FormationDTO;
-import com.example.solfamidasback.controller.DTO.FormationUpdateDTO;
+import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
+import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
+import com.example.solfamidasback.model.DTO.FormationDTO;
+import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -10,9 +12,8 @@ import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
-import com.example.solfamidasback.service.JwtService;
-import com.example.solfamidasback.service.RoleService;
-import com.example.solfamidasback.service.UserService;
+import com.example.solfamidasback.service.*;
+import com.example.solfamidasback.utilities.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,6 +62,13 @@ public class FormationController {
     private final String PREFIX = "Bearer ";
     @Autowired
     private JwtService jwtService;
+
+
+    @Autowired
+    FormationService formationService;
+
+    @Autowired
+    UserFormationRoleService userFormationRoleService;
 
 
     @Operation(summary = "Retrieve a list of formation by user id",
@@ -109,15 +118,18 @@ public class FormationController {
 
     @Operation(summary = "Create a formation",
             description = "Create formation with user_id as administrator of the formation",
-            tags = {"user_id","name","designation","type","fundation date","logo"})
+            tags = {"name","designation","type","fundation date","logo"})
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/create")
-    public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO) {
+    public ResponseEntity<Formation> createFormation(@RequestBody FormationDTO formationDTO,
+                                                     HttpServletRequest request) {
         //buscar el user
-        Users user = userRepository.findByIdAndActiveIsTrue(formationDTO.getId_user());
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
         //crear el rol de propietario de formacion
         Role role = roleService.createRoleFormationAdministrator();
         //guardar el nuevo rol
@@ -129,6 +141,7 @@ public class FormationController {
         formation.setName(formationDTO.getName());
         formation.setDesignation(formationDTO.getDesignation());
         formation.setType(formationDTO.getType());
+        formation.setLink(Utilities.createLink());
         formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
         formation.setUsers(user);
         formationRepository.save(formation);
@@ -148,10 +161,13 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PutMapping("/update")
-    public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO) {
+    public ResponseEntity<Formation> updateFormation(@RequestBody FormationUpdateDTO formationupdateDTO,
+                                                     HttpServletRequest request) {
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(formationupdateDTO.getId());
-        Users user = userRepository.findByIdAndActiveIsTrue(formationupdateDTO.getId_user());
         formation.setActive(true);
         formation.setLogo(formationupdateDTO.getLogo());
         formation.setName(formationupdateDTO.getName());
@@ -180,5 +196,35 @@ public class FormationController {
         formationRepository.save(formation);
         return ResponseEntity.ok("formation deleted");
     }
+
+
+    @DeleteMapping("/deleteUserFormation")
+    public ResponseEntity<String> deleteUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
+        String result = formationService.deleteUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(result,headers, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/reactiveUserFormation")
+    public ResponseEntity<String> reactiveUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
+        String result = formationService.reactiveUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(result,headers, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/searchByName")
+    public ResponseEntity<List<Formation>> searchByNameLike(@NotNull @RequestBody FormationLikeDTO formationLikeDTO){
+        List<Formation> formations = formationRepository.findFormationsByLike(formationLikeDTO.getNameFormation());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(formations,headers, HttpStatus.OK);
+
+    }
+
+
 
 }

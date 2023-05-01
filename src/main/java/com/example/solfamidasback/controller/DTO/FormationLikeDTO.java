@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FormationUpdateDTO extends FormationDTO{
-    private Integer id;
+public class FormationLikeDTO {
+    String nameFormation;
 }

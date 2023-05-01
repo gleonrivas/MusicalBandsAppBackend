@@ -16,15 +16,13 @@ public interface UserRepository extends JpaRepository<Users,Integer> {
 
    Optional<Users> findByEmail(String email);
 
+
     Users findByEmailAndActiveTrue(String email);
     Users findByEmailAndActiveTrueAndSuperadminTrue(String email);
 
     Users findByIdAndActiveIsTrue(Integer id);
 
-  boolean existsByEmail(String email);
-
-
-
+    boolean existsByEmail(String email);
 
 
 

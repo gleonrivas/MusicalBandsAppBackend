@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MusicalPieceDTO {
-    private String name;
-    private String author;
-    private Double length;
+public class FormationUserDeleteDTO {
+    Integer userId;
+    Integer formationId;
 }
