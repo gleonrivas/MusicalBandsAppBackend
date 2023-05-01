@@ -4,10 +4,13 @@ import com.example.solfamidasback.configSecurity.RegisterRequest;
 import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.CalendarEventRepository;
 import com.example.solfamidasback.repository.FormationRepository;
+import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.JwtService;
+import io.jsonwebtoken.security.SignatureException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,6 +44,9 @@ public class CalendarEventController {
     @Autowired
     FormationRepository formationRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
     @Autowired
@@ -54,13 +60,32 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    /*
-    *
-    * FALTA EL AUTH
-    *
-    * */
+
     @PostMapping("CreateEvents")
-    public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO){
+    public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
+                                                             HttpServletRequest request){
+
+
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            String mensaje = "Error de token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        if (!calendarEventService.comprobarjwt(jwtToken)) {
+            String mensaje = "Error de token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+        String mail =  jwtService.extractUsername(jwtToken);
+        System.out.println(mail);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+
         CalendarEvent calendarEvent = new CalendarEvent();
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
             boolean pagado = false;
@@ -76,7 +101,7 @@ public class CalendarEventController {
             calendarEvent.setTitle(calendarEventDTO.getTitle());
             calendarEvent.setFormation(formation.get());
 
-            calendarEventRepository.save(calendarEvent);
+//            calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }else{
             String mensaje = "Hay errores en el formulario";
