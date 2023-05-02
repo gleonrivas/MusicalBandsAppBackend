@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -96,7 +95,6 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/deleteProfile")
