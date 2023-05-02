@@ -17,7 +17,7 @@ public class UserConverter  {
         userDTO.setEmail(user.getEmail());
         userDTO.setSurName(user.getSurName());
         userDTO.setDni(user.getDni());
-        userDTO.setBirthDate(user.getBirthDate().toString());
+        if (user.getBirthDate()!=null) userDTO.setBirthDate(user.getBirthDate().toString());
 
         return userDTO;
     }
