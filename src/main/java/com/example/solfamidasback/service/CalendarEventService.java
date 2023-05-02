@@ -2,6 +2,7 @@ package com.example.solfamidasback.service;
 
 import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.Enums.EnumTypeActuation;
+import com.example.solfamidasback.model.Formation;
 import com.nimbusds.jose.util.IntegerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class CalendarEventService {
@@ -24,14 +26,14 @@ public class CalendarEventService {
         if(calendarEventDTO.getIdFormation().matches(regexid)&&
                 calendarEventDTO.getEnumTypeActuation().matches(regextype)&&
                 calendarEventDTO.getPaid().matches(regexpaid)&&
-                comprobarFecha(calendarEventDTO.getDate())&&
-                comprobarDouble(calendarEventDTO.getAmount())
+                verifyDate(calendarEventDTO.getDate())&&
+                verifyDouble(calendarEventDTO.getAmount())
         ){
             return true;
         }
         return false;
    }
-   private boolean comprobarFecha(String fecha){
+   private boolean verifyDate(String fecha){
        try {
            LocalDate.parse(fecha);
        }catch (Exception e){
@@ -39,7 +41,7 @@ public class CalendarEventService {
        }
        return true;
    }
-    private boolean comprobarDouble(String doble){
+    private boolean verifyDouble(String doble){
         try {
             Double.parseDouble(doble);
         }catch (Exception e){
@@ -47,17 +49,14 @@ public class CalendarEventService {
         }
         return true;
     }
-    public boolean comprobarjwt(String jwttoken){
-
-            try {
-                String mail =  jwtService.extractUsername(jwttoken);
-            }catch (Exception e){
-                String mensaje = "Error de token";
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.TEXT_PLAIN);
-                return false;
+    public boolean verifyFormation(List<Formation> formationList,Integer idFormation){
+        for (Formation formation:formationList){
+            if(formation.getId()==idFormation){
+                return true;
             }
-            return true;
         }
+        return false;
+
+    }
 }
 

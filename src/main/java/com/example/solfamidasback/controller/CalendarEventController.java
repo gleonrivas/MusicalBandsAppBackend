@@ -79,8 +79,13 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
-        System.out.println("USUARIO +"+user.getUserFormationRole());
 
+        if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
+            String mensaje = "No perteneces a esa formacion";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
 
         CalendarEvent calendarEvent = new CalendarEvent();
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
