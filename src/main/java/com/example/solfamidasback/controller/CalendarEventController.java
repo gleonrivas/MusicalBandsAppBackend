@@ -1,17 +1,16 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.configSecurity.RegisterRequest;
-import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
+import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.CalendarEventRepository;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.JwtService;
-import io.jsonwebtoken.io.IOException;
-import io.jsonwebtoken.security.SignatureException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,15 +20,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Tag(name = "Calendar_Event", description = "Calendar crud")
@@ -66,7 +61,7 @@ public class CalendarEventController {
     @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
                                                              HttpServletRequest request){
-
+        //token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
@@ -80,6 +75,7 @@ public class CalendarEventController {
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
+        // validation that the user belongs to that formation
         if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
             String mensaje = "No perteneces a esa formacion";
             HttpHeaders headers = new HttpHeaders();
@@ -87,8 +83,35 @@ public class CalendarEventController {
             return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
         }
 
+        //validation, the user must be on the formation and the rol must be owner,President, or director musical
+        List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
+                userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
+                .collect(Collectors.toList()).stream().filter(userFormationRole
+                        -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)).collect(Collectors.toList());
+
+        if (formationRoleList.isEmpty()){
+            String mensaje = "no puedes crear eventos";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //Validation of DTO
         CalendarEvent calendarEvent = new CalendarEvent();
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
+
+            //validation the date must be later than the current date
+            if(LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now())||
+                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())){
+                String mensaje = "No es posible una fecha anterior a la actual";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.TEXT_PLAIN);
+                return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+            }
+
+            //insert calendar event
             boolean pagado = false;
             if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;};
 
@@ -118,10 +141,13 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("MyEvents")
-    public ResponseEntity<List<CalendarEvent>> listMyEvents(@RequestParam Integer formationId){
+    @GetMapping("AllMyEvents")
+    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@RequestParam Integer formationId){
+
+        //filtrar por el token
 
         return ResponseEntity.ok(calendarEventRepository.findAll().stream().filter(idformation->idformation.getFormation().getId().equals(formationId)).toList());
     }
+    //Método para ver eventos por formacion
 
 }

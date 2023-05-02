@@ -1,4 +1,4 @@
-package com.example.solfamidasback.controller.DTO;
+package com.example.solfamidasback.model.DTO;
 import com.example.solfamidasback.model.Enums.EnumTypeActuation;
 import lombok.Getter;
 import lombok.Setter;

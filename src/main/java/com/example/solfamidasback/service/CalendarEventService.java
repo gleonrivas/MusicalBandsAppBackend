@@ -1,14 +1,8 @@
 package com.example.solfamidasback.service;
 
-import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
-import com.example.solfamidasback.model.Enums.EnumTypeActuation;
+import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.Formation;
-import com.nimbusds.jose.util.IntegerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
