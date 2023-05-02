@@ -39,7 +39,7 @@ public class MaterialController {
         }
         if (bm.isEmpty()){
             materialRepository.createBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
-            return new ResponseEntity("created borrowed material",headers, HttpStatus.OK);
+            return new ResponseEntity("successfully created borrowed material",headers, HttpStatus.OK);
         }
         return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
     }
