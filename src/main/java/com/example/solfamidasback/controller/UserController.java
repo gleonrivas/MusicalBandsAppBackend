@@ -141,7 +141,6 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/deleteProfile")
