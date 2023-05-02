@@ -10,6 +10,7 @@ import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.JwtService;
+import io.jsonwebtoken.io.IOException;
 import io.jsonwebtoken.security.SignatureException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,7 +67,6 @@ public class CalendarEventController {
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
                                                              HttpServletRequest request){
 
-
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
@@ -74,16 +75,11 @@ public class CalendarEventController {
             headers.setContentType(MediaType.TEXT_PLAIN);
             return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
         }
+
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-        if (!calendarEventService.comprobarjwt(jwtToken)) {
-            String mensaje = "Error de token";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-        }
         String mail =  jwtService.extractUsername(jwtToken);
-        System.out.println(mail);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        System.out.println("USUARIO +"+user.getUserFormationRole());
 
 
         CalendarEvent calendarEvent = new CalendarEvent();
