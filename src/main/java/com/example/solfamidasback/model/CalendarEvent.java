@@ -45,11 +45,13 @@ public class CalendarEvent {
     @JoinColumn(name = "amount")
     private Double amount;
 
-    @JoinColumn(name = "consideration_rehearsal")
-    private Double considerationRehearsal;
 
-    @JoinColumn(name = "consideration_bolus")
-    private Double considerationBolus;
+//    BORRADO POR DUPLICADO DEL TIPO
+//    @JoinColumn(name = "consideration_rehearsal")
+//    private Double considerationRehearsal;
+//
+//    @JoinColumn(name = "consideration_bolus")
+//    private Double considerationBolus;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

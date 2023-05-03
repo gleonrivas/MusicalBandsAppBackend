@@ -4,10 +4,7 @@ import com.example.solfamidasback.model.Enums.EnumFormationType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +37,9 @@ public class Formation {
 
     @Column(name = "logo", length = 400)
     private String logo;
+
+    @Column(name = "link", length = 400, nullable = true)
+    private String link;
 
     @Column(name = "active")
     private Boolean active = true;

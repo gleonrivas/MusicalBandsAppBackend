@@ -13,6 +13,7 @@ import com.example.solfamidasback.repository.RoleRepository;
 import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.*;
+import com.example.solfamidasback.utilities.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -117,7 +118,7 @@ public class FormationController {
 
     @Operation(summary = "Create a formation",
             description = "Create formation with user_id as administrator of the formation",
-            tags = {"user_id","name","designation","type","fundation date","logo"})
+            tags = {"name","designation","type","fundation date","logo"})
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -140,6 +141,7 @@ public class FormationController {
         formation.setName(formationDTO.getName());
         formation.setDesignation(formationDTO.getDesignation());
         formation.setType(formationDTO.getType());
+        formation.setLink(Utilities.createLink());
         formation.setFundationDate(LocalDateTime.parse(formationDTO.getFundationDate()));
         formation.setUsers(user);
         formationRepository.save(formation);
