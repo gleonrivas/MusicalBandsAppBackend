@@ -125,7 +125,7 @@ public class CalendarEventController {
             calendarEvent.setTitle(calendarEventDTO.getTitle());
             calendarEvent.setFormation(formation.get());
 
-//            calendarEventRepository.save(calendarEvent);
+            calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }else{
             String mensaje = "Hay errores en el formulario";
@@ -142,12 +142,68 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("AllMyEvents")
-    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@RequestParam Integer formationId){
+    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
         //filtrar por el token
+        //token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            String mensaje = "Error de token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
 
-        return ResponseEntity.ok(calendarEventRepository.findAll().stream().filter(idformation->idformation.getFormation().getId().equals(formationId)).toList());
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        //filter the list of caledar event by list of user formation
+        List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
+                user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
+        if(calendarEventList.isEmpty()){
+            String mensaje = "No tienes eventos";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        return ResponseEntity.ok(calendarEventList);
     }
     //Método para ver eventos por formacion
+    @GetMapping("MyEventsByFormation")
+    public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@RequestParam Integer formationId,HttpServletRequest request){
 
+        //filtrar por el token
+        //token validation
+        System.out.println("ID FORMATION "+formationId);
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            String mensaje = "Error de token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+        //filter the list of caledar event by list of user by formation
+        List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
+                calendarEvent.getFormation().getId().equals(formationId)).collect(Collectors.toList());
+        if(calendarEventList.isEmpty()){
+            String mensaje = "No tienes eventos";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        return ResponseEntity.ok(calendarEventList);
+    }
+
+
+    //para el update, dos tipos, si aun no ha sucedido el evento, se puede eliminar , y modificar los campos,
+    //si ha sucedido, solo se puede modificar la descripcion y si no está pagado a pagado
 }
