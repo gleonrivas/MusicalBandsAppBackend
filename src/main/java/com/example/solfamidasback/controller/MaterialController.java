@@ -11,10 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -90,6 +87,19 @@ public class MaterialController {
 
 
         return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteBorrowedMaterial")
+    public ResponseEntity<String> deleteBorrrowedMarial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<Integer> bm = materialRepository.findBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
+        if (bm.isEmpty()){
+            return new ResponseEntity("borrowed material not exist",headers, HttpStatus.OK);
+        }
+        materialRepository.deleteBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
+
+        return new ResponseEntity("successfully delete borrowed material",headers, HttpStatus.OK);
     }
 
 }

@@ -31,6 +31,11 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     @Query(value = "UPDATE borrowed_material SET id_material = ? where id_users = ? and id_material = ?", nativeQuery = true)
     void changeMaterial(@Param("id_material")Integer materialNewId,@Param("id_users")Integer userId, @Param("id_material")Integer materialId );
 
+    @Transactional
+    @Modifying
+    @Query(value = "delete from borrowed_material where id_material = ? and id_users = ?", nativeQuery = true)
+    void deleteBorrowedMaterial(@Param("id_material")Integer materialId,@Param("id_users")Integer userId );
+
 
 
 }
