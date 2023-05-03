@@ -21,5 +21,16 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     @Query(value = "select id_material, id_users from borrowed_material where id_material = ? and id_users = ?;", nativeQuery = true)
     List<Integer> findBorrowedMaterial(@Param("id_material")Integer materialId, @Param("id_user")Integer userId );
 
+    @Transactional
+    @Modifying
+    @Query(value = "update borrowed_material set id_users = ? where id_material = ? and id_users = ?", nativeQuery = true)
+    void changeUser(@Param("id_users")Integer userNewId,@Param("id_material")Integer materialId, @Param("id_users")Integer userId );
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE borrowed_material SET id_material = ? where id_users = ? and id_material = ?", nativeQuery = true)
+    void changeMaterial(@Param("id_material")Integer materialNewId,@Param("id_users")Integer userId, @Param("id_material")Integer materialId );
+
+
 
 }
