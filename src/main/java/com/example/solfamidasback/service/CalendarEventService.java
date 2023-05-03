@@ -27,7 +27,7 @@ public class CalendarEventService {
         }
         return false;
    }
-   private boolean verifyDate(String fecha){
+   public boolean verifyDate(String fecha){
        try {
            LocalDate.parse(fecha);
        }catch (Exception e){
@@ -35,9 +35,17 @@ public class CalendarEventService {
        }
        return true;
    }
-    private boolean verifyDouble(String doble){
+    public boolean verifyDouble(String doble){
         try {
             Double.parseDouble(doble);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+    public boolean verifyInteger(String integer){
+        try {
+            Integer.parseInt(integer);
         }catch (Exception e){
             return false;
         }

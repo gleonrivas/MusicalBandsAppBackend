@@ -2,6 +2,7 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.DTO.CalendarEventDTODelete;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -11,6 +12,7 @@ import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.JwtService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -144,7 +146,6 @@ public class CalendarEventController {
     @GetMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
-        //filtrar por el token
         //token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -174,9 +175,8 @@ public class CalendarEventController {
     @GetMapping("MyEventsByFormation/{idFormation}")
     public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@PathVariable Integer formationId,HttpServletRequest request){
 
-        //filtrar por el token
+
         //token validation
-        System.out.println("ID FORMATION "+formationId);
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
@@ -203,9 +203,31 @@ public class CalendarEventController {
         return ResponseEntity.ok(calendarEventList);
     }
     @DeleteMapping("delete")
-    public ResponseEntity<String> deleteFormation() {
+    public ResponseEntity<String> deleteFormation(@RequestBody CalendarEventDTODelete calendarEventDTO, HttpServletRequest request) {
+        if (!calendarEventService.verifyInteger(calendarEventDTO.getIdCalendarEvent())||
+                !calendarEventService.verifyInteger(calendarEventDTO.getIdFormation())){
+            String mensaje = "Incorrect format";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //token validation
+//        try {
+//            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+//        }catch (Exception e){
+//            String mensaje = "Token error";
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.TEXT_PLAIN);
+//            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+//        }
+//
+//        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+//        String mail =  jwtService.extractUsername(jwtToken);
+//        Users user = userRepository.findByEmailAndActiveTrue(mail);
 
 
+        calendarEventRepository.deleteById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
         return ResponseEntity.ok("Event deleted");
     }
 
