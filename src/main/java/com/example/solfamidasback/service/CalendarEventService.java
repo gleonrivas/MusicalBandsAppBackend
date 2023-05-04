@@ -1,7 +1,11 @@
 package com.example.solfamidasback.service;
 
 import com.example.solfamidasback.controller.DTO.CalendarEventDTO;
+import com.example.solfamidasback.model.Absence;
+import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Enums.EnumTypeActuation;
+import com.example.solfamidasback.model.ExternalMusician;
+import com.example.solfamidasback.model.Formation;
 import com.nimbusds.jose.util.IntegerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CalendarEventService {
@@ -59,5 +66,7 @@ public class CalendarEventService {
             }
             return true;
         }
+
+
 }
 
