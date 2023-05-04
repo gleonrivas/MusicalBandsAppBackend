@@ -1,11 +1,7 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
-import com.example.solfamidasback.model.DTO.RoleDTO;
-import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
-import com.example.solfamidasback.model.UserFormationRole;
-import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.service.InvitationLinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

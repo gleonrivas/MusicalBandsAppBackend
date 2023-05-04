@@ -1,9 +1,11 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.RepertoryMusicalPieceDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.MusicalPieceDTO;
 import com.example.solfamidasback.model.DTO.MusicalPieceUpdateDTO;
 import com.example.solfamidasback.repository.MusicalPieceRepository;
+import com.example.solfamidasback.repository.RepertoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,6 +31,8 @@ import java.util.Set;
 public class MusicalPieceController {
     @Autowired
     MusicalPieceRepository musicalPieceRepository;
+    @Autowired
+    private RepertoryRepository repertoryRepository;
 
     @Operation(summary = "Retrieve a list of musical Piece",
             description = "The response is a list of Musical Pieces")
@@ -42,7 +46,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = musicalPieceRepository.findAllByActiveIsTrue();
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            MusicalPieceDTO musicalPieceDTO = new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(), musicalPiece.getLength());
+            MusicalPieceDTO musicalPieceDTO = new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(), musicalPiece.getLength(), null);
             musicalPieceDTOList.add(musicalPieceDTO);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -63,7 +67,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength()));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -85,7 +89,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength()));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -107,7 +111,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength()));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -123,12 +127,16 @@ public class MusicalPieceController {
     })
     @PostMapping("/create")
     public ResponseEntity<MusicalPiece> createMusicalPiece(@RequestBody MusicalPieceDTO musicalPieceDTO) {
+        Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(musicalPieceDTO.getIdRepertory());
         MusicalPiece musicalPiece = new MusicalPiece();
         musicalPiece.setName(musicalPieceDTO.getName());
         musicalPiece.setAuthor(musicalPieceDTO.getAuthor());
         musicalPiece.setLength(musicalPieceDTO.getLength());
         musicalPiece.setActive(true);
         musicalPieceRepository.save(musicalPiece);
+        MusicalPiece musicalPieceCreated = musicalPieceRepository.findFirstByActiveIsTrueOrderByIdDesc();
+        musicalPieceRepository.createRelationRepertoryMudicalPiece(repertory.getId(),musicalPieceCreated.getId(),true);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(musicalPiece,headers, HttpStatus.OK);
@@ -166,6 +174,20 @@ public class MusicalPieceController {
         MusicalPiece musicalPiece = musicalPieceRepository.findByIdAndActiveIsTrue(idMusicalPiece);
         musicalPiece.setActive(false);
         musicalPieceRepository.save(musicalPiece);
+        return ResponseEntity.ok("musical piece deleted");
+    }
+
+    @Operation(summary = "Delete a musical piece by id",
+            description = "Delete a musical piece by id",
+            tags = {"idMusicalPiece", "idRepertory"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+
+    @DeleteMapping("/delete/{idMusicalPiece}/{idRepertory}")
+    public ResponseEntity<String> deleteRelation(@PathVariable Integer idMusicalPiece, @PathVariable Integer idRepertory) {
+        musicalPieceRepository.updateRelation(idRepertory,idMusicalPiece);
         return ResponseEntity.ok("musical piece deleted");
     }
 }
