@@ -17,7 +17,7 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
     @Query(value = "select mp.* from musical_piece mp \n" +
             "join repertory_musical_piece rmp \n" +
             "on rmp.musical_piece_id = mp.id \n" +
-            "where rmp.repertory_id =? and mp.active =true ", nativeQuery = true)
+            "where rmp.repertory_id =? and mp.active =true and rmp.active=true", nativeQuery = true)
     List<MusicalPiece> musicalPieceByIdRepertoireAndActiveTrue(@Param("repertory_id") Long repertoryId);
     @Query(value = "select * from musical_piece mp \n" +
             "where mp.name like ? and mp.active =true ", nativeQuery = true)
@@ -30,8 +30,11 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
     MusicalPiece findFirstByActiveIsTrueOrderByIdDesc();
 
     @Modifying
-    @Query(value = "insert into repertory_musical_piece (repertory_id, musical_piece_id) values (?,?)", nativeQuery = true)
+    @Query(value = "insert into repertory_musical_piece (repertory_id, musical_piece_id, active) values (?,?,?)", nativeQuery = true)
     @Transactional
-    void createRelationRepertoryMudicalPiece(@Param("repertory_id")Integer repertoryId,@Param("musical_piece_id")Integer musicalPieceId );
+    void createRelationRepertoryMudicalPiece(@Param("repertory_id")Integer repertoryId,
+                                             @Param("musical_piece_id")Integer musicalPieceId,
+                                             @Param("active")Boolean active);
+
 
 }

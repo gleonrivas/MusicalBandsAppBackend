@@ -134,7 +134,7 @@ public class MusicalPieceController {
         musicalPiece.setActive(true);
         musicalPieceRepository.save(musicalPiece);
         MusicalPiece musicalPieceCreated = musicalPieceRepository.findFirstByActiveIsTrueOrderByIdDesc();
-        musicalPieceRepository.createRelationRepertoryMudicalPiece(repertory.getId(),musicalPieceCreated.getId());
+        musicalPieceRepository.createRelationRepertoryMudicalPiece(repertory.getId(),musicalPieceCreated.getId(),true);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -175,4 +175,5 @@ public class MusicalPieceController {
         musicalPieceRepository.save(musicalPiece);
         return ResponseEntity.ok("musical piece deleted");
     }
+
 }
