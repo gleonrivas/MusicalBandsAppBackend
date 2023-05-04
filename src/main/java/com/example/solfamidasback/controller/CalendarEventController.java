@@ -91,7 +91,8 @@ public class CalendarEventController {
                 .collect(Collectors.toList()).stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)).collect(Collectors.toList());
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
 
         if (formationRoleList.isEmpty()){
             String mensaje = "You cannot create events";
@@ -211,21 +212,55 @@ public class CalendarEventController {
             headers.setContentType(MediaType.TEXT_PLAIN);
             return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
         }
+//        token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            String mensaje = "Token error";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
 
-        //token validation
-//        try {
-//            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-//        }catch (Exception e){
-//            String mensaje = "Token error";
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.TEXT_PLAIN);
-//            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-//        }
-//
-//        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-//        String mail =  jwtService.extractUsername(jwtToken);
-//        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
 
+        //comprobar que el usuario pertenece a la formacion
+        //validar que el evento que borras pertenece a la formacion que envias
+        if(!user.getFormationList().contains(formationRepository.getById(Integer.parseInt(calendarEventDTO.getIdFormation())))||
+            Integer.parseInt(calendarEventDTO.getIdFormation())!=calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getFormation().getId()){
+            String mensaje = "No perteneces a la formacion o evento no corresponde a tu formacion";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //validar los roles dentro de la formacion
+        //validation, the user must be on the formation and the rol must be owner,President, or director musical
+        List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
+                        userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
+                .collect(Collectors.toList()).stream().filter(userFormationRole
+                        -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
+
+        if (formationRoleList.isEmpty()){
+            String mensaje = "You cannot delete events";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //validacion si ha sucedido el evento
+        if(calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().isBefore(LocalDate.now())||
+                calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().equals(LocalDate.now())){
+            String mensaje = "El evento ya ha sucedido, no es posible eliminarlo";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
 
         calendarEventRepository.deleteById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
         return ResponseEntity.ok("Event deleted");
@@ -233,6 +268,6 @@ public class CalendarEventController {
 
 
 
-    //para el update, dos tipos, si aun no ha sucedido el evento, se puede eliminar , y modificar los campos,
+    //para el update, dos tipos, si aun no ha sucedido el evento, y modificar los campos,
     //si ha sucedido, solo se puede modificar la descripcion y si no está pagado a pagado
 }
