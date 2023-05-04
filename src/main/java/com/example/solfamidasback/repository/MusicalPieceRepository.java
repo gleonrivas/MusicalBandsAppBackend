@@ -1,4 +1,5 @@
 package com.example.solfamidasback.repository;
+import com.example.solfamidasback.controller.DTO.RepertoryMusicalPieceDTO;
 import com.example.solfamidasback.model.MusicalPiece;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,5 +37,18 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
                                              @Param("musical_piece_id")Integer musicalPieceId,
                                              @Param("active")Boolean active);
 
+    @Query(value = "select * from repertory_musical_piece rmp \n" +
+            "where repertory_id = ? and musical_piece_id = ? and rmp.active = ? ", nativeQuery = true)
+    RepertoryMusicalPieceDTO getRepertoryMusicalPiece(@Param("repertory_id")Integer repertoryId,
+                                                       @Param("musical_piece_id")Integer musicalPieceId,
+                                                       @Param("active")Boolean active);
+
+    @Modifying
+    @Query(value = " UPDATE repertory_musical_piece\n" +
+            "    SET active  = false\n" +
+            "    WHERE repertory_id  = ? and musical_piece_id = ? ", nativeQuery = true)
+    @Transactional
+    void updateRelation(@Param("repertory_id")Integer repertoryId,
+                        @Param("musical_piece_id")Integer musicalPieceId);
 
 }

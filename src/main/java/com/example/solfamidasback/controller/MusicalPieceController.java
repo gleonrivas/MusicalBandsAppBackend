@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.RepertoryMusicalPieceDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.MusicalPieceDTO;
 import com.example.solfamidasback.model.DTO.MusicalPieceUpdateDTO;
@@ -176,4 +177,17 @@ public class MusicalPieceController {
         return ResponseEntity.ok("musical piece deleted");
     }
 
+    @Operation(summary = "Delete a musical piece by id",
+            description = "Delete a musical piece by id",
+            tags = {"idMusicalPiece", "idRepertory"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+
+    @DeleteMapping("/delete/{idMusicalPiece}/{idRepertory}")
+    public ResponseEntity<String> deleteRelation(@PathVariable Integer idMusicalPiece, @PathVariable Integer idRepertory) {
+        musicalPieceRepository.updateRelation(idRepertory,idMusicalPiece);
+        return ResponseEntity.ok("musical piece deleted");
+    }
 }
