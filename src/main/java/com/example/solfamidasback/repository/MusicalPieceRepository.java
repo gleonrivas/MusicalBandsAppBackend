@@ -15,10 +15,10 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
     List<MusicalPiece> findAllByActiveIsTrue();
 
     @Query(value = "select mp.* from musical_piece mp \n" +
-            "join repertoire_musical_piece rmp \n" +
-            "on rmp.musical_piece_id =mp.id \n" +
-            "where rmp.repertoire_id =? and mp.active =true ", nativeQuery = true)
-    List<MusicalPiece> musicalPieceByIdRepertoireAndActiveTrue(@Param("repertoire_id") Long repertoireId);
+            "join repertory_musical_piece rmp \n" +
+            "on rmp.musical_piece_id = mp.id \n" +
+            "where rmp.repertory_id =? and mp.active =true ", nativeQuery = true)
+    List<MusicalPiece> musicalPieceByIdRepertoireAndActiveTrue(@Param("repertory_id") Long repertoryId);
     @Query(value = "select * from musical_piece mp \n" +
             "where mp.name like ? and mp.active =true ", nativeQuery = true)
     List<MusicalPiece> getByNameLikeAndActiveTrue(String name);
