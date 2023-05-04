@@ -37,8 +37,10 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
                                              @Param("musical_piece_id")Integer musicalPieceId,
                                              @Param("active")Boolean active);
 
+    @Modifying
     @Query(value = "select * from repertory_musical_piece rmp \n" +
             "where repertory_id = ? and musical_piece_id = ? and rmp.active = ? ", nativeQuery = true)
+    @Transactional
     RepertoryMusicalPieceDTO getRepertoryMusicalPiece(@Param("repertory_id")Integer repertoryId,
                                                        @Param("musical_piece_id")Integer musicalPieceId,
                                                        @Param("active")Boolean active);
