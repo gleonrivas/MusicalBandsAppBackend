@@ -12,5 +12,6 @@ public class MusicalPieceDTO {
     private String name;
     private String author;
     private Double length;
+    private Integer idRepertory;
 
 }
