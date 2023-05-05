@@ -21,7 +21,8 @@ public class CalendarEventService {
                 calendarEventDTO.getEnumTypeActuation().matches(regextype)&&
                 calendarEventDTO.getPaid().matches(regexpaid)&&
                 verifyDate(calendarEventDTO.getDate())&&
-                verifyDouble(calendarEventDTO.getAmount())
+                verifyDouble(calendarEventDTO.getAmount())&&
+                verifyDouble(calendarEventDTO.getPenaltyPonderation())
         ){
             return true;
         }

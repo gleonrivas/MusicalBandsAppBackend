@@ -16,4 +16,5 @@ public class CalendarEventDTO {
     private String description;
     private String date;  //LocalDate
     private String amount;  //Double
+    private String penaltyPonderation; //Double
 }

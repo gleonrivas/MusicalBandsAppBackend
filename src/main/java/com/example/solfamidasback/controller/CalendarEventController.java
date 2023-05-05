@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.CalendarEventDTODelete;
+import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -63,6 +64,8 @@ public class CalendarEventController {
     @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
                                                              HttpServletRequest request){
+        CalendarEvent calendarEvent = new CalendarEvent();
+
         //token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -102,7 +105,6 @@ public class CalendarEventController {
         }
 
         //Validation of DTO
-        CalendarEvent calendarEvent = new CalendarEvent();
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
 
             //validation the date must be later than the current date
@@ -116,7 +118,7 @@ public class CalendarEventController {
 
             //insert calendar event
             boolean pagado = false;
-            if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;};
+            if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;}
 
             var formation = formationRepository.findById(Integer.valueOf(calendarEventDTO.getIdFormation()));
             calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
@@ -266,7 +268,40 @@ public class CalendarEventController {
         return ResponseEntity.ok("Event deleted");
     }
 
+@PutMapping("update")
+    public ResponseEntity<CalendarEvent> updateCalendarEvent(@RequestBody CalendarEventUpdateDTO cEUpdateDTO, HttpServletRequest request){
 
+//        token validation
+    try {
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+    }catch (Exception e){
+        String mensaje = "Token error";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+    }
+
+    String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+    String mail =  jwtService.extractUsername(jwtToken);
+    Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+    //verify data of dto
+    if(!calendarEventService.VerifyCalendarEventDTO(cEUpdateDTO)||
+            !calendarEventService.verifyInteger(cEUpdateDTO.getIdCalendarEvent())) {
+        String mensaje = "Form error";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+    }
+    //get calendar event objet
+    CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
+
+    //verify rol and formation of the user
+
+
+
+        return ResponseEntity.ok(calendarEvent);
+}
 
     //para el update, dos tipos, si aun no ha sucedido el evento, y modificar los campos,
     //si ha sucedido, solo se puede modificar la descripcion y si no está pagado a pagado
