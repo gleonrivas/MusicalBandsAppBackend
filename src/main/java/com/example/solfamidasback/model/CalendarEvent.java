@@ -45,6 +45,9 @@ public class CalendarEvent {
     @JoinColumn(name = "amount")
     private Double amount;
 
+    @JoinColumn(name = "penalty_ponderation")
+    private Double penaltyPonderation;
+
 
 //    BORRADO POR DUPLICADO DEL TIPO
 //    @JoinColumn(name = "consideration_rehearsal")
