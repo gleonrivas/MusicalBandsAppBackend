@@ -188,6 +188,9 @@ public class MusicalPieceController {
     @DeleteMapping("/delete/{idMusicalPiece}/{idRepertory}")
     public ResponseEntity<String> deleteRelation(@PathVariable Integer idMusicalPiece, @PathVariable Integer idRepertory) {
         musicalPieceRepository.updateRelation(idRepertory,idMusicalPiece);
-        return ResponseEntity.ok("musical piece deleted");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity("Musical piece deleted",headers, HttpStatus.OK);
+
     }
 }
