@@ -1,5 +1,7 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.ExternalMusicianDTO;
+import com.example.solfamidasback.controller.DTO.ExternalMusicianUpdateDTO;
 import com.example.solfamidasback.model.ExternalMusician;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.service.ExternalMusicianService;
@@ -9,19 +11,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.mediatype.alps.Ext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "ExternalMusician", description = "External Musician crud")
 @RestController
@@ -37,8 +39,8 @@ public class ExternalMusicianController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/{calendarId}")
-    public ResponseEntity<List<ExternalMusician>> externalMusicianById(@PathVariable Integer calendarId) {
+    @GetMapping("/findByCalendar/{calendarId}")
+    public ResponseEntity<List<ExternalMusician>> externalMusicianByIdCalendar(@PathVariable Integer calendarId) {
         List<ExternalMusician> externalMusicianList = externalMusicianService.findByCalendar(calendarId);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -60,6 +62,39 @@ public class ExternalMusicianController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(externalMusicianList,httpHeaders, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/findBy/{id}")
+    public ResponseEntity<ExternalMusician> externalMusicianById(@PathVariable Integer id) {
+        Optional<ExternalMusician> externalMusician = externalMusicianService.findById(id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(externalMusician,httpHeaders, HttpStatus.OK);
+
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ExternalMusician> createExternalMusician(@RequestBody ExternalMusicianDTO externalMusicianDTO){
+        ExternalMusician externalMusician = externalMusicianService.create(externalMusicianDTO);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(externalMusician,httpHeaders, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ExternalMusician> updateExternalMusician(@RequestBody ExternalMusicianUpdateDTO externalMusicianUpdateDTO){
+        ExternalMusician externalMusician = externalMusicianService.update(externalMusicianUpdateDTO);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(externalMusician,httpHeaders, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> deleteExternalMusician(@PathVariable @NotNull Integer id){
+        String response = externalMusicianService.deleteById(id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(response,httpHeaders, HttpStatus.OK);
     }
 
 }

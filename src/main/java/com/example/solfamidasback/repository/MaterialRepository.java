@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material,Integer> {
 
+    Material findByIdAndActiveIsTrue(Integer id);
+
     @Modifying
     @Query(value = "insert into borrowed_material (id_material, id_users) values (?,?)", nativeQuery = true)
     @Transactional
@@ -35,7 +37,5 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     @Modifying
     @Query(value = "delete from borrowed_material where id_material = ? and id_users = ?", nativeQuery = true)
     void deleteBorrowedMaterial(@Param("id_material")Integer materialId,@Param("id_users")Integer userId );
-
-
 
 }

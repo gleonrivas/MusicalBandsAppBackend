@@ -27,6 +27,7 @@ public class Material {
     @Column(name = "id")
     private Integer id;
 
+    //Nombre del material
     @Column(name = "transferred_material", length = 150)
     private String transferredMaterial;
 
@@ -52,7 +53,6 @@ public class Material {
     )
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Users> usersList;
-
 
 
 
