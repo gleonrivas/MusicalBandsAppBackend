@@ -1,6 +1,7 @@
 package com.example.solfamidasback.service;
 
 import com.example.solfamidasback.model.DTO.CalendarEventDTO;
+import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Formation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,20 @@ public class CalendarEventService {
         }
         return false;
    }
+    public boolean VerifyCalendarEventUpdateDTO(CalendarEventUpdateDTO calendarEventDTO){
+
+        String regextype = "PRACTICE|CONCERT";
+        String regexpaid = "0|1";
+        if(calendarEventDTO.getEnumTypeActuation().matches(regextype)&&
+                calendarEventDTO.getPaid().matches(regexpaid)&&
+                verifyDate(calendarEventDTO.getDate())&&
+                verifyDouble(calendarEventDTO.getAmount())&&
+                verifyDouble(calendarEventDTO.getPenaltyPonderation())
+        ){
+            return true;
+        }
+        return false;
+    }
    public boolean verifyDate(String fecha){
        try {
            LocalDate.parse(fecha);

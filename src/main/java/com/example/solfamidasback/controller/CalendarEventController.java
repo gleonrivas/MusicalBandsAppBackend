@@ -9,9 +9,11 @@ import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.CalendarEventRepository;
+import com.example.solfamidasback.repository.ExternalMusicianRepository;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.CalendarEventService;
+import com.example.solfamidasback.service.ExternalMusicianService;
 import com.example.solfamidasback.service.JwtService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +48,9 @@ public class CalendarEventController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ExternalMusicianRepository externalMusicianRepository;
 
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
@@ -129,6 +134,7 @@ public class CalendarEventController {
             calendarEvent.setPlace(calendarEventDTO.getPlace());
             calendarEvent.setTitle(calendarEventDTO.getTitle());
             calendarEvent.setFormation(formation.get());
+            calendarEvent.setPenaltyPonderation(Double.parseDouble(calendarEventDTO.getPenaltyPonderation()));
 
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
@@ -207,8 +213,7 @@ public class CalendarEventController {
     }
     @DeleteMapping("delete")
     public ResponseEntity<String> deleteFormation(@RequestBody CalendarEventDTODelete calendarEventDTO, HttpServletRequest request) {
-        if (!calendarEventService.verifyInteger(calendarEventDTO.getIdCalendarEvent())||
-                !calendarEventService.verifyInteger(calendarEventDTO.getIdFormation())){
+        if (!calendarEventService.verifyInteger(calendarEventDTO.getIdCalendarEvent())){
             String mensaje = "Incorrect format";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_PLAIN);
@@ -228,20 +233,22 @@ public class CalendarEventController {
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
+        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
+
         //comprobar que el usuario pertenece a la formacion
         //validar que el evento que borras pertenece a la formacion que envias
-        if(!user.getFormationList().contains(formationRepository.getById(Integer.parseInt(calendarEventDTO.getIdFormation())))||
-            Integer.parseInt(calendarEventDTO.getIdFormation())!=calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getFormation().getId()){
-            String mensaje = "No perteneces a la formacion o evento no corresponde a tu formacion";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-        }
+//        if(!user.getFormationList().contains(formationRepository.getById(Integer.parseInt(calendarEventDTO.getIdFormation())))||
+//            Integer.parseInt(calendarEventDTO.getIdFormation())!=calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getFormation().getId()){
+//            String mensaje = "No perteneces a la formacion o evento no corresponde a tu formacion";
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.TEXT_PLAIN);
+//            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+//        }
 
         //validar los roles dentro de la formacion
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
-                        userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
+                        userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
                 .collect(Collectors.toList()).stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
@@ -263,6 +270,10 @@ public class CalendarEventController {
             headers.setContentType(MediaType.TEXT_PLAIN);
             return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
         }
+
+        //borrado de musicos externos si tiene
+
+
 
         calendarEventRepository.deleteById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
         return ResponseEntity.ok("Event deleted");
@@ -286,7 +297,7 @@ public class CalendarEventController {
     Users user = userRepository.findByEmailAndActiveTrue(mail);
 
     //verify data of dto
-    if(!calendarEventService.VerifyCalendarEventDTO(cEUpdateDTO)||
+    if(!calendarEventService.VerifyCalendarEventUpdateDTO(cEUpdateDTO)||
             !calendarEventService.verifyInteger(cEUpdateDTO.getIdCalendarEvent())) {
         String mensaje = "Form error";
         HttpHeaders headers = new HttpHeaders();
@@ -296,11 +307,62 @@ public class CalendarEventController {
     //get calendar event objet
     CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
 
-    //verify rol and formation of the user
+    //validation, the user must be on the formation and the rol must be owner,President, or director musical
+    List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
+                    userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
+            .collect(Collectors.toList()).stream().filter(userFormationRole
+                    -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
 
+    if (formationRoleList.isEmpty()){
+        String mensaje = "You cannot update events";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+    }
 
+    //validation the date must be later than the current date
+    if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
+            LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
+        String mensaje = "No earlier date than the current date is possible";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+    }
 
+    //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
+    if (calendarEvent.getDate().isBefore(LocalDate.now())||calendarEvent.getDate().equals(LocalDate.now())){
+        if (cEUpdateDTO.getPaid().contains("1")){
+            calendarEvent.setPaid(true);
+        }
+        calendarEvent.setDescription(cEUpdateDTO.getDescription());
+        calendarEventRepository.save(calendarEvent);
         return ResponseEntity.ok(calendarEvent);
+    }
+
+    //si no ha sucedido
+    if (calendarEvent.getDate().isAfter(LocalDate.now())){
+        boolean pagado = false;
+        if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
+        calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
+        calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
+        calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
+        calendarEvent.setDescription(cEUpdateDTO.getDescription());
+        calendarEvent.setPaid(pagado);
+        calendarEvent.setPlace(cEUpdateDTO.getPlace());
+        calendarEvent.setTitle(cEUpdateDTO.getTitle());
+        calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
+        calendarEventRepository.save(calendarEvent);
+        return ResponseEntity.ok(calendarEvent);
+    }
+
+
+    String mensaje = "Something wron";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.TEXT_PLAIN);
+    return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
 }
 
     //para el update, dos tipos, si aun no ha sucedido el evento, y modificar los campos,

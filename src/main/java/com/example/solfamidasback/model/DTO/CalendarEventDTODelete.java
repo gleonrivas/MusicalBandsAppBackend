@@ -5,5 +5,4 @@ import lombok.Setter;
 @Setter
 public class CalendarEventDTODelete {
     private String idCalendarEvent;
-    private String idFormation;
 }
