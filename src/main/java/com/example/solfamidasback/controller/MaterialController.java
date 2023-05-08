@@ -2,10 +2,12 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialDTO;
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialUpdateDTO;
+import com.example.solfamidasback.controller.DTO.MaterialDTO;
 import com.example.solfamidasback.model.Material;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.MaterialRepository;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.MaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ public class MaterialController {
     MaterialRepository materialRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    MaterialService materialService;
 
     @PostMapping("/createBorrowedMaterial")
     public ResponseEntity<String> saveBorrowedMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
@@ -101,6 +105,34 @@ public class MaterialController {
 
         return new ResponseEntity("successfully delete borrowed material",headers, HttpStatus.OK);
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<Material> createMaterial(@RequestBody MaterialDTO materialDTO){
+        Material material = materialService.createUpdate(materialDTO);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(material,httpHeaders, HttpStatus.OK);
+
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Material> updateMaterial(@RequestBody MaterialDTO materialDTO){
+        Material material = materialService.createUpdate(materialDTO);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(material,httpHeaders, HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/delete/{idMaterial}")
+    public ResponseEntity<String> deleteMaterial(@PathVariable Integer idMaterial){
+        String result = materialService.deleteMaterial(idMaterial);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(result,httpHeaders, HttpStatus.OK);
+    }
+
+
 
 }
 
