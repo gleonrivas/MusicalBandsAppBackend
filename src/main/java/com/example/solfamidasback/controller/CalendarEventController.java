@@ -1,13 +1,10 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.CalendarEventDTO;
-import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.CalendarEventDTODelete;
 import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
-import com.example.solfamidasback.model.Formation;
-import com.example.solfamidasback.model.UserFormationRole;
-import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.CalendarEventRepository;
 import com.example.solfamidasback.repository.ExternalMusicianRepository;
 import com.example.solfamidasback.repository.FormationRepository;
@@ -235,16 +232,6 @@ public class CalendarEventController {
 
         CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
 
-        //comprobar que el usuario pertenece a la formacion
-        //validar que el evento que borras pertenece a la formacion que envias
-//        if(!user.getFormationList().contains(formationRepository.getById(Integer.parseInt(calendarEventDTO.getIdFormation())))||
-//            Integer.parseInt(calendarEventDTO.getIdFormation())!=calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getFormation().getId()){
-//            String mensaje = "No perteneces a la formacion o evento no corresponde a tu formacion";
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.TEXT_PLAIN);
-//            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-//        }
-
         //validar los roles dentro de la formacion
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
@@ -272,8 +259,10 @@ public class CalendarEventController {
         }
 
         //borrado de musicos externos si tiene
-
-
+        List<ExternalMusician> externalMusicianList = externalMusicianRepository.findAllByCalendarId(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
+        for (ExternalMusician m :externalMusicianList){
+            externalMusicianRepository.delete(m);
+        }
 
         calendarEventRepository.deleteById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
         return ResponseEntity.ok("Event deleted");
