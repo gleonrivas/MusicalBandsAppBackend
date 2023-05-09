@@ -54,8 +54,7 @@ public class MusicalPieceController {
         return new ResponseEntity(musicalPieceDTOList,httpHeaders, HttpStatus.OK);
     }
     @Operation(summary = "Retrieve a list of musical Piece",
-            description = "The response is a list of Musical Pieces",
-            tags = {"idRepertory"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -76,8 +75,7 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by name",
-            description = "The response is a list of Musical Pieces",
-            tags = {"name"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -98,8 +96,7 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by author",
-            description = "The response is a list of Musical Pieces",
-            tags = {"author"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema()) }),
@@ -119,8 +116,7 @@ public class MusicalPieceController {
 
     }
     @Operation(summary = "Create a musical piece",
-            description = "Create a musical piece",
-            tags = {"name","author","length"})
+            description = "Create a musical piece")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema())}),
@@ -143,8 +139,7 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Update a musical Piece",
-            description = "Uptate a musical Piece",
-            tags = {"id","name","author","length"})
+            description = "Uptate a musical Piece")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -162,10 +157,9 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id",
-            tags = {"id"})
+            description = "Delete a musical piece by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 
@@ -178,8 +172,7 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id",
-            tags = {"idMusicalPiece", "idRepertory"})
+            description = "Delete a musical piece by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),

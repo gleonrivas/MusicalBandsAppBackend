@@ -25,10 +25,9 @@ public class InvitationLinkController {
     @Autowired
     InvitationLinkService invitationLinkService;
     @Operation(summary = "create a invitation link in a Formation",
-            description = "create a invitation link in a Formation",
-            tags = {"idFormation"})
+            description = "create a invitation link in a Formation")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = InvitationLinkDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/create/{idFormation}")
@@ -42,10 +41,9 @@ public class InvitationLinkController {
     }
 
     @Operation(summary = "create a invitation link in a Formation",
-            description = "create a invitation link in a Formation",
-            tags = {"idFormation"})
+            description = "create a invitation link in a Formation")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = InvitationLinkDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PatchMapping("/{idFormation}")

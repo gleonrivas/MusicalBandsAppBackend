@@ -72,8 +72,7 @@ public class FormationController {
 
 
     @Operation(summary = "Retrieve a list of formation by user id",
-            description = "The response is a list of Formation Objects",
-            tags = {"user_id"})
+            description = "The response is a list of Formation Objects")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -103,8 +102,7 @@ public class FormationController {
 
     }
     @Operation(summary = "Retrieve a formation by id",
-            description = "The response is a Formation Objects",
-            tags = {"formation_id"})
+            description = "The response is a Formation Objects")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -117,8 +115,7 @@ public class FormationController {
 
 
     @Operation(summary = "Create a formation",
-            description = "Create formation with user_id as administrator of the formation",
-            tags = {"name","designation","type","fundation date","logo"})
+            description = "Create formation with user_id as administrator of the formation")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -154,8 +151,7 @@ public class FormationController {
         return ResponseEntity.ok(formation);
     }
     @Operation(summary = "Update a formation by id",
-            description = "Uptate a formation by id ",
-            tags = {"id"})
+            description = "Uptate a formation by id ")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -181,8 +177,7 @@ public class FormationController {
     }
 
     @Operation(summary = "Delete a formation by id",
-            description = "Delete a formation by id",
-            tags = {"id"})
+            description = "Delete a formation by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
