@@ -13,11 +13,16 @@ import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.ExternalMusicianService;
 import com.example.solfamidasback.service.JwtService;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.api.client.auth.oauth2.BearerToken;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,11 +149,13 @@ public class CalendarEventController {
     }
     @Operation(summary = "Retrieve a list of calendar events for the user",
             description = "The response is a list of Formation Objects",
-            tags = {"token"})
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
+
     @GetMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
