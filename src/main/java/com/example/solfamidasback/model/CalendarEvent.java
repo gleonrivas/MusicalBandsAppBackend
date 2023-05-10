@@ -48,14 +48,6 @@ public class CalendarEvent {
     @JoinColumn(name = "penalty_ponderation")
     private Double penaltyPonderation;
 
-
-//    BORRADO POR DUPLICADO DEL TIPO
-//    @JoinColumn(name = "consideration_rehearsal")
-//    private Double considerationRehearsal;
-//
-//    @JoinColumn(name = "consideration_bolus")
-//    private Double considerationBolus;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_formation")
