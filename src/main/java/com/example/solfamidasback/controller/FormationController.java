@@ -4,6 +4,7 @@ import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
+import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -192,7 +193,12 @@ public class FormationController {
         return ResponseEntity.ok("formation deleted");
     }
 
-
+    @Operation(summary = "Delete a user from a formation",
+            description = "Delete a user from a formation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("/deleteUserFormation")
     public ResponseEntity<String> deleteUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
         String result = formationService.deleteUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
@@ -202,6 +208,12 @@ public class FormationController {
 
     }
 
+    @Operation(summary = "Insert a user in a formation",
+            description = "Insert a user in a formation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/reactiveUserFormation")
     public ResponseEntity<String> reactiveUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
         String result = formationService.reactiveUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
@@ -210,13 +222,37 @@ public class FormationController {
         return new ResponseEntity(result,headers, HttpStatus.OK);
 
     }
-
+    @Operation(summary = "Search a formation by name",
+            description = "Search a formation by name")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/searchByName")
     public ResponseEntity<List<Formation>> searchByNameLike(@NotNull @RequestBody FormationLikeDTO formationLikeDTO){
         List<Formation> formations = formationRepository.findFormationsByLike(formationLikeDTO.getNameFormation());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(formations,headers, HttpStatus.OK);
+
+    }
+
+    @Operation(summary = "Insert an user in a formation by a invitation link",
+            description = "Insert an user in a formation by a invitation link")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @PostMapping("/addUser")
+    public ResponseEntity<String> addingByInvitationLink(@NotNull @RequestBody InvitationLinkDTO invitationLinkDTO,
+                                                         HttpServletRequest request){
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        String response = formationService.addingByInvitationLink(invitationLinkDTO, user);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(response,headers, HttpStatus.OK);
 
     }
 
