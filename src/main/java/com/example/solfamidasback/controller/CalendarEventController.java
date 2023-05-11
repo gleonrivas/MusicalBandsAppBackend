@@ -150,7 +150,7 @@ public class CalendarEventController {
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("AllMyEvents")
@@ -186,7 +186,7 @@ public class CalendarEventController {
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("MyEventsByFormation/{idFormation}")
@@ -224,7 +224,7 @@ public class CalendarEventController {
             description = "Delete a Calendar Event Objet by Calendar event id",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @DeleteMapping("delete")
@@ -291,7 +291,7 @@ public class CalendarEventController {
             description = "Update a Calendar Event Objet by Calendar event id",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PutMapping("update")
