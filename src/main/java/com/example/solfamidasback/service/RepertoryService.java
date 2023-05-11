@@ -9,9 +9,7 @@ import com.example.solfamidasback.repository.RepertoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RepertoryService {
@@ -21,45 +19,49 @@ public class RepertoryService {
     RepertoryRepository repertoryRepository;
     @Autowired
     FormationRepository formationRepository;
-    public List<RepertoryDTO> findByIdFormation (Integer idFormation){
+
+    public List<RepertoryDTO> findByIdFormation(Integer idFormation) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
         Set<Repertory> repertoryList = formation.getRepertorySet();
         List<Repertory> repertories = new ArrayList<>(repertoryList);
         List<RepertoryDTO> repertoryDTOList = new ArrayList<>();
-        for(Repertory repertory: repertories){
-            if(repertory.isActive()){
+        for (Repertory repertory : repertories) {
+            if (repertory.isActive()) {
                 repertoryDTOList.add(repertoryConverter.toDTO(repertory));
             }
         }
+        List<RepertoryDTO> repertoryDTOSortedList = repertoryDTOList.stream().sorted(Comparator.comparing(RepertoryDTO::getId)).toList();
 
-        return repertoryDTOList;
+
+        return repertoryDTOSortedList;
     }
 
-    public List<RepertoryDTO> findById(){
+    public List<RepertoryDTO> findById() {
         Set<Repertory> repertoryList = repertoryRepository.findAllByActiveIsTrue();
         List<Repertory> repertories = new ArrayList<>(repertoryList);
         List<RepertoryDTO> repertoryDTOList = new ArrayList<>();
-        for(Repertory repertory: repertories){
+        for (Repertory repertory : repertories) {
             repertoryDTOList.add(repertoryConverter.toDTO(repertory));
         }
 
         return repertoryDTOList;
     }
-    public RepertoryDTO findUniqueById(Integer id){
+
+    public RepertoryDTO findUniqueById(Integer id) {
         Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(id);
         RepertoryDTO repertoryDTO = new RepertoryDTO();
-        if(repertory !=null){
-            repertoryDTO= repertoryConverter.toDTO(repertory);
+        if (repertory != null) {
+            repertoryDTO = repertoryConverter.toDTO(repertory);
         }
 
         return repertoryDTO;
     }
 
-    public Repertory createUpdate(RepertoryDTO repertoryDTO){
+    public Repertory createUpdate(RepertoryDTO repertoryDTO) {
         Repertory repertory = new Repertory();
-        if(repertoryDTO.getId() == null){
+        if (repertoryDTO.getId() == null) {
             repertory = repertoryConverter.toEntity(repertoryDTO);
-        }else{
+        } else {
             repertory = repertoryRepository.findByIdAndActiveIsTrue(repertoryDTO.getId());
             repertory.setName(repertoryDTO.getName());
             repertory.setDescription(repertoryDTO.getDescription());
@@ -69,19 +71,19 @@ public class RepertoryService {
         return repertory;
     }
 
-    public String modifyActive(Integer id){
+    public String modifyActive(Integer id) {
         Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(id);
         String active = "";
-        if(repertory!=null){
+        if (repertory != null) {
             repertory.setActive(false);
             repertoryRepository.save(repertory);
             active = "deleted";
 
-        }else{
-            active= "null";
+        } else {
+            active = "null";
         }
 
-       return active;
+        return active;
     }
 
 
