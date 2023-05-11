@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,8 @@ public class RepertoryController {
     RepertoryService repertoryService;
 
     @Operation(summary = "Retrieve a repertory",
-            description = "The response is a repertory by his id")
+            description = "The response is a repertory by his id",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = RepertoryDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -48,7 +50,8 @@ public class RepertoryController {
 
 
     @Operation(summary = "Retrieve a list of repertories",
-            description = "The response is a list of repertory")
+            description = "The response is a list of repertory",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = RepertoryDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -66,7 +69,8 @@ public class RepertoryController {
 
 
     @Operation(summary = "Retrieve a list of repertory",
-            description = "The response is a list of repertory by id Formation")
+            description = "The response is a list of repertory by id Formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = RepertoryDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -83,7 +87,8 @@ public class RepertoryController {
     }
 
     @Operation(summary = "Creatre a repertory",
-            description = "Creatre a repertory")
+            description = "Creatre a repertory",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -98,7 +103,8 @@ public class RepertoryController {
     }
 
     @Operation(summary = "Update a repertory",
-            description = "modify a repertory")
+            description = "modify a repertory",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -113,7 +119,8 @@ public class RepertoryController {
     }
 
     @Operation(summary = "Delete a repertory by id",
-            description = "Delete a repertory piece by id")
+            description = "Delete a repertory piece by id",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
