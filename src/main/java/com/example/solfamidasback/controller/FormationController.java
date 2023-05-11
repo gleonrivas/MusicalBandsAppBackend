@@ -2,6 +2,7 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -248,15 +249,17 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/addUser")
-    public ResponseEntity<String> addingByInvitationLink(@NotNull @RequestBody InvitationLinkDTO invitationLinkDTO,
-                                                         HttpServletRequest request){
+    public ResponseEntity<ResponseStringDTO> addingByInvitationLink(@NotNull @RequestBody InvitationLinkDTO invitationLinkDTO,
+                                                                    HttpServletRequest request){
+        ResponseStringDTO responseDTO = new ResponseStringDTO();
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
         String response = formationService.addingByInvitationLink(invitationLinkDTO, user);
+        responseDTO.setResponse(response);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(response,headers, HttpStatus.OK);
+        return new ResponseEntity(responseDTO,headers, HttpStatus.OK);
 
     }
 
