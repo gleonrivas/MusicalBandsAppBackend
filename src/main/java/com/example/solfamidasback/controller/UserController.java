@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -62,7 +63,10 @@ public class UserController {
 
 
     @Operation(summary = "List Users",
-            description = "List Users")
+            description = "List Users",
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
+
     @ApiResponses({
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
@@ -115,7 +119,9 @@ public class UserController {
 //    }
 
     @Operation(summary = "List Users by name",
-            description = "List Users by name")
+            description = "List Users by name",
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
@@ -127,7 +133,9 @@ public class UserController {
 
     }
     @Operation(summary = "Edit your profile",
-            description = "Edit your profile")
+            description = "Edit your profile",
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = UserDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -151,7 +159,8 @@ public class UserController {
     }
     @Operation(summary = "See your profile",
             description = "See your profile",
-            tags = {"type"})
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -168,7 +177,8 @@ public class UserController {
     }
     @Operation(summary = "Delete your user",
             description = "Delete your user",
-            tags = {"type"})
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -187,7 +197,9 @@ public class UserController {
     }
 
     @Operation(summary = "Create a SuperAdmin",
-            description = "Create a SuperAdmin")
+            description = "Create a SuperAdmin",
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = SuperAdminDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -204,7 +216,8 @@ public class UserController {
 
     @Operation(summary = "Delete your SuperAdmin",
             description = "Delete your SuperAdmin",
-            tags = {"type"})
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -222,7 +235,9 @@ public class UserController {
 
     }
     @Operation(summary = "Change your password",
-            description = "Change your password")
+            description = "Change your password",
+            tags = {"token"},
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = PasswordDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
