@@ -27,8 +27,11 @@ public class RepertoryService {
         List<Repertory> repertories = new ArrayList<>(repertoryList);
         List<RepertoryDTO> repertoryDTOList = new ArrayList<>();
         for(Repertory repertory: repertories){
-            repertoryDTOList.add(repertoryConverter.toDTO(repertory));
+            if(repertory.isActive()){
+                repertoryDTOList.add(repertoryConverter.toDTO(repertory));
+            }
         }
+
         return repertoryDTOList;
     }
 

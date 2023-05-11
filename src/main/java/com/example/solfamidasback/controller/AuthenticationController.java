@@ -4,6 +4,7 @@ import com.example.solfamidasback.configSecurity.AuthenticationRequests;
 import com.example.solfamidasback.configSecurity.AuthenticationResponses;
 import com.example.solfamidasback.configSecurity.RegisterRequest;
 import com.example.solfamidasback.model.DTO.LoginDTO;
+import com.example.solfamidasback.model.DTO.LoginSiDTO;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,8 +36,7 @@ public class AuthenticationController {
         return password.matches(pattern);
     }
     @Operation(summary = "Register new user",
-            description = "Register new user by firstname , secondname and password ",
-            tags = {"firstname","secondname","email","password"})
+            description = "Register new user by firstname , secondname, email and password ")
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -74,11 +74,10 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Login by email and password",
-            description = "Authenticate by email and password and response jswon with token",
-            tags = {"email","password"})
+            description = "Authenticate by email and password and response jswon with token")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = LoginSiDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = LoginDTO.class),mediaType = "application/json")}),
     })
     @PostMapping("/auth")
     public ResponseEntity<AuthenticationResponses> authenticate(

@@ -51,4 +51,11 @@ public class UserFormationRole {
         this.formation = formation;
         this.role = role;
     }
+
+    public UserFormationRole(Users users, Formation formation, Role role, boolean active) {
+        this.users = users;
+        this.formation = formation;
+        this.role = role;
+        this.active = active;
+    }
 }

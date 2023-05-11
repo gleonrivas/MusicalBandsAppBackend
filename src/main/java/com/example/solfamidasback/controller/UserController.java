@@ -1,6 +1,9 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.configSecurity.driveCredentials.GoogleDriveBasic;
 import com.example.solfamidasback.controller.DTO.PasswordDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
+import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
 import com.example.solfamidasback.model.DTO.UserDTO;
@@ -10,6 +13,11 @@ import com.example.solfamidasback.service.AuthenticationService;
 import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +61,12 @@ public class UserController {
     AuthenticationService authenticateService;
 
 
-
+    @Operation(summary = "List Users",
+            description = "List Users")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("/list")
     public ResponseEntity<List<Users>>  listUsers(){
         List<Users> listUsers = userRepository.findAllByActiveTrue();
@@ -100,20 +114,24 @@ public class UserController {
 //
 //    }
 
-
-
-    @GetMapping("/listAll")
-    public ResponseEntity<String> todosLosUser(){
-        return ResponseEntity.ok("Se verian todos los usuarios");
-    }
-
+    @Operation(summary = "List Users by name",
+            description = "List Users by name")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("/list/{name}")
     public @ResponseBody List<Users> listUsersByName(@PathVariable String name) throws JsonProcessingException {
 
         return Collections.singletonList(userRepository.findAllByNameAndActiveIsTrue(name));
 
     }
-
+    @Operation(summary = "Edit your profile",
+            description = "Edit your profile")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = UserDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/editProfile")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request){
         HttpHeaders headers = new HttpHeaders();
@@ -131,9 +149,15 @@ public class UserController {
         return new ResponseEntity("user edited successfully",headers, HttpStatus.OK);
 
     }
-
+    @Operation(summary = "See your profile",
+            description = "See your profile",
+            tags = {"type"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("/profile")
-    public ResponseEntity<Users> profile(HttpServletRequest request){
+    public ResponseEntity<Users> profile(HttpServletRequest request) throws IOException {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
@@ -142,7 +166,13 @@ public class UserController {
         UserDTO userDTO = userConverter.toDTO(user);
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
     }
-
+    @Operation(summary = "Delete your user",
+            description = "Delete your user",
+            tags = {"type"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("/deleteProfile")
     public ResponseEntity<String> deleteProfile(HttpServletRequest request){
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -156,7 +186,12 @@ public class UserController {
 
     }
 
-
+    @Operation(summary = "Create a SuperAdmin",
+            description = "Create a SuperAdmin")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = SuperAdminDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/createAdmin")
     public ResponseEntity<String> registerAdmin(@RequestBody SuperAdminDTO user){
         HttpHeaders headers = new HttpHeaders();
@@ -167,6 +202,13 @@ public class UserController {
 
     }
 
+    @Operation(summary = "Delete your SuperAdmin",
+            description = "Delete your SuperAdmin",
+            tags = {"type"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("/deleteAdmin")
     public ResponseEntity<String> deleteAdminProfile(HttpServletRequest request){
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -179,7 +221,12 @@ public class UserController {
         return new ResponseEntity("admin deleted successfully",headers, HttpStatus.OK);
 
     }
-
+    @Operation(summary = "Change your password",
+            description = "Change your password")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = PasswordDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/changePassword")
     public ResponseEntity<String> changePassword(@RequestBody PasswordDTO passwordDTO, HttpServletRequest request){
         HttpHeaders headers = new HttpHeaders();
@@ -191,12 +238,12 @@ public class UserController {
             if (passwordDTO.getNewPassword1().equals(passwordDTO.getNewPassword2())){
                 user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword1()));
                 userRepository.save(user);
-                return new ResponseEntity("password changed successfully",headers, HttpStatus.OK);
+                return new ResponseEntity(new ResponseStringDTO("password changed successfully"),headers, HttpStatus.OK);
             }else {
-                return new ResponseEntity("new passwords are not the same",headers, HttpStatus.OK);
+                return new ResponseEntity(new ResponseStringDTO("new passwords are not the same"),headers, HttpStatus.UNPROCESSABLE_ENTITY);
             }
         }else {
-            return new ResponseEntity("old passwords are not the same",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("old passwords are not the same"),headers, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
 

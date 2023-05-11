@@ -4,7 +4,6 @@ import com.example.solfamidasback.model.Users;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 public class UserConverter  {

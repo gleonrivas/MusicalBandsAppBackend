@@ -7,6 +7,7 @@ import com.example.solfamidasback.model.DTO.MusicalPieceUpdateDTO;
 import com.example.solfamidasback.repository.MusicalPieceRepository;
 import com.example.solfamidasback.repository.RepertoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,7 +38,7 @@ public class MusicalPieceController {
     @Operation(summary = "Retrieve a list of musical Piece",
             description = "The response is a list of Musical Pieces")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("")
@@ -54,10 +55,9 @@ public class MusicalPieceController {
         return new ResponseEntity(musicalPieceDTOList,httpHeaders, HttpStatus.OK);
     }
     @Operation(summary = "Retrieve a list of musical Piece",
-            description = "The response is a list of Musical Pieces",
-            tags = {"idRepertory"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{idRepertory}")
@@ -76,10 +76,9 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by name",
-            description = "The response is a list of Musical Pieces",
-            tags = {"name"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/name/{name}")
@@ -98,11 +97,10 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by author",
-            description = "The response is a list of Musical Pieces",
-            tags = {"author"})
+            description = "The response is a list of Musical Pieces")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/author/{author}")
     public ResponseEntity<List<MusicalPieceDTO>> musicalPieceActiveByAuthor(@PathVariable String author) {
@@ -119,11 +117,11 @@ public class MusicalPieceController {
 
     }
     @Operation(summary = "Create a musical piece",
-            description = "Create a musical piece",
-            tags = {"name","author","length"})
+            description = "Create a musical piece")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @PostMapping("/create")
     public ResponseEntity<MusicalPiece> createMusicalPiece(@RequestBody MusicalPieceDTO musicalPieceDTO) {
@@ -143,11 +141,11 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Update a musical Piece",
-            description = "Uptate a musical Piece",
-            tags = {"id","name","author","length"})
+            description = "Uptate a musical Piece")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @PutMapping("/update")
     public ResponseEntity<MusicalPiece> updateMusicalPiece(@RequestBody MusicalPieceUpdateDTO musicalPieceUpdateDTO) {
@@ -162,10 +160,9 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id",
-            tags = {"id"})
+            description = "Delete a musical piece by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 
@@ -178,10 +175,9 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id",
-            tags = {"idMusicalPiece", "idRepertory"})
+            description = "Delete a musical piece by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 

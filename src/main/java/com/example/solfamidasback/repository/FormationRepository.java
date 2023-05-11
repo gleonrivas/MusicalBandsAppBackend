@@ -37,6 +37,7 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
     List<Formation> findFormationsByLike(String nameFormation);
 
 
+    Formation findByLinkAndActiveIsTrue(String link);
 
 
 

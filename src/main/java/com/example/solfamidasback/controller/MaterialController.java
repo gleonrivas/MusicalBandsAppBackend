@@ -8,6 +8,12 @@ import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.MaterialRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.MaterialService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Material", description = "Material crud and Material Borrowed crud")
 @RestController
 @RequestMapping("/material")
 public class MaterialController {
@@ -28,6 +35,12 @@ public class MaterialController {
     @Autowired
     MaterialService materialService;
 
+    @Operation(summary = "creates a borrowed material indicating the material id and the user id",
+            description = "The response is a String if an error has been created or raised")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/createBorrowedMaterial")
     public ResponseEntity<String> saveBorrowedMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
@@ -46,6 +59,13 @@ public class MaterialController {
         return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
     }
 
+
+    @Operation(summary = "Modify the material borrowed passing old material id, new material id and the user id",
+            description = "The response is a String if an error has been updated or raised")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/updateMaterialBorrowedMaterial")
     public ResponseEntity<String> updateBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
@@ -69,6 +89,12 @@ public class MaterialController {
         return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
     }
 
+    @Operation(summary = "Modify the material borrowed passing old user id, new user id and the material id",
+            description = "The response is a String if an error has been updated or raised")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/updateUserBorrowedMaterial")
     public ResponseEntity<String> updateUserBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
@@ -93,6 +119,12 @@ public class MaterialController {
         return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
     }
 
+    @Operation(summary = "Delete the material borrowed passing user id and the material id",
+            description = "The response is a String if an error has been deleted or raised")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("/deleteBorrowedMaterial")
     public ResponseEntity<String> deleteBorrrowedMarial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
@@ -106,6 +138,12 @@ public class MaterialController {
         return new ResponseEntity("successfully delete borrowed material",headers, HttpStatus.OK);
     }
 
+    @Operation(summary = "Create a material",
+            description = "Create material with id, transferredMaterial, materialType, fullDate and idFormation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MaterialDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PostMapping("/create")
     public ResponseEntity<Material> createMaterial(@RequestBody MaterialDTO materialDTO){
         Material material = materialService.createUpdate(materialDTO);
@@ -115,6 +153,12 @@ public class MaterialController {
 
     }
 
+    @Operation(summary = "Update a material",
+            description = "Update material with id, transferredMaterial, materialType, fullDate and idFormation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MaterialDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @PutMapping("/update")
     public ResponseEntity<Material> updateMaterial(@RequestBody MaterialDTO materialDTO){
         Material material = materialService.createUpdate(materialDTO);
@@ -124,6 +168,12 @@ public class MaterialController {
 
     }
 
+    @Operation(summary = "Delete a material",
+            description = "Delete material with id material")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("/delete/{idMaterial}")
     public ResponseEntity<String> deleteMaterial(@PathVariable Integer idMaterial){
         String result = materialService.deleteMaterial(idMaterial);

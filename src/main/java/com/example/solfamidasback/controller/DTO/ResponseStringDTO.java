@@ -1,15 +1,15 @@
-package com.example.solfamidasback.model.DTO;
+package com.example.solfamidasback.controller.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-public class InvitationLinkDTO {
-    private String link;
+@AllArgsConstructor
+public class ResponseStringDTO {
+    private String response;
 
 }
