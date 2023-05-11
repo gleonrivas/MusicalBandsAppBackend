@@ -142,9 +142,6 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
-        GoogleDriveBasic driveBasic = new GoogleDriveBasic();
-        driveBasic.getURL();
-        driveBasic.uploadTextFile("../src/main/java/com/example/solfamidasback/configSecurity/driveCredentials/a.png", "a");
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
     }
 
