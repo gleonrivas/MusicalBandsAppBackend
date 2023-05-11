@@ -64,7 +64,6 @@ public class UserController {
 
     @Operation(summary = "List Users",
             description = "List Users",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
 
     @ApiResponses({
@@ -120,7 +119,6 @@ public class UserController {
 
     @Operation(summary = "List Users by name",
             description = "List Users by name",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -134,7 +132,6 @@ public class UserController {
     }
     @Operation(summary = "Edit your profile",
             description = "Edit your profile",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = UserDTO.class),mediaType = "application/json")}),
@@ -159,7 +156,6 @@ public class UserController {
     }
     @Operation(summary = "See your profile",
             description = "See your profile",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
@@ -177,7 +173,6 @@ public class UserController {
     }
     @Operation(summary = "Delete your user",
             description = "Delete your user",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
@@ -198,7 +193,6 @@ public class UserController {
 
     @Operation(summary = "Create a SuperAdmin",
             description = "Create a SuperAdmin",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = SuperAdminDTO.class),mediaType = "application/json")}),
@@ -216,7 +210,6 @@ public class UserController {
 
     @Operation(summary = "Delete your SuperAdmin",
             description = "Delete your SuperAdmin",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
@@ -236,7 +229,6 @@ public class UserController {
     }
     @Operation(summary = "Change your password",
             description = "Change your password",
-            tags = {"token"},
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = PasswordDTO.class),mediaType = "application/json")}),
