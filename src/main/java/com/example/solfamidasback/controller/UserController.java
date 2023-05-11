@@ -2,6 +2,7 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.configSecurity.driveCredentials.GoogleDriveBasic;
 import com.example.solfamidasback.controller.DTO.PasswordDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
@@ -237,12 +238,12 @@ public class UserController {
             if (passwordDTO.getNewPassword1().equals(passwordDTO.getNewPassword2())){
                 user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword1()));
                 userRepository.save(user);
-                return new ResponseEntity("password changed successfully",headers, HttpStatus.OK);
+                return new ResponseEntity(new ResponseStringDTO("password changed successfully"),headers, HttpStatus.OK);
             }else {
-                return new ResponseEntity("new passwords are not the same",headers, HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity(new ResponseStringDTO("new passwords are not the same"),headers, HttpStatus.UNPROCESSABLE_ENTITY);
             }
         }else {
-            return new ResponseEntity("old passwords are not the same",headers, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity(new ResponseStringDTO("old passwords are not the same"),headers, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
 
