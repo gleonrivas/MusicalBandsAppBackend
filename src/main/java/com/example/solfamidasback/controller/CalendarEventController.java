@@ -17,6 +17,7 @@ import com.google.api.client.auth.oauth2.BearerToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -64,8 +65,8 @@ public class CalendarEventController {
             description = "The calendar event is for one formation and is created by director, president or assistance controller",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema( implementation = CalendarEvent.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
@@ -150,8 +151,8 @@ public class CalendarEventController {
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @GetMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
@@ -186,8 +187,8 @@ public class CalendarEventController {
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @GetMapping("MyEventsByFormation/{idFormation}")
     public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@PathVariable Integer formationId,HttpServletRequest request){
@@ -225,7 +226,7 @@ public class CalendarEventController {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @DeleteMapping("delete")
     public ResponseEntity<String> deleteFormation(@RequestBody CalendarEventDTODelete calendarEventDTO, HttpServletRequest request) {
@@ -292,7 +293,7 @@ public class CalendarEventController {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @PutMapping("update")
         public ResponseEntity<CalendarEvent> updateCalendarEvent(@RequestBody CalendarEventUpdateDTO cEUpdateDTO, HttpServletRequest request){
