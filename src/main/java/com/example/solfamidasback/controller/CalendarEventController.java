@@ -62,12 +62,11 @@ public class CalendarEventController {
 
     @Operation(summary = "Create a calendar event for the formation",
             description = "The calendar event is for one formation and is created by director, president or assistance controller",
-            tags = {"token"})
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = CalendarEvent.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-
     @PostMapping("CreateEvents")
     public ResponseEntity<CalendarEvent> createCalendarEvent(@RequestBody CalendarEventDTO calendarEventDTO,
                                                              HttpServletRequest request){
@@ -148,14 +147,12 @@ public class CalendarEventController {
         }
     }
     @Operation(summary = "Retrieve a list of calendar events for the user",
-            description = "The response is a list of Formation Objects",
-            tags = {"token"},
+            description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-
     @GetMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
@@ -184,7 +181,14 @@ public class CalendarEventController {
 
         return ResponseEntity.ok(calendarEventList);
     }
-    //Método para ver eventos por formacion
+
+    @Operation(summary = "Retrieve a list of Calendar Event by formation",
+            description = "The response is a list of Calendar Event Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @GetMapping("MyEventsByFormation/{idFormation}")
     public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@PathVariable Integer formationId,HttpServletRequest request){
 
@@ -215,6 +219,14 @@ public class CalendarEventController {
 
         return ResponseEntity.ok(calendarEventList);
     }
+
+    @Operation(summary = "Delete a Calendar Event Objet by Calendar event id",
+            description = "Delete a Calendar Event Objet by Calendar event id",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
     @DeleteMapping("delete")
     public ResponseEntity<String> deleteFormation(@RequestBody CalendarEventDTODelete calendarEventDTO, HttpServletRequest request) {
         if (!calendarEventService.verifyInteger(calendarEventDTO.getIdCalendarEvent())){
@@ -275,92 +287,97 @@ public class CalendarEventController {
         return ResponseEntity.ok("Event deleted");
     }
 
-@PutMapping("update")
-    public ResponseEntity<CalendarEvent> updateCalendarEvent(@RequestBody CalendarEventUpdateDTO cEUpdateDTO, HttpServletRequest request){
+    @Operation(summary = "Update a Calendar Event Objet by Calendar event id",
+            description = "Update a Calendar Event Objet by Calendar event id",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @PutMapping("update")
+        public ResponseEntity<CalendarEvent> updateCalendarEvent(@RequestBody CalendarEventUpdateDTO cEUpdateDTO, HttpServletRequest request){
 
-//        token validation
-    try {
-        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-    }catch (Exception e){
-        String mensaje = "Token error";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-    }
-
-    String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-    String mail =  jwtService.extractUsername(jwtToken);
-    Users user = userRepository.findByEmailAndActiveTrue(mail);
-
-    //verify data of dto
-    if(!calendarEventService.VerifyCalendarEventUpdateDTO(cEUpdateDTO)||
-            !calendarEventService.verifyInteger(cEUpdateDTO.getIdCalendarEvent())) {
-        String mensaje = "Form error";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-    }
-    //get calendar event objet
-    CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
-
-    //validation, the user must be on the formation and the rol must be owner,President, or director musical
-    List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
-                    userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
-            .collect(Collectors.toList()).stream().filter(userFormationRole
-                    -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
-                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
-                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
-                    userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
-
-    if (formationRoleList.isEmpty()){
-        String mensaje = "You cannot update events";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-    }
-
-    //validation the date must be later than the current date
-    if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
-            LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
-        String mensaje = "No earlier date than the current date is possible";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
-    if (calendarEvent.getDate().isBefore(LocalDate.now())||calendarEvent.getDate().equals(LocalDate.now())){
-        if (cEUpdateDTO.getPaid().contains("1")){
-            calendarEvent.setPaid(true);
+    //token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            String mensaje = "Token error";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
         }
-        calendarEvent.setDescription(cEUpdateDTO.getDescription());
-        calendarEventRepository.save(calendarEvent);
-        return ResponseEntity.ok(calendarEvent);
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+        //verify data of dto
+        if(!calendarEventService.VerifyCalendarEventUpdateDTO(cEUpdateDTO)||
+                !calendarEventService.verifyInteger(cEUpdateDTO.getIdCalendarEvent())) {
+            String mensaje = "Form error";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+        //get calendar event objet
+        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
+
+        //validation, the user must be on the formation and the rol must be owner,President, or director musical
+        List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
+                        userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
+                .collect(Collectors.toList()).stream().filter(userFormationRole
+                        -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
+
+        if (formationRoleList.isEmpty()){
+            String mensaje = "You cannot update events";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //validation the date must be later than the current date
+        if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
+                LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
+            String mensaje = "No earlier date than the current date is possible";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
+        if (calendarEvent.getDate().isBefore(LocalDate.now())||calendarEvent.getDate().equals(LocalDate.now())){
+            if (cEUpdateDTO.getPaid().contains("1")){
+                calendarEvent.setPaid(true);
+            }
+            calendarEvent.setDescription(cEUpdateDTO.getDescription());
+            calendarEventRepository.save(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        }
+
+        //si no ha sucedido
+        if (calendarEvent.getDate().isAfter(LocalDate.now())){
+            boolean pagado = false;
+            if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
+            calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
+            calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
+            calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
+            calendarEvent.setDescription(cEUpdateDTO.getDescription());
+            calendarEvent.setPaid(pagado);
+            calendarEvent.setPlace(cEUpdateDTO.getPlace());
+            calendarEvent.setTitle(cEUpdateDTO.getTitle());
+            calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
+            calendarEventRepository.save(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        }
+
+
+        String mensaje = "Something wron";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
     }
 
-    //si no ha sucedido
-    if (calendarEvent.getDate().isAfter(LocalDate.now())){
-        boolean pagado = false;
-        if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
-        calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
-        calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
-        calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
-        calendarEvent.setDescription(cEUpdateDTO.getDescription());
-        calendarEvent.setPaid(pagado);
-        calendarEvent.setPlace(cEUpdateDTO.getPlace());
-        calendarEvent.setTitle(cEUpdateDTO.getTitle());
-        calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
-        calendarEventRepository.save(calendarEvent);
-        return ResponseEntity.ok(calendarEvent);
-    }
-
-
-    String mensaje = "Something wron";
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-}
-
-    //para el update, dos tipos, si aun no ha sucedido el evento, y modificar los campos,
-    //si ha sucedido, solo se puede modificar la descripcion y si no está pagado a pagado
 }
