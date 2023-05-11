@@ -11,6 +11,7 @@ import com.example.solfamidasback.repository.UserFormationRoleRepository;
 import com.example.solfamidasback.repository.UserRepository;
 import com.example.solfamidasback.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,8 +50,9 @@ public class RoleController {
     @Operation(summary = "Retrieve a list of roles",
             description = "The response is a list of Role Objects")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = Role.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @GetMapping("/list/{idFormation}")
     public ResponseEntity<List<Role>> list(@PathVariable Integer idFormation,
@@ -74,11 +76,11 @@ public class RoleController {
     }
 
     @Operation(summary = "Create a role in a formation",
-            description = "Create role of an user in a formation",
-            tags = {"type"})
+            description = "Create role of an user in a formation")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @PostMapping("/create/{idFormation}")
     public ResponseEntity<Role> createRole(@RequestBody RoleDTO roleDTO, HttpServletRequest request,
@@ -102,10 +104,9 @@ public class RoleController {
 
 
     @Operation(summary = "Change the status of a role to false",
-            description = "Change an user rol from a formation to active is false",
-            tags = {"id"})
+            description = "Change an user rol from a formation to active is false")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 

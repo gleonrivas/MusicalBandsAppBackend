@@ -6,6 +6,7 @@ import com.example.solfamidasback.model.MusicalPiece;
 import com.example.solfamidasback.model.Repertory;
 import com.example.solfamidasback.service.RepertoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,7 +31,7 @@ public class RepertoryController {
     @Operation(summary = "Retrieve a repertory",
             description = "The response is a repertory by his id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = RepertoryDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{id}")
@@ -49,8 +50,9 @@ public class RepertoryController {
     @Operation(summary = "Retrieve a list of repertories",
             description = "The response is a list of repertory")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = RepertoryDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @GetMapping("")
     public ResponseEntity<List<RepertoryDTO>> listRepertory() {
@@ -66,8 +68,9 @@ public class RepertoryController {
     @Operation(summary = "Retrieve a list of repertory",
             description = "The response is a list of repertory by id Formation")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = RepertoryDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
     })
     @GetMapping("list/{idFormation}")
     public ResponseEntity<List<RepertoryDTO>> listRepertoryByIdFormation(@PathVariable Integer idFormation) {
@@ -112,7 +115,7 @@ public class RepertoryController {
     @Operation(summary = "Delete a repertory by id",
             description = "Delete a repertory piece by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Repertory.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
 
