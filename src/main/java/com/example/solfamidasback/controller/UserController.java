@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.configSecurity.driveCredentials.GoogleDriveBasic;
 import com.example.solfamidasback.controller.DTO.PasswordDTO;
 import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -133,13 +135,16 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<Users> profile(HttpServletRequest request){
+    public ResponseEntity<Users> profile(HttpServletRequest request) throws IOException {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
+        GoogleDriveBasic driveBasic = new GoogleDriveBasic();
+        driveBasic.getURL();
+        driveBasic.uploadTextFile("../src/main/java/com/example/solfamidasback/configSecurity/driveCredentials/a.png", "a");
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
     }
 
