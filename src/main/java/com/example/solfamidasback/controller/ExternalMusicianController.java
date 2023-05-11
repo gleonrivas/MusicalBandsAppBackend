@@ -5,6 +5,7 @@ import com.example.solfamidasback.controller.DTO.ExternalMusicianUpdateDTO;
 import com.example.solfamidasback.model.ExternalMusician;
 import com.example.solfamidasback.service.ExternalMusicianService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,7 @@ public class ExternalMusicianController {
     @Operation(summary = "Retrieve a external musician by calendar id",
             description = "The response is a external musician Objects")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = ExternalMusician.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/findByCalendar/{calendarId}")
@@ -46,7 +47,7 @@ public class ExternalMusicianController {
     @Operation(summary = "Retrieve a external musician by name",
             description = "The response is a external musician Objects")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = ExternalMusician.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/{name}")
@@ -100,7 +101,7 @@ public class ExternalMusicianController {
     @Operation(summary = "Retrieve a message",
             description = "the external musician is deletec")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PatchMapping("/{id}")
