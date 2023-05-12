@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RepertoryService {
@@ -30,10 +31,10 @@ public class RepertoryService {
                 repertoryDTOList.add(repertoryConverter.toDTO(repertory));
             }
         }
-        List<RepertoryDTO> repertoryDTOSortedList = repertoryDTOList.stream().sorted(Comparator.comparing(RepertoryDTO::getId)).toList();
 
-
-        return repertoryDTOSortedList;
+        return repertoryDTOList.stream()
+                .sorted(Comparator.comparing(RepertoryDTO::getId).reversed())
+                .collect(Collectors.toList());
     }
 
     public List<RepertoryDTO> findById() {
