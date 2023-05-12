@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class MusicalPieceController {
     private RepertoryRepository repertoryRepository;
 
     @Operation(summary = "Retrieve a list of musical Piece",
-            description = "The response is a list of Musical Pieces")
+            description = "The response is a list of Musical Pieces",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -55,7 +57,8 @@ public class MusicalPieceController {
         return new ResponseEntity(musicalPieceDTOList,httpHeaders, HttpStatus.OK);
     }
     @Operation(summary = "Retrieve a list of musical Piece",
-            description = "The response is a list of Musical Pieces")
+            description = "The response is a list of Musical Pieces",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -76,7 +79,8 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by name",
-            description = "The response is a list of Musical Pieces")
+            description = "The response is a list of Musical Pieces",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -97,7 +101,8 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Retrieve a musical Piece by author",
-            description = "The response is a list of Musical Pieces")
+            description = "The response is a list of Musical Pieces",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = MusicalPieceDTO.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -117,7 +122,8 @@ public class MusicalPieceController {
 
     }
     @Operation(summary = "Create a musical piece",
-            description = "Create a musical piece")
+            description = "Create a musical piece",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -141,7 +147,8 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Update a musical Piece",
-            description = "Uptate a musical Piece")
+            description = "Uptate a musical Piece",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = MusicalPiece.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -160,7 +167,8 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id")
+            description = "Delete a musical piece by id",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -175,7 +183,8 @@ public class MusicalPieceController {
     }
 
     @Operation(summary = "Delete a musical piece by id",
-            description = "Delete a musical piece by id")
+            description = "Delete a musical piece by id",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
