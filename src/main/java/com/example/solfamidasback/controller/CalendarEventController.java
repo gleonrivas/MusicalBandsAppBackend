@@ -382,4 +382,41 @@ public class CalendarEventController {
         return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
     }
 
+    @Operation(summary = "Retrieve a list of calendar events for the user",
+            description = "The response is a list of Calendar Event Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
+    })
+    @GetMapping("TodayEventByFormation/{formationId}")
+    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@PathVariable Integer formationId, HttpServletRequest request) {
+
+        //token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        } catch (Exception e) {
+            String mensaje = "Token error";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+        }
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail = jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+        //filter the list of caledar event by list of user by formation
+        List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
+                        calendarEvent.getFormation().getId().equals(formationId)).collect(Collectors.toList());
+        if(calendarEventList.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        return ResponseEntity.ok(calendarEventList);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.CalendarEventRepository;
@@ -22,10 +23,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Tag(name = "Absence", description = "Absence crud")
@@ -35,38 +40,14 @@ public class AbsenceController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    CalendarEventRepository calendarEventRepository;
+
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
     @Autowired
     private JwtService jwtService;
 
-    @Operation(summary = "Retrieve a list of calendar events for the user",
-            description = "The response is a list of Calendar Event Objects",
-            security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
-    })
-    @GetMapping("EventToList")
-    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request) {
 
-        //token validation
-        try {
-            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-        } catch (Exception e) {
-            String mensaje = "Token error";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
-        }
-
-        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-        String mail = jwtService.extractUsername(jwtToken);
-        Users user = userRepository.findByEmailAndActiveTrue(mail);
-
-
-
-        return null;
-    }
 
 }
