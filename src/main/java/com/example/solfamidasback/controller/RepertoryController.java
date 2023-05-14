@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.DTO.RepertoryDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.MusicalPiece;
@@ -131,7 +132,7 @@ public class RepertoryController {
         repertoryService.modifyActive(idRepertory);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("the repertory has been deleted",httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("the repertory has been deleted"),httpHeaders, HttpStatus.OK);
     }
 
 

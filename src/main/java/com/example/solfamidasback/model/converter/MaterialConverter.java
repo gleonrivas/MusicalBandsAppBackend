@@ -21,9 +21,9 @@ public class MaterialConverter implements IMaterialConverter {
     public MaterialDTO toDTO(Material material) {
 
         MaterialDTO materialDTO = new MaterialDTO();
-        materialDTO.setId(materialDTO.getId());
+        materialDTO.setId(material.getId());
         materialDTO.setTransferredMaterial(material.getTransferredMaterial());
-        materialDTO.setFullDate(String.valueOf(material.getFullDate()));
+        materialDTO.setFullDate(String.valueOf(material.getFullDate().toLocalDate()));
         materialDTO.setMaterialType(material.getMaterialType().ordinal());
         materialDTO.setIdFormation(material.getFormation().getId());
 

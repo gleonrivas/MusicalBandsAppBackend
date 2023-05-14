@@ -3,10 +3,14 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialDTO;
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialUpdateDTO;
 import com.example.solfamidasback.controller.DTO.MaterialDTO;
+import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Material;
 import com.example.solfamidasback.model.Users;
+import com.example.solfamidasback.model.converter.MaterialConverter;
+import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.MaterialRepository;
 import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.service.FormationService;
 import com.example.solfamidasback.service.MaterialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +39,10 @@ public class MaterialController {
     UserRepository userRepository;
     @Autowired
     MaterialService materialService;
+    @Autowired
+    FormationRepository formationRepository;
+    @Autowired
+    MaterialConverter materialConverter;
 
     @Operation(summary = "creates a borrowed material indicating the material id and the user id",
             description = "The response is a String if an error has been created or raised")
@@ -181,6 +190,30 @@ public class MaterialController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(result,httpHeaders, HttpStatus.OK);
     }
+
+    @Operation(summary = "Receive list of materials",
+            description = "Receive all the materials of a formation using the id of the formation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MaterialDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
+    @GetMapping("/listMaterialIdFormation/{idFormation}")
+    public ResponseEntity<List<MaterialDTO>> getListMaterialIdFormation(@PathVariable Integer idFormation){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+        List<MaterialDTO> listMaterialDTO = new ArrayList<>();
+        if (formation != null){
+            List<Material> listMaterial = materialRepository.getAllByIdFormation(idFormation);
+            for (Material material : listMaterial){
+            MaterialDTO materialDTO = materialConverter.toDTO(material);
+            listMaterialDTO.add(materialDTO);
+            }
+        }
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
+    }
+
 
 
 
