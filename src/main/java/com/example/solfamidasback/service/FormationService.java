@@ -1,6 +1,9 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
+import com.example.solfamidasback.model.DTO.RepertoryDTO;
+import com.example.solfamidasback.model.DTO.RoleDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
@@ -13,7 +16,7 @@ import com.example.solfamidasback.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FormationService {
@@ -27,6 +30,7 @@ public class FormationService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     public String deleteUserFormation(Integer formationID, Integer userId){
 
@@ -72,6 +76,29 @@ public class FormationService {
             userFormationRoleRepository.save(userFormationRole);
             return "you have been added succesfully";
         }
+    }
+
+    public List<UsersFormationRoleDTO> listUsersByFormation(Integer idFormation){
+        //buscar usuarios por formacion
+        List<Users> userList = userRepository.getUsersByFormation(idFormation);
+        //no se repiten
+        Set<Users> usersSet = new HashSet<>(userList);
+        userList = new ArrayList<>(usersSet);
+        //ordenarlos
+        List<Users> userFinalList = userList.stream().sorted(Comparator.comparing(Users::getId)).toList();
+        List<UsersFormationRoleDTO> usersFormationRoleDTOList= new ArrayList<>();
+        //rellenar userFormationRoleDTOList
+        for(Users user:userFinalList){
+            Set<Integer> roleTypeSet = userFormationRoleRepository.rolesByFormation(idFormation, user.getId());
+            List<Integer> roleTypeList = new ArrayList<>(roleTypeSet);
+            EnumRolUserFormation[] enumRolUserFormationList =  EnumRolUserFormation.values();
+            List<RoleDTO> roleDTOList = new ArrayList<>();
+            roleTypeList.stream().forEach(i -> roleDTOList.add(new RoleDTO(enumRolUserFormationList[i])));
+            UsersFormationRoleDTO usersFormationRoleDTO = new UsersFormationRoleDTO(user.getId(),user.getName(),
+                    user.getSurName(),user.getEmail(),"", roleDTOList);
+            usersFormationRoleDTOList.add(usersFormationRoleDTO);
+        }
+        return usersFormationRoleDTOList;
     }
 
 
