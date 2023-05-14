@@ -338,9 +338,7 @@ public class CalendarEventController {
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot update events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
         //validation the date must be later than the current date
@@ -391,17 +389,20 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("TodayEventByFormation/{formationId}")
-    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@PathVariable Integer formationId, HttpServletRequest request) {
+    @GetMapping("TodayEventByFormation")
+    public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@RequestBody FormationIdDTO formationId, HttpServletRequest request) {
 
         //token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         } catch (Exception e) {
-            String mensaje = "Token error";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje, headers, HttpStatus.BAD_REQUEST);
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        if(!calendarEventService.verifyInteger(formationId.getFormationId())){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Error formationId");
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -410,12 +411,13 @@ public class CalendarEventController {
 
         //filter the list of caledar event by list of user by formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                        calendarEvent.getFormation().getId().equals(formationId)).collect(Collectors.toList());
+                        user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList()).stream()
+                .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).
+                collect(Collectors.toList()).stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDate.now())).collect(Collectors.toList());
+
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
         return ResponseEntity.ok(calendarEventList);
