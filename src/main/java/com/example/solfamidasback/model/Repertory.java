@@ -42,6 +42,9 @@ public class Repertory {
             inverseJoinColumns = @JoinColumn(name = "musical_piece_id"))
     Set<MusicalPiece> musicalPieceSet;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "calendar_event_id", referencedColumnName = "id")
+    private CalendarEvent calendarEvent;
 
 
 }

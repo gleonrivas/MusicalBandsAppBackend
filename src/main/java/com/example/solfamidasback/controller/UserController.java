@@ -149,7 +149,7 @@ public class UserController {
         userSession.setName(user.getName());
         userSession.setSurName(user.getSurName());
         userSession.setEmail(user.getEmail());
-        userSession.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
+        userSession.setBirthDate(user.getBirthDate() != null ? LocalDate.parse(user.getBirthDate()).atStartOfDay() : null);
         userSession.setDni(user.getDni());
         userSession.setUrl(DropboxConfig.UploadFile(user.getUrl(), user.getEmail()));
 

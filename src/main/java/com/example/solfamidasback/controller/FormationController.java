@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
+import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -72,7 +74,8 @@ public class FormationController {
 
 
     @Operation(summary = "Retrieve a list of formation by user id",
-            description = "The response is a list of Formation Objects")
+            description = "The response is a list of Formation Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = Formation.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -91,7 +94,8 @@ public class FormationController {
 
     }
     @Operation(summary = "Retrieve a list of formation by owner",
-            description = "The response is a list of Formation Objects")
+            description = "The response is a list of Formation Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = Formation.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -108,7 +112,8 @@ public class FormationController {
 
     }
     @Operation(summary = "Retrieve a formation by id",
-            description = "The response is a Formation Objects")
+            description = "The response is a Formation Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -121,7 +126,8 @@ public class FormationController {
 
 
     @Operation(summary = "Create a formation",
-            description = "Create formation with user_id as administrator of the formation")
+            description = "Create formation with user_id as administrator of the formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -157,7 +163,8 @@ public class FormationController {
         return ResponseEntity.ok(formation);
     }
     @Operation(summary = "Update a formation by id",
-            description = "Uptate a formation by id ")
+            description = "Uptate a formation by id ",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Formation.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -183,7 +190,8 @@ public class FormationController {
     }
 
     @Operation(summary = "Delete a formation by id",
-            description = "Delete a formation by id")
+            description = "Delete a formation by id",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -199,7 +207,8 @@ public class FormationController {
     }
 
     @Operation(summary = "Delete a user from a formation",
-            description = "Delete a user from a formation")
+            description = "Delete a user from a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -214,7 +223,8 @@ public class FormationController {
     }
 
     @Operation(summary = "Insert a user in a formation",
-            description = "Insert a user in a formation")
+            description = "Insert a user in a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -228,7 +238,8 @@ public class FormationController {
 
     }
     @Operation(summary = "Search a formation by name",
-            description = "Search a formation by name")
+            description = "Search a formation by name",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = Formation.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -243,7 +254,8 @@ public class FormationController {
     }
 
     @Operation(summary = "Insert an user in a formation by a invitation link",
-            description = "Insert an user in a formation by a invitation link")
+            description = "Insert an user in a formation by a invitation link",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -263,6 +275,36 @@ public class FormationController {
 
     }
 
+
+    @Operation(summary = "List the users of a formation",
+            description = "List the users of a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = UsersFormationRoleDTO.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/listUsers/{idFormation}")
+    public ResponseEntity<List<UsersFormationRoleDTO>> usersByAFormation(@NotNull @PathVariable Integer idFormation){
+        List<UsersFormationRoleDTO> usersList = formationService.listUsersByFormation(idFormation);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(usersList,headers, HttpStatus.OK);
+
+    }
+
+
+    @Operation(summary = "Retrieve a formation by invitation link",
+            description = "The response is a Formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = FormationDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/findByInvitationLink")
+    public ResponseEntity<FormationDTO> formationByInvitationLink(@NotNull @RequestBody  InvitationLinkDTO invitationLinkDTO) {
+        FormationDTO formation = formationService.findByInvitationLink(invitationLinkDTO.getLink());
+        return ResponseEntity.ok(formation);
+    }
 
 
 }

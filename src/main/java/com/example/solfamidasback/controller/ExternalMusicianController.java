@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class ExternalMusicianController {
     ExternalMusicianService externalMusicianService;
 
     @Operation(summary = "Retrieve a external musician by calendar id",
-            description = "The response is a external musician Objects")
+            description = "The response is a external musician Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = ExternalMusician.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -45,7 +47,8 @@ public class ExternalMusicianController {
     }
 
     @Operation(summary = "Retrieve a external musician by name",
-            description = "The response is a external musician Objects")
+            description = "The response is a external musician Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = ExternalMusician.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -59,7 +62,8 @@ public class ExternalMusicianController {
 
     }
     @Operation(summary = "Retrieve a external musician by id",
-            description = "The response is a external musician Objects")
+            description = "The response is a external musician Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -73,7 +77,8 @@ public class ExternalMusicianController {
 
     }
     @Operation(summary = "Retrieve a external musician created",
-            description = "The response is a external musician Object")
+            description = "The response is a external musician Object",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -86,7 +91,8 @@ public class ExternalMusicianController {
         return new ResponseEntity(externalMusician,httpHeaders, HttpStatus.OK);
     }
     @Operation(summary = "Retrieve a external musician updated",
-            description = "The response is a external musician Object")
+            description = "The response is a external musician Object",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ExternalMusician.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -99,7 +105,8 @@ public class ExternalMusicianController {
         return new ResponseEntity(externalMusician,httpHeaders, HttpStatus.OK);
     }
     @Operation(summary = "Retrieve a message",
-            description = "the external musician is deletec")
+            description = "the external musician is deletec",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),

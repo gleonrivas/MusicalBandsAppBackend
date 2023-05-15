@@ -38,4 +38,8 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     @Query(value = "delete from borrowed_material where id_material = ? and id_users = ?", nativeQuery = true)
     void deleteBorrowedMaterial(@Param("id_material")Integer materialId,@Param("id_users")Integer userId );
 
+
+    @Query(value = "select * from material m where id_formation = ? and active = true", nativeQuery = true)
+    List<Material> getAllByIdFormation(@Param("id_formation")Integer formationID);
+
 }

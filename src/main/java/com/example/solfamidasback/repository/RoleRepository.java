@@ -1,9 +1,12 @@
 package com.example.solfamidasback.repository;
 
+import com.example.solfamidasback.model.DTO.RoleDTO;
 import com.example.solfamidasback.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role,Integer> {
@@ -11,6 +14,7 @@ public interface RoleRepository extends JpaRepository<Role,Integer> {
     Role findFirstOrderByIdDesc();
 
     Role findByActiveIsTrueAndId(Integer id);
+
 
 
 }

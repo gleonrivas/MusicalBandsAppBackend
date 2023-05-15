@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.FormationRoleUserDTO;
 import com.example.solfamidasback.model.DTO.RoleDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,8 @@ public class RoleController {
     private FormationRepository formationRepository;
 
     @Operation(summary = "Retrieve a list of roles",
-            description = "The response is a list of Role Objects")
+            description = "The response is a list of Role Objects",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = Role.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -76,26 +79,24 @@ public class RoleController {
     }
 
     @Operation(summary = "Create a role in a formation",
-            description = "Create role of an user in a formation")
+            description = "Create role of an user in a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = Role.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
 
     })
-    @PostMapping("/create/{idFormation}")
-    public ResponseEntity<Role> createRole(@RequestBody RoleDTO roleDTO, HttpServletRequest request,
-                                           @PathVariable Integer idFormation) {
+    @PostMapping("/create")
+    public ResponseEntity<Role> createRole(@RequestBody FormationRoleUserDTO roleUserFormationDTO) {
         //buscar el user
-        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-        String mail =  jwtService.extractUsername(jwtToken);
-        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
         //crear rol
-        Role role = new Role(true,roleDTO.getType());
+        Role role = new Role(true,roleUserFormationDTO.getType());
         roleRepository.save(role);
         role = roleRepository.findFirstOrderByIdDesc();
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
         //crear relacion
-        UserFormationRole userFormationRole= new UserFormationRole(user,formation,role);
+        UserFormationRole userFormationRole= new UserFormationRole(user,formation,role,true);
         userFormationRoleRepository.save(userFormationRole);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -104,7 +105,8 @@ public class RoleController {
 
 
     @Operation(summary = "Change the status of a role to false",
-            description = "Change an user rol from a formation to active is false")
+            description = "Change an user rol from a formation to active is false",
+            security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),

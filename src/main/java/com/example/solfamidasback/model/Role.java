@@ -36,4 +36,10 @@ public class Role {
         this.active = active;
         this.type = type;
     }
+
+    public Role(Integer id, boolean active, EnumRolUserFormation type) {
+        this.id = id;
+        this.active = active;
+        this.type = type;
+    }
 }
