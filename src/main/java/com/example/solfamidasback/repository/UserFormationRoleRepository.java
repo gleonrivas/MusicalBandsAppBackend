@@ -1,5 +1,7 @@
 package com.example.solfamidasback.repository;
 
+import com.example.solfamidasback.model.DTO.RoleDTO;
+import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Repository
@@ -19,6 +22,12 @@ public interface UserFormationRoleRepository extends JpaRepository<UserFormation
             " where id_formation = ? and id_user = ?", nativeQuery = true)
     List<Integer> idRolByFormationAndUser(@Param("id_formation") Integer id_formation,
                                           @Param("id_user") Integer id_user);
+
+    @Query(value = "select  r.type  from role r join user_formation_role ufr on ufr.id_role  = r.id\n" +
+            "join users u  on u.id =ufr.id_user  \n" +
+            "where ufr.id_formation =? and u.id =? and ufr.active =true and r.active =true", nativeQuery = true)
+    Set<Integer> rolesByFormation(@Param("id_formation") Integer id_formation,
+                               @Param("id") Integer id_user);
 
     @Transactional
     @Modifying

@@ -1,4 +1,4 @@
-package com.example.solfamidasback.model.DTO;
+package com.example.solfamidasback.controller.DTO;
 
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleDTO {
-    private EnumRolUserFormation type;
-
+public class FormationRoleUserDTO {
+    EnumRolUserFormation type;
+    Integer userId;
+    Integer formationId;
 }

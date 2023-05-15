@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
+import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -273,6 +274,24 @@ public class FormationController {
         return new ResponseEntity(responseDTO,headers, HttpStatus.OK);
 
     }
+
+
+    @Operation(summary = "List the users of a formation",
+            description = "List the users of a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = UsersFormationRoleDTO.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/listUsers/{idFormation}")
+    public ResponseEntity<List<UsersFormationRoleDTO>> usersByAFormation(@NotNull @PathVariable Integer idFormation){
+        List<UsersFormationRoleDTO> usersList = formationService.listUsersByFormation(idFormation);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(usersList,headers, HttpStatus.OK);
+
+    }
+
 
 
 
