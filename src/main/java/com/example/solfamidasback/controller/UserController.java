@@ -1,6 +1,8 @@
 package com.example.solfamidasback.controller;
 
+import com.dropbox.core.DbxException;
 import com.example.solfamidasback.configSecurity.driveCredentials.GoogleDriveBasic;
+import com.example.solfamidasback.configSecurity.dropbox.DropboxConfig;
 import com.example.solfamidasback.controller.DTO.PasswordDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
@@ -138,7 +140,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/editProfile")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request){
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request ) throws DbxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -149,6 +151,8 @@ public class UserController {
         userSession.setEmail(user.getEmail());
         userSession.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
         userSession.setDni(user.getDni());
+        userSession.setUrl(DropboxConfig.UploadFile(user.getUrl(), user.getEmail()));
+
 
         userRepository.save(userSession);
         return new ResponseEntity("user edited successfully",headers, HttpStatus.OK);
