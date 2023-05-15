@@ -65,9 +65,9 @@ public class AbsenceController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @PostMapping("RegisterAbsence")
-    public ResponseEntity<CalendarEvent> listAllMyEvents(@RequestBody RegisterAbsenceDTO registerAbsenceDTO, HttpServletRequest request) {
+    public ResponseEntity<List<Absence>> listAllMyEvents(@RequestBody RegisterAbsenceDTO registerAbsenceDTO, HttpServletRequest request) {
 
-
+        List<Absence> absenceList = new ArrayList<>();
         //token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -91,6 +91,19 @@ public class AbsenceController {
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("Data error");
                 return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
             }
+        }
+
+        //validar que no se repite ningun usuario
+
+        for(int i=1,z=0;i<=registerAbsenceDTO.getListOfUserId().size()-1;i++){
+            if(i<=z)i=z+1;
+            if(Integer.parseInt(registerAbsenceDTO.getListOfUserId().get(i))==Integer.parseInt(registerAbsenceDTO.getListOfUserId().get(z))){
+                ResponseStringDTO responseStringDTO = new ResponseStringDTO("There are repeated users");
+                return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+            }
+            if(i==registerAbsenceDTO.getListOfUserId().size()-1)z++;
+            if(i==registerAbsenceDTO.getListOfUserId().size()-1)i=z;
+
         }
         // validacion de que el usuario que registra pertenece a la formacion del evento y su rol es correcto
 
@@ -117,7 +130,7 @@ public class AbsenceController {
             List<UserFormationRole> userFormationRoles = u.getUserFormationRole().stream().filter(userFormationRole ->
                     userFormationRole.getFormation().equals(calendarEvent.getFormation())).collect(Collectors.toList());
 
-            if(userFormationRoles.size()!=registerAbsenceDTO.getListOfUserId().size()){
+            if(userFormationRoles.isEmpty()){
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("There is a user who does not belong to the formation");
                 return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
             }
@@ -131,14 +144,9 @@ public class AbsenceController {
             absence.setFullDate(LocalDateTime.now());
             absence.setUsers(userRepository.getReferenceById(Integer.parseInt(s)));
             absenceRepository.save(absence);
+            absenceList.add(absence);
         }
-
-
-
-
-
-
-        return null;
+        return ResponseEntity.ok(absenceList);
     }
 
 }
