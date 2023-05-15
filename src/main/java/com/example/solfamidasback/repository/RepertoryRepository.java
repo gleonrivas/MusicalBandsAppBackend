@@ -1,5 +1,6 @@
 package com.example.solfamidasback.repository;
 
+import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Repertory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +17,7 @@ public interface RepertoryRepository extends JpaRepository<Repertory,Integer> {
     Set<Repertory> findAllByActiveIsTrue();
 
     Repertory findByIdAndActiveIsTrue(Integer id);
+
+    Repertory findByActiveIsTrueAndCalendarEvent(CalendarEvent calendar);
 
 }
