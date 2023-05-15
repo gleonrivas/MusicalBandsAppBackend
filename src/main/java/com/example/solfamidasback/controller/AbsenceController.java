@@ -1,10 +1,12 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.CalendarEventIdDTO;
 import com.example.solfamidasback.controller.DTO.FormationIdDTO;
 import com.example.solfamidasback.controller.DTO.RegisterAbsenceDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.Absence;
 import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
@@ -30,7 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.solfamidasback.model.DTO.UserConverter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class AbsenceController {
     @Autowired UserFormationRoleRepository userFormationRoleRepository;
 
     @Autowired AbsenceRepository absenceRepository;
+
+    @Autowired UserConverter userConverter;
 
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
@@ -91,6 +95,9 @@ public class AbsenceController {
                 return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
             }
         }
+        // validar que los usuarios no esten ya registrados
+
+
 
         //validar que no se repite ningun usuario
 
@@ -163,7 +170,7 @@ public class AbsenceController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @PostMapping("SeeUsersAbsense")
-    public ResponseEntity<List<Users>> usersAbsenceOnCalendarEvent(@RequestBody RegisterAbsenceDTO registerAbsenceDTO, HttpServletRequest request) {
+    public ResponseEntity<List<UserDTO>> usersAbsenceOnCalendarEvent(@RequestBody CalendarEventIdDTO calendarEventIdDTO, HttpServletRequest request) {
 
         List<Absence> absenceList = new ArrayList<>();
         //token validation
@@ -178,7 +185,35 @@ public class AbsenceController {
         String mail = jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
+        //sanear la entrada
+        if (!calendarEventService.verifyInteger(calendarEventIdDTO.getCalendarEventId())){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
 
-        return null;
+        //verificar que el usuario pertenece a la formacion
+        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventIdDTO.getCalendarEventId()));
+        List<UserFormationRole> userFormationRole = user.getUserFormationRole().stream().filter(userFormationRole1 ->
+                userFormationRole1.getFormation().equals(calendarEvent.getFormation())).collect(Collectors.toList());
+        if (userFormationRole.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        //buscar los ausentes a ese dia
+        List<Absence> absences = absenceRepository.findAll().stream().filter(absence -> absence.getCalendar().getId().equals(calendarEvent.getId())).collect(Collectors.toList());
+
+        if (absences.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Nobody absence");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (Absence a:absences){
+            UserDTO userDTO = userConverter.toDTO(a.getUsers());
+            userDTOList.add(userDTO);
+        }
+
+        return ResponseEntity.ok(userDTOList);
     }
 }
