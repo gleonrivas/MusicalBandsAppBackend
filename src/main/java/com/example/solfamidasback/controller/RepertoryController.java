@@ -128,7 +128,7 @@ public class RepertoryController {
     })
 
     @DeleteMapping("/delete/{idRepertory}")
-    public ResponseEntity<String> deleteFormation(@PathVariable Integer idRepertory) {
+    public ResponseEntity<String> deleteRepertory(@PathVariable Integer idRepertory) {
         repertoryService.modifyActive(idRepertory);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
