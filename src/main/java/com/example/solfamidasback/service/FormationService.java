@@ -1,6 +1,7 @@
 package com.example.solfamidasback.service;
 
 import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
+import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.DTO.RepertoryDTO;
 import com.example.solfamidasback.model.DTO.RoleDTO;
@@ -99,6 +100,24 @@ public class FormationService {
             usersFormationRoleDTOList.add(usersFormationRoleDTO);
         }
         return usersFormationRoleDTOList;
+    }
+
+    public FormationDTO findByInvitationLink(String invitationLink){
+        Formation formation = formationRepository.findByLinkAndActiveIsTrue(invitationLink);
+        FormationDTO formationDTO = new FormationDTO();
+        if(formation!= null){
+            formationDTO.setName(formation.getName());
+            formationDTO.setDesignation(formation.getDesignation());
+            formationDTO.setType(formation.getType());
+            if (formation.getFundationDate() != null) {
+                formationDTO.setFundationDate(formation.getFundationDate().toString());
+            }
+            formationDTO.setLogo(formation.getLogo());
+            return formationDTO;
+        }else{
+            return formationDTO;
+        }
+
     }
 
 
