@@ -43,9 +43,10 @@ public class ExternalMusician {
     private String bankAccount;
     @Column(name = "amount", length = 150)
     private Integer amount;
-
     @Column(name = "active", length = 150)
     private boolean active = true;
+    @Column(name = "paid")
+    private boolean paid = false;
 
 
 }

@@ -42,5 +42,8 @@ public interface UserFormationRoleRepository extends JpaRepository<UserFormation
 
     boolean existsUserFormationRoleByActiveFalseAndUsersIdAndFormationId(Integer userId, Integer formationId);
 
+    @Query(value = "select count(id_user) from user_formation_role ufr where id_formation = ? and active = true;", nativeQuery = true)
+    Integer countUsersFormation(@Param("id_formation") Integer formationId);
+
 
 }

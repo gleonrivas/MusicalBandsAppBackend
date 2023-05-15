@@ -23,4 +23,6 @@ public interface ExternalMusicianRepository extends JpaRepository<ExternalMusici
 
     List<ExternalMusician> findAllByCalendarId(Integer calendar);
 
+    ExternalMusician findExternalMusicianByIdAndActiveIsTrue(Integer id);
+
 }

@@ -7,10 +7,7 @@ import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
-import com.example.solfamidasback.repository.FormationRepository;
-import com.example.solfamidasback.repository.RoleRepository;
-import com.example.solfamidasback.repository.UserFormationRoleRepository;
-import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.repository.*;
 import com.example.solfamidasback.service.*;
 import com.example.solfamidasback.utilities.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -58,6 +56,9 @@ public class FormationController {
 
     @Autowired
     private UserFormationRoleRepository userFormationRoleRepository;
+
+    @Autowired
+    private TreasuryRepository treasuryRepository;
 
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
@@ -158,6 +159,13 @@ public class FormationController {
         //crear relación user_formation_role
         UserFormationRole userFormationRole = new UserFormationRole(user, formationCreated, role);
         userFormationRoleRepository.save(userFormationRole);
+        //crear la tesorería
+        Treasury treasury = new Treasury();
+        treasury.setFormation(formation);
+        treasury.setReceiveMoneyDate(LocalDate.now());
+        treasury.setAmount(0.0);
+        treasury.setActive(true);
+        treasuryRepository.save(treasury);
 
         return ResponseEntity.ok(formation);
     }
