@@ -1,5 +1,7 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.controller.DTO.UserUpdateDTO;
+import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,26 @@ public class TreasuryService {
         treasuryRepository.save(treasuryNew);
     }
 
+    public UsersPaidDTO usersPenalty (Users user){
+        //Buscamos todas las ausencias que tiene el usuario
+        List<Absence> absenceList = absenceRepository.getAllByIdUser(user.getId());
+        Double totalPenalty = 0.0;
+        //De todas las ausencias calculamos el porcentaje que se quita del ensayo o bolo
+        for (Absence absence : absenceList){
+            Double amount = absence.getCalendar().getAmount();
+            Double penalty = absence.getCalendar().getPenaltyPonderation();
+            Double total = (amount * penalty) / 100;
+            totalPenalty = total++;
+        }
+
+        UsersPaidDTO usersPaid = new UsersPaidDTO();
+        usersPaid.setName(user.getName());
+        usersPaid.setSubname(user.getSurName());
+        usersPaid.setAmountPenalty(totalPenalty);
+
+        return  usersPaid;
+    }
+
     public Double paidUserFormation (Users users,Formation formation){
         //Buscamos todas las ausencias que tiene el usuario
         List<Absence> absenceList = absenceRepository.getAllByIdUser(users.getId());
@@ -129,6 +151,34 @@ public class TreasuryService {
 
 
         return howMuchBelongPenalty;
+    }
+
+    public List<UsersPaidDTO> calculatePaidFormation (Formation formation){
+        //Obtenemos todos los usuarios activos que tiene la formación
+        List<Integer> idsUsers = userFormationRoleRepository.getAllUsersIdFormation(formation.getId());
+        List<Users> usersList = new ArrayList<>();
+        for (Integer idUser : idsUsers){
+            Users user = userRepository.findByIdAndActiveIsTrue(idUser);
+            usersList.add(user);
+        }
+
+        //Obtenemos la cantidad total que tiene la agrupación
+        Treasury treasuryLast = treasuryRepository.findLastTreasury(formation.getId());
+        Double amountTotal = treasuryLast.getAmount();
+
+        //Obtenemos con cuantos miembros tiene que repartir y la cantidad de la formación
+        Integer totalUsers = usersList.size();
+
+        Double amountTotalPerUsers = amountTotal / totalUsers;
+
+        List<UsersPaidDTO> usersPaids = new ArrayList<>();
+        for (Users user : usersList){
+            UsersPaidDTO u = usersPenalty(user);
+            u.setAmountReceibes(amountTotal - u.getAmountPenalty());
+            usersPaids.add(u);
+        }
+
+         return usersPaids;
     }
 
 

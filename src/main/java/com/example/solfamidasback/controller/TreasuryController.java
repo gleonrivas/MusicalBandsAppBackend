@@ -1,6 +1,7 @@
 package com.example.solfamidasback.controller;
 
 
+import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.PayLowDTO;
 import com.example.solfamidasback.model.ExternalMusician;
@@ -82,4 +83,12 @@ public class TreasuryController {
         return new ResponseEntity(amount,httpHeaders, HttpStatus.OK);
     }
 
+    @PostMapping("/payFormation")
+    public ResponseEntity<List<UsersPaidDTO>> payFormation(@PathVariable Integer idFormation){
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+        List<UsersPaidDTO> usersPaid = treasuryService.calculatePaidFormation(formation);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(usersPaid,httpHeaders, HttpStatus.OK);
+    }
 }
