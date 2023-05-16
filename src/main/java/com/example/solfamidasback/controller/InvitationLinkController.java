@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.InvitationLinkExistDTO;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.service.InvitationLinkService;
@@ -58,6 +59,23 @@ public class InvitationLinkController {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return new ResponseEntity(invitationLinkDTO,headers, HttpStatus.OK);
+    }
+
+    @Operation(summary = "check if an invitation link is actived",
+            description = "check if an invitation link is actived",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = InvitationLinkExistDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/{idFormation}")
+    public ResponseEntity<InvitationLinkExistDTO> checkLink(@NotNull @PathVariable Integer idFormation) {
+
+        InvitationLinkExistDTO response = invitationLinkService.checkIfExist(idFormation);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new ResponseEntity(response,headers, HttpStatus.OK);
     }
 
 
