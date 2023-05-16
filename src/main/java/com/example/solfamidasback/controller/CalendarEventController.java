@@ -100,11 +100,11 @@ public class CalendarEventController {
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
                 userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
-                .collect(Collectors.toList()).stream().filter(userFormationRole
+                .toList().stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).toList();
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot create events");
