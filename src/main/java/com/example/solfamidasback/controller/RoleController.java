@@ -1,5 +1,6 @@
 package com.example.solfamidasback.controller;
 
+import com.example.solfamidasback.controller.DTO.FormationRoleUserDTO;
 import com.example.solfamidasback.model.DTO.RoleDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
@@ -85,20 +86,17 @@ public class RoleController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
 
     })
-    @PostMapping("/create/{idFormation}")
-    public ResponseEntity<Role> createRole(@RequestBody RoleDTO roleDTO, HttpServletRequest request,
-                                           @PathVariable Integer idFormation) {
+    @PostMapping("/create")
+    public ResponseEntity<Role> createRole(@RequestBody FormationRoleUserDTO roleUserFormationDTO) {
         //buscar el user
-        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
-        String mail =  jwtService.extractUsername(jwtToken);
-        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
         //crear rol
-        Role role = new Role(true,roleDTO.getType());
+        Role role = new Role(true,roleUserFormationDTO.getType());
         roleRepository.save(role);
         role = roleRepository.findFirstOrderByIdDesc();
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
         //crear relacion
-        UserFormationRole userFormationRole= new UserFormationRole(user,formation,role);
+        UserFormationRole userFormationRole= new UserFormationRole(user,formation,role,true);
         userFormationRoleRepository.save(userFormationRole);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

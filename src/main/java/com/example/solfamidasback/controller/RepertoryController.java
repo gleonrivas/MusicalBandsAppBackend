@@ -87,6 +87,28 @@ public class RepertoryController {
         return new ResponseEntity(repertoryDTOList,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Retrieve a list of repertory",
+            description = "The response is a list of repertory by id Caledar Event",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content( schema = @Schema(implementation = RepertoryDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+
+    })
+    @GetMapping("list/calendar/{idCalendar}")
+    public ResponseEntity<RepertoryDTO> listRepertoryByIdCalendar(@PathVariable Integer idCalendar) {
+
+        RepertoryDTO repertoryDTO = repertoryService.findByIdCalendar(idCalendar);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        if(repertoryDTO.getId()!= null){
+            return new ResponseEntity(repertoryDTO,httpHeaders, HttpStatus.OK);
+        }else{
+            return new ResponseEntity(repertoryDTO,httpHeaders, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     @Operation(summary = "Creatre a repertory",
             description = "Creatre a repertory",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -128,7 +150,7 @@ public class RepertoryController {
     })
 
     @DeleteMapping("/delete/{idRepertory}")
-    public ResponseEntity<String> deleteFormation(@PathVariable Integer idRepertory) {
+    public ResponseEntity<String> deleteRepertory(@PathVariable Integer idRepertory) {
         repertoryService.modifyActive(idRepertory);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

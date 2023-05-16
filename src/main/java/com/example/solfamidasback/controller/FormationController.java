@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
 import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
+import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -282,6 +283,36 @@ public class FormationController {
 
     }
 
+
+    @Operation(summary = "List the users of a formation",
+            description = "List the users of a formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema( schema = @Schema(implementation = UsersFormationRoleDTO.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/listUsers/{idFormation}")
+    public ResponseEntity<List<UsersFormationRoleDTO>> usersByAFormation(@NotNull @PathVariable Integer idFormation){
+        List<UsersFormationRoleDTO> usersList = formationService.listUsersByFormation(idFormation);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(usersList,headers, HttpStatus.OK);
+
+    }
+
+
+    @Operation(summary = "Retrieve a formation by invitation link",
+            description = "The response is a Formation",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = FormationDTO.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @GetMapping("/findByInvitationLink")
+    public ResponseEntity<FormationDTO> formationByInvitationLink(@NotNull @RequestBody  InvitationLinkDTO invitationLinkDTO) {
+        FormationDTO formation = formationService.findByInvitationLink(invitationLinkDTO.getLink());
+        return ResponseEntity.ok(formation);
+    }
 
 
 }
