@@ -20,7 +20,7 @@ import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.example.solfamidasback.model.Users;
 
 public class DropboxConfig {
-    private static final String ACCESS_TOKEN = "sl.BefJrgpAso81eb2Dm47pZkEfqfAoWYES4jab_WlmJPu_RTFgcKtieJfI-RAYfl5evz6oyRzCPnPAqCDN0_2pGEn7cd5HnnefIaWDlt1w82oX-j9r0dDGYm4d_yhar7O4XQwZbew4wKzC";
+    private static final String ACCESS_TOKEN = "sl.Beiv7DMTZtxMdE-Hq9wlmZAZpUD-hojRv4BHYCpohPImruvoXN85nZlhc6I_FkHwJ2XW_bSSMH0zcN-FPho9xAd-gjtm17H9vaLX-CeLHvf43Jsm-Wzlb50eQ9b6n0fH1QfZCUhtqLCE";
 
     public static void main(String args[]) throws FileNotFoundException, DbxException {
         System.out.println("Hi");
@@ -96,10 +96,10 @@ public class DropboxConfig {
         String[] filename = fileRoute.split("");
         // Upload "test.txt" to Dropbox
         try (InputStream in = new FileInputStream(fileRoute)) {
-            FileMetadata metadata = client.files().uploadBuilder("/Solfamidas/" + email + "/hola.jpg")
+            FileMetadata metadata = client.files().uploadBuilder("/Solfamidas/" + email + "/a.jpg")
                     .uploadAndFinish(in);
 
-            return client.sharing().createSharedLinkWithSettings("/Solfamidas/" + email + "/hola.jpg").getUrl();
+            return client.sharing().createSharedLinkWithSettings("/Solfamidas/" + email + "/a.jpg").getUrl().replace("dl=0", "raw=1");
 
 
         } catch (IOException e) {
