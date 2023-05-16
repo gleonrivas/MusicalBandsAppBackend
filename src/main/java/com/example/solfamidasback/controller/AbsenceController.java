@@ -99,8 +99,16 @@ public class AbsenceController {
 
         // validar que los usuarios no esten ya registrados
         List<Absence> absenceList = absenceRepository.findAll().stream().filter(absence -> absence.getCalendar().getId().equals(calendarEvent.getId())).toList();
-        if(!absenceList.isEmpty()){
+        System.out.println("AAAAAAAAAAA "+absenceList.size());
 
+        if(!absenceList.isEmpty()){
+            for(String s : registerAbsenceDTO.getListOfUserId()){
+                absenceList = absenceList.stream().filter(absence -> absence.getUsers().getId().equals(Integer.parseInt(s))).toList();
+            }
+            if (!absenceList.isEmpty()){
+                ResponseStringDTO responseStringDTO = new ResponseStringDTO("There are already registered users");
+                return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+            }
         }
 
 
@@ -159,7 +167,7 @@ public class AbsenceController {
             absence.setCalendar(calendarEvent);
             absence.setFullDate(LocalDateTime.now());
             absence.setUsers(userRepository.getReferenceById(Integer.parseInt(s)));
-            absenceRepository.save(absence);
+//            absenceRepository.save(absence);
 
         }
         return ResponseEntity.ok(new ResponseStringDTO("Success"));
