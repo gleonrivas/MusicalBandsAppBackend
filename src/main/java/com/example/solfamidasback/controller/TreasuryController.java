@@ -37,9 +37,9 @@ public class TreasuryController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/getAllEvents/{formationId}")
-    public ResponseEntity<List<CalendarEvent>> getAllEvents (@PathVariable Integer idFormation){
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+    @GetMapping("/getAllEvents")
+    public ResponseEntity<List<CalendarEvent>> getAllEvents (@RequestBody PayLowDTO payLowDTO){
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
         List<CalendarEvent> calendarEventList = treasuryService.eventsWithMoney(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

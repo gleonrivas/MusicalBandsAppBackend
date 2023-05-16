@@ -23,6 +23,8 @@ public class TreasuryService {
     UserRepository userRepository;
     @Autowired
     UserFormationRoleRepository userFormationRoleRepository;
+    @Autowired
+    CalendarEventRepository calendarEventRepository;
 
     public Integer moneyAbsence(Formation formation){
         List<CalendarEvent> calendarEvents = formation.getCalendarEvents();
@@ -49,7 +51,7 @@ public class TreasuryService {
     }
 
     public List<CalendarEvent> eventsWithMoney (Formation formation){
-        List<CalendarEvent> listCalendarEvents = formation.getCalendarEvents();
+        List<CalendarEvent> listCalendarEvents = calendarEventRepository.getCalendarFormation(formation.getId());
         List<CalendarEvent> calendarEventsPaid = new ArrayList<>();
         for (CalendarEvent calendarEvent : listCalendarEvents){
             if (calendarEvent.getAmount() > 0){
