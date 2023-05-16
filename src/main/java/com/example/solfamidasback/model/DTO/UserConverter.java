@@ -17,7 +17,7 @@ public class UserConverter  {
         userDTO.setSurName(user.getSurName());
         userDTO.setDni(user.getDni());
         if (user.getBirthDate()!=null) userDTO.setBirthDate(user.getBirthDate().toString());
-
+        if (user.getUrl()!=null) userDTO.setUrl(user.getUrl());
         return userDTO;
     }
 
@@ -30,7 +30,7 @@ public class UserConverter  {
         users.setSurName(user.getSurName());
         users.setDni(user.getDni());
         users.setBirthDate(LocalDate.parse(user.getBirthDate()).atStartOfDay());
-
+        users.setUrl(user.getUrl());
         return users;
     }
 
