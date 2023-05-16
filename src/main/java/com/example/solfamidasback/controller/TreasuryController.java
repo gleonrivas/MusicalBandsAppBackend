@@ -3,7 +3,10 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.DTO.CalendarDTO;
+import com.example.solfamidasback.model.DTO.ExternalMusicianDTO;
 import com.example.solfamidasback.model.DTO.PayLowDTO;
+import com.example.solfamidasback.model.DTO.UserPaidDTO;
 import com.example.solfamidasback.model.ExternalMusician;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Users;
@@ -46,27 +49,27 @@ public class TreasuryController {
         return new ResponseEntity(calendarEventList,httpHeaders, HttpStatus.OK);
     }
 
-    @GetMapping("/getAllExternalMusician/{formationId}")
-    public ResponseEntity<List<ExternalMusician>> getAllExternalMusician (@PathVariable Integer idFormation){
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+    @GetMapping("/getAllExternalMusician")
+    public ResponseEntity<List<ExternalMusician>> getAllExternalMusician (@RequestBody PayLowDTO payLowDTO){
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
         List<ExternalMusician> externalMusicianList = treasuryService.externalMusicianEvents(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(externalMusicianList,httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/payMusician/{externalMusicianId}")
-    public ResponseEntity<ExternalMusician> payExternalMusician(@PathVariable Integer externalMusicianId){
-        ExternalMusician externalMusician = externalMusicianRepository.findExternalMusicianByIdAndActiveIsTrue(externalMusicianId);
+    @PostMapping("/payMusician")
+    public ResponseEntity<ExternalMusician> payExternalMusician(@RequestBody ExternalMusicianDTO externalMusicianDTO){
+        ExternalMusician externalMusician = externalMusicianRepository.findExternalMusicianByIdAndActiveIsTrue(externalMusicianDTO.getExternalMusicianId());
         treasuryService.externalMusicianPaid(externalMusician);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity("Se ha pagado al músico",httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/payEvent/{calendarEventId}")
-    public ResponseEntity<CalendarEvent> payEvent(@PathVariable Integer calendarEventId){
-        CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(calendarEventId);
+    @PostMapping("/payEvent")
+    public ResponseEntity<CalendarEvent> payEvent(@RequestBody CalendarDTO calendarDTO){
+        CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(calendarDTO.getCalendarId());
         treasuryService.calendarEventPaid(calendarEvent);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -74,18 +77,18 @@ public class TreasuryController {
     }
 
     @PostMapping("/payLow")
-    public ResponseEntity<Double> payLowUser(@NotNull @RequestBody PayLowDTO payLowDTO){
+    public ResponseEntity<UserPaidDTO> payLowUser(@NotNull @RequestBody PayLowDTO payLowDTO){
         Users users = userRepository.findByIdAndActiveIsTrue(payLowDTO.getUserId());
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        Double amount = treasuryService.paidUserFormation(users,formation);
+        UserPaidDTO userPaid = treasuryService.paidUserFormation(users,formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(amount,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(userPaid,httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping("/payFormation")
-    public ResponseEntity<List<UsersPaidDTO>> payFormation(@PathVariable Integer idFormation){
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+    public ResponseEntity<List<UsersPaidDTO>> payFormation(@RequestBody PayLowDTO payLowDTO){
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
         List<UsersPaidDTO> usersPaid = treasuryService.calculatePaidFormation(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);

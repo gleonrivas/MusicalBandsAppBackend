@@ -12,6 +12,6 @@ public interface TreasuryRepository extends JpaRepository<Treasury,Integer> {
     @Query(value = "select * from treasury t order by id desc limit 1 ", nativeQuery = true)
     Treasury findLastTreasury();
 
-    @Query(value = "select * from treasury t order by id desc limit 1 and id_formation = ? ", nativeQuery = true)
-    Treasury findLastTreasury(@Param("id_formation")Integer formationId);
+    @Query(value = "select * from treasury t where id_formation = ? order by id desc limit 1 ", nativeQuery = true)
+    Treasury findLastTreasuryPay(@Param("id_formation")Integer formationId);
 }

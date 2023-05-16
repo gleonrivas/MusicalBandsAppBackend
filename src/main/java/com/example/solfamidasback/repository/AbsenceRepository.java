@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface AbsenceRepository extends JpaRepository<Absence,Integer> {
-    @Query(value = "select * absence where id_user = ? ", nativeQuery = true)
+    @Query(value = "select * from absence a where id_user = ?", nativeQuery = true)
     List<Absence> getAllByIdUser(@Param("id_user")Integer userId);
 
 }

@@ -3,10 +3,12 @@ package com.example.solfamidasback.service;
 import com.example.solfamidasback.controller.DTO.UserUpdateDTO;
 import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.*;
+import com.example.solfamidasback.model.DTO.UserPaidDTO;
 import com.example.solfamidasback.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +65,7 @@ public class TreasuryService {
     }
 
     public List<ExternalMusician> externalMusicianEvents (Formation formation){
-        List<CalendarEvent> listCalendarEvents = formation.getCalendarEvents();
+        List<CalendarEvent> listCalendarEvents = calendarEventRepository.getCalendarFormation(formation.getId());;
         List<ExternalMusician> calendarExternalMusician = new ArrayList<>();
         for (CalendarEvent calendarEvent : listCalendarEvents){
             for (ExternalMusician externalMusician : calendarEvent.getExtenalMusicianList()){
@@ -80,7 +82,7 @@ public class TreasuryService {
         Treasury treasuryLast = treasuryRepository.findLastTreasury();
         Treasury treasuryNew = new Treasury();
 
-        treasuryNew.setAmount(treasuryLast.getAmount() - externalMusician.getCalendar().getAmount());
+        treasuryNew.setAmount(treasuryLast.getAmount() - externalMusician.getAmount());
         treasuryNew.setFormation(treasuryLast.getFormation());
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
@@ -100,27 +102,8 @@ public class TreasuryService {
         treasuryRepository.save(treasuryNew);
     }
 
-    public UsersPaidDTO usersPenalty (Users user){
-        //Buscamos todas las ausencias que tiene el usuario
-        List<Absence> absenceList = absenceRepository.getAllByIdUser(user.getId());
-        Double totalPenalty = 0.0;
-        //De todas las ausencias calculamos el porcentaje que se quita del ensayo o bolo
-        for (Absence absence : absenceList){
-            Double amount = absence.getCalendar().getAmount();
-            Double penalty = absence.getCalendar().getPenaltyPonderation();
-            Double total = (amount * penalty) / 100;
-            totalPenalty = total++;
-        }
-
-        UsersPaidDTO usersPaid = new UsersPaidDTO();
-        usersPaid.setName(user.getName());
-        usersPaid.setSubname(user.getSurName());
-        usersPaid.setAmountPenalty(totalPenalty);
-
-        return  usersPaid;
-    }
-
-    public Double paidUserFormation (Users users,Formation formation){
+    public UserPaidDTO paidUserFormation (Users users,Formation formation){
+        UserPaidDTO userPaidDTO = new UserPaidDTO();
         //Buscamos todas las ausencias que tiene el usuario
         List<Absence> absenceList = absenceRepository.getAllByIdUser(users.getId());
         Double totalPenalty = 0.0;
@@ -133,7 +116,7 @@ public class TreasuryService {
         }
 
         //Obtenemos la cantidad total que tiene la agrupación
-        Treasury treasuryLast = treasuryRepository.findLastTreasury(formation.getId());
+        Treasury treasuryLast = treasuryRepository.findLastTreasuryPay(formation.getId());
         Double amountTotal = treasuryLast.getAmount();
 
         //Obtenemos la cantidad total de miembros que tiene la agrupación
@@ -151,8 +134,40 @@ public class TreasuryService {
         treasuryNew.setActive(true);
         treasuryRepository.save(treasuryNew);
 
+        userPaidDTO.setName(users.getName());
+        userPaidDTO.setSurname(userPaidDTO.getSurname());
+        userPaidDTO.setPenalty(totalPenalty);
+        userPaidDTO.setAmount(howMuchBelongPenalty);
 
-        return howMuchBelongPenalty;
+        //Se pone inactivo ya que se da de baja de la formación
+        users.setActive(false);
+        userRepository.save(users);
+
+
+        return userPaidDTO;
+    }
+    public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
+        return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);
+    }
+
+    public UsersPaidDTO usersPenalty (Users user){
+        //Buscamos todas las ausencias que tiene el usuario
+        List<Absence> absenceList = absenceRepository.getAllByIdUser(user.getId());
+        Double totalPenalty = 0.0;
+        //De todas las ausencias calculamos el porcentaje que se quita del ensayo o bolo
+        for (Absence absence : absenceList){
+            Double amount = absence.getCalendar().getAmount();
+            Double penalty = absence.getCalendar().getPenaltyPonderation();
+            Double total = (amount * penalty) / 100;
+            totalPenalty = total++;
+        }
+
+        UsersPaidDTO usersPaid = new UsersPaidDTO();
+        usersPaid.setName(user.getName());
+        usersPaid.setSubname(user.getSurName());
+        usersPaid.setAmountPenalty(formatearDecimales(totalPenalty,2));
+
+        return  usersPaid;
     }
 
     public List<UsersPaidDTO> calculatePaidFormation (Formation formation){
@@ -165,20 +180,31 @@ public class TreasuryService {
         }
 
         //Obtenemos la cantidad total que tiene la agrupación
-        Treasury treasuryLast = treasuryRepository.findLastTreasury(formation.getId());
+        Treasury treasuryLast = treasuryRepository.findLastTreasuryPay(formation.getId());
         Double amountTotal = treasuryLast.getAmount();
 
         //Obtenemos con cuantos miembros tiene que repartir y la cantidad de la formación
         Integer totalUsers = usersList.size();
 
         Double amountTotalPerUsers = amountTotal / totalUsers;
+        Double restAmount = 0.0;
 
         List<UsersPaidDTO> usersPaids = new ArrayList<>();
         for (Users user : usersList){
             UsersPaidDTO u = usersPenalty(user);
-            u.setAmountReceibes(amountTotal - u.getAmountPenalty());
+            u.setAmountReceibes(formatearDecimales((amountTotalPerUsers - u.getAmountPenalty()),2));
             usersPaids.add(u);
+            Double totalRestAmount =  amountTotalPerUsers - u.getAmountPenalty();
+            restAmount = formatearDecimales((restAmount + totalRestAmount),2);
         }
+
+        //Se crea un nuevo registro  descontandose lo que se le ha pagado
+        Treasury treasuryNew = new Treasury();
+        treasuryNew.setAmount(treasuryLast.getAmount() - restAmount);
+        treasuryNew.setFormation(treasuryLast.getFormation());
+        treasuryNew.setReceiveMoneyDate(LocalDate.now());
+        treasuryNew.setActive(true);
+        treasuryRepository.save(treasuryNew);
 
          return usersPaids;
     }

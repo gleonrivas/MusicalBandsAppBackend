@@ -69,4 +69,6 @@ public class CalendarEvent {
     @JsonIgnore
     @JsonIgnoreProperties(value = "repertory")
     private Repertory repertory;
+
+
 }
