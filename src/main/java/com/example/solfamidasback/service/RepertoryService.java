@@ -1,9 +1,11 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.RepertoryDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Repertory;
 import com.example.solfamidasback.model.converter.RepertoryConverter;
+import com.example.solfamidasback.repository.CalendarEventRepository;
 import com.example.solfamidasback.repository.FormationRepository;
 import com.example.solfamidasback.repository.RepertoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class RepertoryService {
     RepertoryRepository repertoryRepository;
     @Autowired
     FormationRepository formationRepository;
+    @Autowired
+    CalendarEventRepository calendarRepository;
 
     public List<RepertoryDTO> findByIdFormation(Integer idFormation) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
@@ -87,5 +91,19 @@ public class RepertoryService {
         return active;
     }
 
+    public RepertoryDTO findByIdCalendar(Integer idCalendar) {
+        RepertoryDTO repertoryDTO = new RepertoryDTO();
+        CalendarEvent calendarEvent = calendarRepository.findFirstById(idCalendar);
+        if(calendarEvent != null){
+            Repertory repertory = repertoryRepository.findByActiveIsTrue();
+            if(repertory!= null){
+                repertoryDTO = repertoryConverter.toDTO(repertory);
+                return repertoryDTO;
+            }
+        }
+
+
+        return repertoryDTO;
+    }
 
 }

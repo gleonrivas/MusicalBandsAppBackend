@@ -63,4 +63,10 @@ public class CalendarEvent {
     @JsonIgnoreProperties(value="calendar")
     @JsonIgnore
     private List<Absence> absenceList;
+
+    @ManyToOne
+    @JoinColumn(name = "id_repertory")
+    @JsonIgnore
+    @JsonIgnoreProperties(value = "repertory")
+    private Repertory repertory;
 }

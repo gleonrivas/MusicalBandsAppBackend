@@ -36,6 +36,8 @@ public class Users implements UserDetails {
 
     @Column(name = "email", length = 150)
     private String email;
+    @Column(name = "url", length = 150)
+    private String url;
 
     @Column(name = "birthdate")
     private LocalDateTime birthDate;
@@ -94,6 +96,7 @@ public class Users implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(enumRolAuth.name()));
     }
+
 
     @Override
     public String getUsername() {
