@@ -18,6 +18,6 @@ public interface RepertoryRepository extends JpaRepository<Repertory,Integer> {
 
     Repertory findByIdAndActiveIsTrue(Integer id);
 
-    Repertory findByActiveIsTrueAndCalendarEvent(CalendarEvent calendar);
+    Repertory findByActiveIsTrue();
 
 }

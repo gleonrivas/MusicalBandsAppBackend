@@ -1,6 +1,7 @@
 package com.example.solfamidasback.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,9 +43,11 @@ public class Repertory {
             inverseJoinColumns = @JoinColumn(name = "musical_piece_id"))
     Set<MusicalPiece> musicalPieceSet;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "calendar_event_id", referencedColumnName = "id")
-    private CalendarEvent calendarEvent;
+    @OneToMany(mappedBy = "repertory",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="repertory")
+    @JsonIgnore
+    private Set<CalendarEvent> calendarEvents;
+
 
 
 }

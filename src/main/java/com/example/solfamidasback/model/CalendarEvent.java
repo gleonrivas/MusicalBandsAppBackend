@@ -64,6 +64,9 @@ public class CalendarEvent {
     @JsonIgnore
     private List<Absence> absenceList;
 
-    @OneToOne(mappedBy = "calendarEvent")
+    @ManyToOne
+    @JoinColumn(name = "id_repertory")
+    @JsonIgnore
+    @JsonIgnoreProperties(value = "repertory")
     private Repertory repertory;
 }

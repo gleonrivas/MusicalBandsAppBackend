@@ -95,7 +95,7 @@ public class RepertoryService {
         RepertoryDTO repertoryDTO = new RepertoryDTO();
         CalendarEvent calendarEvent = calendarRepository.findFirstById(idCalendar);
         if(calendarEvent != null){
-            Repertory repertory = repertoryRepository.findByActiveIsTrueAndCalendarEvent(calendarEvent);
+            Repertory repertory = repertoryRepository.findByActiveIsTrue();
             if(repertory!= null){
                 repertoryDTO = repertoryConverter.toDTO(repertory);
                 return repertoryDTO;
