@@ -34,8 +34,10 @@ public class InvitationLinkService {
         InvitationLinkExistDTO invitationLinkExistDTO = new InvitationLinkExistDTO();
         invitationLinkExistDTO.setLink(formation.getLink());
         if (formation.getLink() == null) {
+            invitationLinkExistDTO.setExist(false);
             return invitationLinkExistDTO;
         } else {
+            invitationLinkExistDTO.setExist(true);
             return invitationLinkExistDTO;
         }
     }
