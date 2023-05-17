@@ -23,7 +23,8 @@ public class CalendarEventService {
                 calendarEventDTO.getPaid().matches(regexpaid)&&
                 verifyDate(calendarEventDTO.getDate())&&
                 verifyDouble(calendarEventDTO.getAmount())&&
-                verifyDouble(calendarEventDTO.getPenaltyPonderation())
+                verifyDouble(calendarEventDTO.getPenaltyPonderation())&&
+                verifyInteger(calendarEventDTO.getIdRepertory())
         ){
             return true;
         }
@@ -37,7 +38,8 @@ public class CalendarEventService {
                 calendarEventDTO.getPaid().matches(regexpaid)&&
                 verifyDate(calendarEventDTO.getDate())&&
                 verifyDouble(calendarEventDTO.getAmount())&&
-                verifyDouble(calendarEventDTO.getPenaltyPonderation())
+                verifyDouble(calendarEventDTO.getPenaltyPonderation())&&
+                verifyInteger(calendarEventDTO.getIdRepertory())
         ){
             return true;
         }

@@ -1,0 +1,15 @@
+package com.example.solfamidasback.controller.DTO;
+
+import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class InvitationLinkExistDTO extends InvitationLinkDTO {
+    Boolean exist;
+}

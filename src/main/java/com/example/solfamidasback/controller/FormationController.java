@@ -308,9 +308,9 @@ public class FormationController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = FormationDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/findByInvitationLink")
-    public ResponseEntity<FormationDTO> formationByInvitationLink(@NotNull @RequestBody  InvitationLinkDTO invitationLinkDTO) {
-        FormationDTO formation = formationService.findByInvitationLink(invitationLinkDTO.getLink());
+    @PostMapping("/findByInvitationLink")
+    public ResponseEntity<Formation> formationByInvitationLink(@NotNull @RequestBody  InvitationLinkDTO invitationLinkDTO) {
+        Formation formation = formationRepository.findByLinkAndActiveIsTrue(invitationLinkDTO.getLink());
         return ResponseEntity.ok(formation);
     }
 

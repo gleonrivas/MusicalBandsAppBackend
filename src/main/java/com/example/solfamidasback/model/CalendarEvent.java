@@ -64,7 +64,7 @@ public class CalendarEvent {
     @JsonIgnore
     private List<Absence> absenceList;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_repertory")
     @JsonIgnore
     @JsonIgnoreProperties(value = "repertory")

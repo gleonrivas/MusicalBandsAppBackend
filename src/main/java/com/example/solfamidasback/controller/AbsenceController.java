@@ -1,10 +1,11 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.FormationIdDTO;
+import com.example.solfamidasback.controller.DTO.CalendarEventIdDTO;
 import com.example.solfamidasback.controller.DTO.RegisterAbsenceDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.Absence;
 import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.DTO.UserDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.UserFormationRole;
 import com.example.solfamidasback.model.Users;
@@ -30,7 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.solfamidasback.model.DTO.UserConverter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,21 +53,22 @@ public class AbsenceController {
 
     @Autowired AbsenceRepository absenceRepository;
 
+    @Autowired UserConverter userConverter;
+
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
     @Autowired
     private JwtService jwtService;
 
-    @Operation(summary = "Retrieve a list of calendar events for the user",
-            description = "The response is a list of Calendar Event Objects",
+    @Operation(summary = "Save a list of user who are absence on a event",
+            description = "Save a list of user who are absence on a event by calendar event id",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = Absence.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
     @PostMapping("RegisterAbsence")
-    public ResponseEntity<CalendarEvent> listAllMyEvents(@RequestBody RegisterAbsenceDTO registerAbsenceDTO, HttpServletRequest request) {
-
+    public ResponseEntity<ResponseStringDTO> listAllMyEvents(@RequestBody RegisterAbsenceDTO registerAbsenceDTO, HttpServletRequest request) {
 
         //token validation
         try {
@@ -92,10 +94,40 @@ public class AbsenceController {
                 return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
             }
         }
-        // validacion de que el usuario que registra pertenece a la formacion del evento y su rol es correcto
-
         CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(registerAbsenceDTO.getCalendarEventId()));
 
+        // validar que los usuarios no esten ya registrados
+        List<Absence> absenceList = absenceRepository.findAll().stream().filter(absence -> absence.getCalendar().getId().equals(calendarEvent.getId())).toList();
+
+        if(!absenceList.isEmpty()){
+            for(String s : registerAbsenceDTO.getListOfUserId()){
+                if(!absenceList.stream().filter(absence -> absence.getUsers().getId().equals(Integer.parseInt(s))).toList().isEmpty()){
+                    ResponseStringDTO responseStringDTO = new ResponseStringDTO("There are already registered users");
+                    return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+                }
+            }
+
+        }
+        //validar que no se repite ningun usuario
+
+        for(int i=1,z=0;i<=registerAbsenceDTO.getListOfUserId().size()-1;i++){
+            if(i<=z)i=z+1;
+            if(Integer.parseInt(registerAbsenceDTO.getListOfUserId().get(i))==Integer.parseInt(registerAbsenceDTO.getListOfUserId().get(z))){
+                ResponseStringDTO responseStringDTO = new ResponseStringDTO("There are repeated users");
+                return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+            }
+            if(i==registerAbsenceDTO.getListOfUserId().size()-1)z++;
+            if(i==registerAbsenceDTO.getListOfUserId().size()-1)i=z;
+
+        }
+
+        //verificar que el evento es hoy
+        if (!calendarEvent.getDate().equals(LocalDate.now())){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        // validacion de que el usuario que registra pertenece a la formacion del evento y su rol es correcto
         if(!user.getFormationList().contains(calendarEvent.getFormation())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
             return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
@@ -117,7 +149,7 @@ public class AbsenceController {
             List<UserFormationRole> userFormationRoles = u.getUserFormationRole().stream().filter(userFormationRole ->
                     userFormationRole.getFormation().equals(calendarEvent.getFormation())).collect(Collectors.toList());
 
-            if(userFormationRoles.size()!=registerAbsenceDTO.getListOfUserId().size()){
+            if(userFormationRoles.isEmpty()){
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("There is a user who does not belong to the formation");
                 return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
             }
@@ -131,14 +163,62 @@ public class AbsenceController {
             absence.setFullDate(LocalDateTime.now());
             absence.setUsers(userRepository.getReferenceById(Integer.parseInt(s)));
             absenceRepository.save(absence);
+
         }
-
-
-
-
-
-
-        return null;
+        return ResponseEntity.ok(new ResponseStringDTO("Success"));
     }
 
+    @Operation(summary = "Retrieve a lis of user who are absence on a event",
+            description = "Save a list of user who are absence on a event by calendar event id",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = Absence.class)),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
+    })
+    @PostMapping("SeeUsersAbsense")
+    public ResponseEntity<List<UserDTO>> usersAbsenceOnCalendarEvent(@RequestBody CalendarEventIdDTO calendarEventIdDTO, HttpServletRequest request) {
+
+        List<Absence> absenceList = new ArrayList<>();
+        //token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        } catch (Exception e) {
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail = jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
+        //sanear la entrada
+        if (!calendarEventService.verifyInteger(calendarEventIdDTO.getCalendarEventId())){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        //verificar que el usuario pertenece a la formacion
+        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventIdDTO.getCalendarEventId()));
+        List<UserFormationRole> userFormationRole = user.getUserFormationRole().stream().filter(userFormationRole1 ->
+                userFormationRole1.getFormation().equals(calendarEvent.getFormation())).toList();
+        if (userFormationRole.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
+        //buscar los ausentes a ese dia
+        List<Absence> absences = absenceRepository.findAll().stream().filter(absence -> absence.getCalendar().getId().equals(calendarEvent.getId())).toList();
+
+        if (absences.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Nobody absence");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+        //pasar los ausentes a dto para filtrar la salida
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (Absence a:absences){
+            UserDTO userDTO = userConverter.toDTO(a.getUsers());
+            userDTOList.add(userDTO);
+        }
+        return ResponseEntity.ok(userDTOList);
+    }
 }

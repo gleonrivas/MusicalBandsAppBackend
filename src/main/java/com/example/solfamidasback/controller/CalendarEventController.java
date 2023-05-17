@@ -7,10 +7,7 @@ import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.DTO.CalendarEventDTODelete;
 import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
-import com.example.solfamidasback.repository.CalendarEventRepository;
-import com.example.solfamidasback.repository.ExternalMusicianRepository;
-import com.example.solfamidasback.repository.FormationRepository;
-import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.repository.*;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.ExternalMusicianService;
 import com.example.solfamidasback.service.JwtService;
@@ -57,6 +54,9 @@ public class CalendarEventController {
     @Autowired
     ExternalMusicianRepository externalMusicianRepository;
 
+    @Autowired
+    RepertoryRepository repertoryRepository;
+
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
     @Autowired
@@ -89,30 +89,6 @@ public class CalendarEventController {
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
-        // validation that the user belongs to that formation
-        if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
-            String mensaje = "You do not belong to that formation";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-        }
-
-        //validation, the user must be on the formation and the rol must be owner,President, or director musical
-        List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
-                userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
-                .collect(Collectors.toList()).stream().filter(userFormationRole
-                        -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
-
-        if (formationRoleList.isEmpty()){
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot create events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO,headers , HttpStatus.BAD_REQUEST );
-        }
-
         //Validation of DTO
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
 
@@ -124,6 +100,30 @@ public class CalendarEventController {
                 headers.setContentType(MediaType.TEXT_PLAIN);
                 return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
             }
+
+        // validation that the user belongs to that formation
+        if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
+            String mensaje = "You do not belong to that formation";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+        }
+
+        //validation, the user must be on the formation and the rol must be owner,President, or director musical
+        List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
+                userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
+                .toList().stream().filter(userFormationRole
+                        -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).toList();
+
+        if (formationRoleList.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot create events");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            return new ResponseEntity(responseStringDTO,headers , HttpStatus.BAD_REQUEST );
+        }
 
             //insert calendar event
             boolean pagado = false;
@@ -139,7 +139,7 @@ public class CalendarEventController {
             calendarEvent.setTitle(calendarEventDTO.getTitle());
             calendarEvent.setFormation(formation.get());
             calendarEvent.setPenaltyPonderation(Double.parseDouble(calendarEventDTO.getPenaltyPonderation()));
-
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdRepertory())));
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }else{
@@ -149,6 +149,7 @@ public class CalendarEventController {
             return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
         }
     }
+
     @Operation(summary = "Retrieve a list of calendar events for the user",
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -372,6 +373,7 @@ public class CalendarEventController {
             calendarEvent.setPlace(cEUpdateDTO.getPlace());
             calendarEvent.setTitle(cEUpdateDTO.getTitle());
             calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdRepertory())));
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }
