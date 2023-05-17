@@ -2,6 +2,8 @@ package com.example.solfamidasback.controller;
 
 
 import com.example.solfamidasback.controller.DTO.PayFormationDTO;
+
+import com.example.solfamidasback.controller.DTO.PayFormationResponse;
 import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.CalendarDTO;
@@ -13,14 +15,26 @@ import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.*;
 import com.example.solfamidasback.service.TreasuryService;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import com.itextpdf.text.pdf.PdfWriter;
+
+
+
+import java.io.ByteArrayOutputStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +132,7 @@ public class TreasuryController {
         return new ResponseEntity(userPaid,httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/payFormation")
+    @PostMapping("/payFormationJson")
     public ResponseEntity<PayFormationDTO> payFormation(@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
         if (formation == null){
@@ -131,5 +145,55 @@ public class TreasuryController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(payFormationDTO,httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/payFormationPdf")
+    public ResponseEntity<byte[]> payFormation2(@RequestBody PayLowDTO payLowDTO) {
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
+        if (formation == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        PayFormationDTO payFormationDTO = treasuryService.calculatePaidFormation(formation);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            Document document = new Document();
+            PdfWriter.getInstance(document, baos);
+            document.open();
+            Paragraph centeredParagraph = new Paragraph();
+            centeredParagraph.setAlignment(Element.ALIGN_CENTER);
+            centeredParagraph.add(new Phrase("Information: " + formation.getName() + " " + payFormationDTO.getPayDay()));
+            document.add(centeredParagraph);
+            document.add(new Chunk(new LineSeparator(1, 100, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
+
+            for (UsersPaidDTO userPaidDTO : payFormationDTO.getUsersPaid()) {
+                document.add(new Paragraph("Nombre: " + userPaidDTO.getName()));
+                document.add(new Paragraph("Apellido: " + userPaidDTO.getSubname()));
+                document.add(new Paragraph("Cantidad descontada: " + userPaidDTO.getAmountPenalty() + " €"));
+                document.add(new Paragraph("Cantidad recibida: " + userPaidDTO.getAmountReceibes() + " €"));
+                document.add(new Chunk(new LineSeparator(1, 0, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
+            }
+            document.add(new Chunk(new LineSeparator(1, 0, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
+
+            document.add(new Paragraph("Cantidad total pagada: " + payFormationDTO.getTotalPaid()));
+            document.add(new Chunk(new LineSeparator(1, 100, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
+            document.add(new Paragraph("Cantidad total en cuenta: " + payFormationDTO.getInAccount()));
+
+            document.close();
+
+
+            byte[] pdfBytes = baos.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "payFormation.pdf");
+            headers.setContentLength(pdfBytes.length);
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

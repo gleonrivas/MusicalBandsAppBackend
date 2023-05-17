@@ -7,8 +7,11 @@ import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.UserPaidDTO;
 import com.example.solfamidasback.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -220,8 +223,12 @@ public class TreasuryService {
         payFormationDTO.setTotalPaid(restAmount);
 
 
+
+
+
          return payFormationDTO;
     }
+
 
 
 }
