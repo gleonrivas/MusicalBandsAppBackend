@@ -1,7 +1,6 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.CalendarEventIdDTO;
-import com.example.solfamidasback.controller.DTO.FormationIdDTO;
 import com.example.solfamidasback.controller.DTO.RegisterAbsenceDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.Absence;
@@ -109,8 +108,6 @@ public class AbsenceController {
             }
 
         }
-
-
         //validar que no se repite ningun usuario
 
         for(int i=1,z=0;i<=registerAbsenceDTO.getListOfUserId().size()-1;i++){
@@ -216,7 +213,7 @@ public class AbsenceController {
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Nobody absence");
             return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
-
+        //pasar los ausentes a dto para filtrar la salida
         List<UserDTO> userDTOList = new ArrayList<>();
         for (Absence a:absences){
             UserDTO userDTO = userConverter.toDTO(a.getUsers());

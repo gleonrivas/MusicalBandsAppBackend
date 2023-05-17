@@ -15,4 +15,5 @@ public class CalendarEventUpdateDTO{
     private String date;  //LocalDate
     private String amount;  //Double
     private String penaltyPonderation; //Double
+    private String idRepertory; //Integer
 }

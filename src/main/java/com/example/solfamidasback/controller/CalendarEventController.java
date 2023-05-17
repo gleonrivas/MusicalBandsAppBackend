@@ -7,10 +7,7 @@ import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.DTO.CalendarEventDTODelete;
 import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
-import com.example.solfamidasback.repository.CalendarEventRepository;
-import com.example.solfamidasback.repository.ExternalMusicianRepository;
-import com.example.solfamidasback.repository.FormationRepository;
-import com.example.solfamidasback.repository.UserRepository;
+import com.example.solfamidasback.repository.*;
 import com.example.solfamidasback.service.CalendarEventService;
 import com.example.solfamidasback.service.ExternalMusicianService;
 import com.example.solfamidasback.service.JwtService;
@@ -57,6 +54,9 @@ public class CalendarEventController {
     @Autowired
     ExternalMusicianRepository externalMusicianRepository;
 
+    @Autowired
+    RepertoryRepository repertoryRepository;
+
     private final String HEADER = "Authorization";
     private final String PREFIX = "Bearer ";
     @Autowired
@@ -89,6 +89,18 @@ public class CalendarEventController {
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
+        //Validation of DTO
+        if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
+
+            //validation the date must be later than the current date
+            if(LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now())||
+                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())){
+                ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.TEXT_PLAIN);
+                return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            }
+
         // validation that the user belongs to that formation
         if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
             String mensaje = "You do not belong to that formation";
@@ -113,18 +125,6 @@ public class CalendarEventController {
             return new ResponseEntity(responseStringDTO,headers , HttpStatus.BAD_REQUEST );
         }
 
-        //Validation of DTO
-        if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
-
-            //validation the date must be later than the current date
-            if(LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now())||
-                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())){
-                ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.TEXT_PLAIN);
-                return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
-            }
-
             //insert calendar event
             boolean pagado = false;
             if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;}
@@ -139,7 +139,7 @@ public class CalendarEventController {
             calendarEvent.setTitle(calendarEventDTO.getTitle());
             calendarEvent.setFormation(formation.get());
             calendarEvent.setPenaltyPonderation(Double.parseDouble(calendarEventDTO.getPenaltyPonderation()));
-
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdRepertory())));
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }else{
@@ -149,6 +149,7 @@ public class CalendarEventController {
             return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
         }
     }
+
     @Operation(summary = "Retrieve a list of calendar events for the user",
             description = "The response is a list of Calendar Event Objects",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -372,6 +373,7 @@ public class CalendarEventController {
             calendarEvent.setPlace(cEUpdateDTO.getPlace());
             calendarEvent.setTitle(cEUpdateDTO.getTitle());
             calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdRepertory())));
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }
