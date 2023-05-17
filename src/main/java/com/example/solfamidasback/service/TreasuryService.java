@@ -1,5 +1,6 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.controller.DTO.PayFormationDTO;
 import com.example.solfamidasback.controller.DTO.UserUpdateDTO;
 import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.*;
@@ -162,6 +163,7 @@ public class TreasuryService {
             totalPenalty = total++;
         }
 
+        //Creamos un usuario DTO con la información que necesitamos
         UsersPaidDTO usersPaid = new UsersPaidDTO();
         usersPaid.setName(user.getName());
         usersPaid.setSubname(user.getSurName());
@@ -170,13 +172,16 @@ public class TreasuryService {
         return  usersPaid;
     }
 
-    public List<UsersPaidDTO> calculatePaidFormation (Formation formation){
+    public PayFormationDTO calculatePaidFormation (Formation formation){
         //Obtenemos todos los usuarios activos que tiene la formación
         List<Integer> idsUsers = userFormationRoleRepository.getAllUsersIdFormation(formation.getId());
         List<Users> usersList = new ArrayList<>();
         for (Integer idUser : idsUsers){
             Users user = userRepository.findByIdAndActiveIsTrue(idUser);
-            usersList.add(user);
+            if (user != null){
+                usersList.add(user);
+            }
+
         }
 
         //Obtenemos la cantidad total que tiene la agrupación
@@ -189,6 +194,7 @@ public class TreasuryService {
         Double amountTotalPerUsers = amountTotal / totalUsers;
         Double restAmount = 0.0;
 
+        //Vemos cuanta penalización tiene cada usuario en total
         List<UsersPaidDTO> usersPaids = new ArrayList<>();
         for (Users user : usersList){
             UsersPaidDTO u = usersPenalty(user);
@@ -206,7 +212,15 @@ public class TreasuryService {
         treasuryNew.setActive(true);
         treasuryRepository.save(treasuryNew);
 
-         return usersPaids;
+        PayFormationDTO payFormationDTO = new PayFormationDTO();
+
+        payFormationDTO.setUsersPaid(usersPaids);
+        payFormationDTO.setPayDay(LocalDate.now());
+        payFormationDTO.setInAccount(formatearDecimales((treasuryLast.getAmount() - restAmount),2) );
+        payFormationDTO.setTotalPaid(restAmount);
+
+
+         return payFormationDTO;
     }
 
 
