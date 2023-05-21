@@ -1,5 +1,6 @@
 package com.example.solfamidasback.repository;
 
+import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,6 +39,8 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
 
 
     Formation findByLinkAndActiveIsTrue(String link);
+
+    Formation findFirstByCalendarEventsAndActiveIsTrue(CalendarEvent calendarEvent);
 
 
 

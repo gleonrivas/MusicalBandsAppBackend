@@ -1,8 +1,10 @@
 package com.example.solfamidasback.service;
 
+import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.DTO.CalendarEventDTO;
 import com.example.solfamidasback.model.DTO.CalendarEventUpdateDTO;
 import com.example.solfamidasback.model.Formation;
+import com.example.solfamidasback.repository.FormationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.List;
 public class CalendarEventService {
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private FormationRepository formationRepository;
 
     public boolean VerifyCalendarEventDTO(CalendarEventDTO calendarEventDTO){
         String regexid = "\\d+"; //expresion regular para verificar si es un digito
@@ -77,6 +81,11 @@ public class CalendarEventService {
         }
         return false;
 
+    }
+
+    public Formation findFormationbyCalendar (CalendarEvent calendarEvent){
+        Formation formation= formationRepository.findFirstByCalendarEventsAndActiveIsTrue(calendarEvent);
+        return formation;
     }
 }
 
