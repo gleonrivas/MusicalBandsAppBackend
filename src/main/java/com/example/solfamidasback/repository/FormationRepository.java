@@ -1,6 +1,5 @@
 package com.example.solfamidasback.repository;
 
-import com.example.solfamidasback.model.CalendarEvent;
 import com.example.solfamidasback.model.Formation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,9 +28,9 @@ public interface FormationRepository extends JpaRepository<Formation,Integer> {
     @Query(value = "select * from formation f order by id desc limit 1 ", nativeQuery = true)
     Formation findLastFormation();
 
-    @Query(value = "select f.* from formation f join user_formation_role ufr\n" +
-            "on f.id = ufr.id_formation \n" +
-            "join users u on u.id =ufr.id_user where u.id = ? and f.active =true", nativeQuery = true)
+    @Query(value = "SELECT f.* FROM formation f JOIN user_formation_role ufr\n" +
+            "ON f.id = ufr.id_formation \n" +
+            "JOIN users u ON u.id = ufr.id_user WHERE u.id = ?1 AND f.active = true AND f.id_owner <> ?1", nativeQuery = true)
     List<Formation> getAllByUserAndActiveIsTrue(Integer id);
 
     @Query(value = "select * from formation where name like CONCAT('%', ?,'%');", nativeQuery = true)
