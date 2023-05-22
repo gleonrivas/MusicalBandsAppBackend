@@ -95,7 +95,7 @@ public class FormationService {
             EnumRolUserFormation[] enumRolUserFormationList =  EnumRolUserFormation.values();
             List<RoleDTO> roleDTOList = new ArrayList<>();
             roleTypeList.stream().forEach(i -> roleDTOList.add(new RoleDTO(enumRolUserFormationList[i])));
-            UsersFormationRoleDTO usersFormationRoleDTO = new UsersFormationRoleDTO(user.getId(),user.getName(),
+            UsersFormationRoleDTO usersFormationRoleDTO = new UsersFormationRoleDTO(user.getId(),user.getName(),user.getUrl(),
                     user.getSurName(),user.getEmail(),"", roleDTOList);
             usersFormationRoleDTOList.add(usersFormationRoleDTO);
         }
