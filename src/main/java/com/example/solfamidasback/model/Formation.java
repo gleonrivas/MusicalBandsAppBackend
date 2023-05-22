@@ -80,5 +80,10 @@ public class Formation {
     @JsonIgnore
     private Set<Repertory> repertorySet;
 
+    @OneToMany(mappedBy = "formation",fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value="formation")
+    @JsonIgnore
+    private Set<Treasury> treasuries;
+
 
 }

@@ -17,6 +17,8 @@ public class UsersFormationRoleDTO {
     private Integer id;
     private String name;
 
+    private String image;
+
     private String surName;
 
     private String email;
