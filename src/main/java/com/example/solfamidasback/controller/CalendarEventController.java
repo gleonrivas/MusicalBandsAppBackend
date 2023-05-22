@@ -147,7 +147,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("AllMyEvents")
+    @PostMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
         //token validation
@@ -179,7 +179,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("MyEventsByFormation")
+    @PostMapping("MyEventsByFormation")
     public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@RequestBody FormationIdDTO formationId, HttpServletRequest request){
 
 
@@ -361,7 +361,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("TodayEventByFormation")
+    @PostMapping("TodayEventByFormation")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@RequestBody FormationIdDTO formationId, HttpServletRequest request) {
 
         //token validation
