@@ -213,9 +213,23 @@ public class MaterialController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
     }
-
-
-
-
+    /*
+    @GetMapping("/listMaterialUser/{idUser}")
+    public ResponseEntity<List<MaterialDTO>> getListMaterialIdFormation(@PathVariable Integer User){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
+        List<MaterialDTO> listMaterialDTO = new ArrayList<>();
+        if (formation != null){
+            List<Material> listMaterial = materialRepository.getAllByIdFormation(idFormation);
+            for (Material material : listMaterial){
+                MaterialDTO materialDTO = materialConverter.toDTO(material);
+                listMaterialDTO.add(materialDTO);
+            }
+        }
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
+    }
+    */
 }
 

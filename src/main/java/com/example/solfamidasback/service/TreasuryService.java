@@ -32,6 +32,10 @@ public class TreasuryService {
     @Autowired
     CalendarEventRepository calendarEventRepository;
 
+    public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
+        return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);
+    }
+
     public Integer moneyAbsence(Formation formation){
         List<CalendarEvent> calendarEvents = formation.getCalendarEvents();
         Double amountTotal = 0.0;
@@ -86,7 +90,8 @@ public class TreasuryService {
         Treasury treasuryLast = treasuryRepository.findLastTreasury();
         Treasury treasuryNew = new Treasury();
 
-        treasuryNew.setAmount(treasuryLast.getAmount() - externalMusician.getAmount());
+
+        treasuryNew.setAmount(formatearDecimales((treasuryLast.getAmount() - externalMusician.getAmount()),2));
         treasuryNew.setFormation(treasuryLast.getFormation());
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
@@ -99,7 +104,7 @@ public class TreasuryService {
         Treasury treasuryLast = treasuryRepository.findLastTreasury();
         Treasury treasuryNew = new Treasury();
 
-        treasuryNew.setAmount(treasuryLast.getAmount() + amount);
+        treasuryNew.setAmount(formatearDecimales((treasuryLast.getAmount() + amount),2));
         treasuryNew.setFormation(treasuryLast.getFormation());
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
@@ -110,7 +115,7 @@ public class TreasuryService {
         UserPaidDTO userPaidDTO = new UserPaidDTO();
         //Buscamos todas las ausencias que tiene el usuario
         List<Absence> absenceList = absenceRepository.getAllByIdUser(users.getId());
-        Double totalPenalty = 0.0;
+        Double  totalPenalty = 0.0;
         //De todas las ausencias calculamos el porcentaje que se quita del ensayo o bolo
         for (Absence absence : absenceList){
             Double amount = absence.getCalendar().getAmount();
@@ -132,16 +137,18 @@ public class TreasuryService {
 
         //Se crea un nuevo registro  descontandose lo que se le ha pagado
         Treasury treasuryNew = new Treasury();
-        treasuryNew.setAmount(treasuryLast.getAmount() - howMuchBelongPenalty);
+        treasuryNew.setAmount(formatearDecimales((treasuryLast.getAmount() - howMuchBelongPenalty),2));
         treasuryNew.setFormation(treasuryLast.getFormation());
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
         treasuryRepository.save(treasuryNew);
 
+
+
         userPaidDTO.setName(users.getName());
         userPaidDTO.setSurname(userPaidDTO.getSurname());
-        userPaidDTO.setPenalty(totalPenalty);
-        userPaidDTO.setAmount(howMuchBelongPenalty);
+        userPaidDTO.setPenalty(formatearDecimales(totalPenalty,2));
+        userPaidDTO.setAmount(formatearDecimales(howMuchBelongPenalty,2));
 
         //Se pone inactivo ya que se da de baja de la formación
         users.setActive(false);
@@ -150,9 +157,7 @@ public class TreasuryService {
 
         return userPaidDTO;
     }
-    public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
-        return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);
-    }
+
 
     public UsersPaidDTO usersPenalty (Users user){
         //Buscamos todas las ausencias que tiene el usuario
@@ -165,6 +170,7 @@ public class TreasuryService {
             Double total = (amount * penalty) / 100;
             totalPenalty = total++;
         }
+
 
         //Creamos un usuario DTO con la información que necesitamos
         UsersPaidDTO usersPaid = new UsersPaidDTO();
@@ -209,7 +215,7 @@ public class TreasuryService {
 
         //Se crea un nuevo registro  descontandose lo que se le ha pagado
         Treasury treasuryNew = new Treasury();
-        treasuryNew.setAmount(treasuryLast.getAmount() - restAmount);
+        treasuryNew.setAmount(formatearDecimales((treasuryLast.getAmount() - restAmount),2));
         treasuryNew.setFormation(treasuryLast.getFormation());
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
@@ -221,10 +227,6 @@ public class TreasuryService {
         payFormationDTO.setPayDay(LocalDate.now());
         payFormationDTO.setInAccount(formatearDecimales((treasuryLast.getAmount() - restAmount),2) );
         payFormationDTO.setTotalPaid(restAmount);
-
-
-
-
 
          return payFormationDTO;
     }

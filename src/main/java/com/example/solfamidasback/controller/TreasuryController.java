@@ -5,19 +5,19 @@ import com.example.solfamidasback.controller.DTO.PayFormationDTO;
 
 import com.example.solfamidasback.controller.DTO.PayFormationResponse;
 import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
-import com.example.solfamidasback.model.CalendarEvent;
+import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.CalendarDTO;
 import com.example.solfamidasback.model.DTO.ExternalMusicianDTO;
 import com.example.solfamidasback.model.DTO.PayLowDTO;
 import com.example.solfamidasback.model.DTO.UserPaidDTO;
-import com.example.solfamidasback.model.ExternalMusician;
-import com.example.solfamidasback.model.Formation;
-import com.example.solfamidasback.model.Users;
 import com.example.solfamidasback.repository.*;
+import com.example.solfamidasback.service.JwtService;
 import com.example.solfamidasback.service.TreasuryService;
+import com.example.solfamidasback.utilities.Utilities;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
 
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class TreasuryController {
     CalendarEventRepository calendarEventRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    JwtService jwtService;
 
     @GetMapping("/getAllEvents")
     public ResponseEntity<List<CalendarEvent>> getAllEvents (@RequestBody PayLowDTO payLowDTO){
@@ -176,9 +179,9 @@ public class TreasuryController {
             }
             document.add(new Chunk(new LineSeparator(1, 0, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
 
-            document.add(new Paragraph("Cantidad total pagada: " + payFormationDTO.getTotalPaid()));
+            document.add(new Paragraph("Cantidad total pagada: " + payFormationDTO.getTotalPaid() + " €"));
             document.add(new Chunk(new LineSeparator(1, 100, BaseColor.BLACK, Element.ALIGN_CENTER, -5)));
-            document.add(new Paragraph("Cantidad total en cuenta: " + payFormationDTO.getInAccount()));
+            document.add(new Paragraph("Cantidad total en cuenta: " + payFormationDTO.getInAccount() + " €"));
 
             document.close();
 
@@ -195,5 +198,27 @@ public class TreasuryController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/getAllMoney")
+    ResponseEntity<List<Treasury>> getAllMoney(@RequestBody PayLowDTO payLowDTO){
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
+        if (formation==null){
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity(formation,httpHeaders, HttpStatus.BAD_REQUEST);
+        }
+        List<Treasury> treasuryList = treasuryRepository.getAllTreasuryFormation(payLowDTO.getFormationId());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(treasuryList,httpHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping("/isSuperAdmin")
+    ResponseEntity<String> isSuperAdmin(HttpServletRequest request){
+        boolean isSuper = Utilities.isSuperAdministrador(request,jwtService,userRepository);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity(isSuper,httpHeaders, HttpStatus.OK);
     }
 }
