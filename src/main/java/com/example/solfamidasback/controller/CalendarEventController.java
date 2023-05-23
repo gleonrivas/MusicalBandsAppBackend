@@ -79,10 +79,8 @@ public class CalendarEventController {
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
-            String mensaje = "Token error";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -96,18 +94,8 @@ public class CalendarEventController {
             if(LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now())||
                     LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())){
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.TEXT_PLAIN);
-                return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+                return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
             }
-
-        // validation that the user belongs to that formation
-        if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
-            String mensaje = "You do not belong to that formation";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(mensaje ,headers , HttpStatus.BAD_REQUEST );
-        }
 
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
@@ -120,9 +108,7 @@ public class CalendarEventController {
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot create events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
             //insert calendar event
@@ -144,9 +130,7 @@ public class CalendarEventController {
             return ResponseEntity.ok(calendarEvent);
         }else{
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
     }
 
@@ -157,7 +141,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("AllMyEvents")
+    @PostMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
 
         //token validation
@@ -165,9 +149,7 @@ public class CalendarEventController {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -178,9 +160,7 @@ public class CalendarEventController {
                 user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 
         return ResponseEntity.ok(calendarEventList);
@@ -193,7 +173,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("MyEventsByFormation")
+    @PostMapping("MyEventsByFormation")
     public ResponseEntity<List<CalendarEvent>> listEventsByFormation(@RequestBody FormationIdDTO formationId, HttpServletRequest request){
 
 
@@ -237,18 +217,14 @@ public class CalendarEventController {
     public ResponseEntity<String> deleteFormation(@RequestBody CalendarEventDTODelete calendarEventDTO, HttpServletRequest request) {
         if (!calendarEventService.verifyInteger(calendarEventDTO.getIdCalendarEvent())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Incorrect format");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 //        token validation
         try {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -269,18 +245,14 @@ public class CalendarEventController {
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot delete events");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
 
         //validacion si ha sucedido el evento
         if(calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().isBefore(LocalDate.now())||
                 calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().equals(LocalDate.now())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event has already occurred, it is not possible to delete it.");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
         //borrado de musicos externos si tiene
@@ -308,9 +280,7 @@ public class CalendarEventController {
             String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         }catch (Exception e){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -321,9 +291,7 @@ public class CalendarEventController {
         if(!calendarEventService.VerifyCalendarEventUpdateDTO(cEUpdateDTO)||
                 !calendarEventService.verifyInteger(cEUpdateDTO.getIdCalendarEvent())) {
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
         }
         //get calendar event objet
         CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
@@ -346,9 +314,7 @@ public class CalendarEventController {
         if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
                 LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity(responseStringDTO, headers, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
 
         //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
@@ -379,9 +345,7 @@ public class CalendarEventController {
         }
 
         ResponseStringDTO responseStringDTO = new ResponseStringDTO("Something wron");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_PLAIN);
-        return new ResponseEntity(responseStringDTO ,headers , HttpStatus.BAD_REQUEST );
+        return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
     }
 
     @Operation(summary = "Retrieve a list of calendar events for the user",
@@ -391,7 +355,7 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("TodayEventByFormation")
+    @PostMapping("TodayEventByFormation")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(@RequestBody FormationIdDTO formationId, HttpServletRequest request) {
 
         //token validation
