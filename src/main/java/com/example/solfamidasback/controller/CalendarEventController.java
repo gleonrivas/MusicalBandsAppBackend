@@ -97,12 +97,6 @@ public class CalendarEventController {
                 return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
             }
 
-        // validation that the user belongs to that formation
-        if(!calendarEventService.verifyFormation(user.getFormationList(),Integer.parseInt(calendarEventDTO.getIdFormation()))){
-            String mensaje = "You do not belong to that formation";
-            return new ResponseEntity(mensaje , HttpStatus.BAD_REQUEST );
-        }
-
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
                 userFormationRole.getFormation().getId()==Integer.parseInt(calendarEventDTO.getIdFormation()))
