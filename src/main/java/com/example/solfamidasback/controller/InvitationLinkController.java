@@ -68,7 +68,7 @@ public class InvitationLinkController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = InvitationLinkExistDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/{idFormation}")
+    @GetMapping("/check/{idFormation}")
     public ResponseEntity<InvitationLinkExistDTO> checkLink(@NotNull @PathVariable Integer idFormation) {
 
         InvitationLinkExistDTO response = invitationLinkService.checkIfExist(idFormation);
