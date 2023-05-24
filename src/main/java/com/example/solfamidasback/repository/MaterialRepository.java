@@ -42,4 +42,10 @@ public interface MaterialRepository extends JpaRepository<Material,Integer> {
     @Query(value = "select * from material m where id_formation = ? and active = true", nativeQuery = true)
     List<Material> getAllByIdFormation(@Param("id_formation")Integer formationID);
 
+    @Query(value = "select id_material from borrowed_material where id_users = ?", nativeQuery = true)
+    List<Integer> getAllMateriaLWhereUserId (@Param("id_users")Integer userID);
+
+    @Query(value = "select id_users from borrowed_material where id_material = ?", nativeQuery = true)
+    List<Integer> getAllUserWhereMaterialId (@Param("id_material")Integer materialId);
+
 }
