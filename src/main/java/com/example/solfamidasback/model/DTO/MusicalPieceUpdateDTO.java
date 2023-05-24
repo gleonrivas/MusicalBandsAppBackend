@@ -4,6 +4,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MusicalPieceUpdateDTO extends MusicalPieceDTO {
+public class MusicalPieceUpdateDTO  {
     private Long id;
 }
