@@ -86,16 +86,41 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users usersadmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
+
+        //creacion por el super admin
+        if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)&&user.equals(usersadmin)) {
+            boolean pagado = false;
+            if (calendarEventDTO.getPaid().contains("1")){ pagado = true ;}
+
+            var formation = formationRepository.findById(Integer.valueOf(calendarEventDTO.getIdFormation()));
+            calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
+            calendarEvent.setDate(LocalDate.parse(calendarEventDTO.getDate()));
+            calendarEvent.setAmount(Double.parseDouble(calendarEventDTO.getAmount()));
+            calendarEvent.setDescription(calendarEventDTO.getDescription());
+            calendarEvent.setPaid(pagado);
+            calendarEvent.setPlace(calendarEventDTO.getPlace());
+            calendarEvent.setTitle(calendarEventDTO.getTitle());
+            calendarEvent.setFormation(formation.get());
+            calendarEvent.setPenaltyPonderation(Double.parseDouble(calendarEventDTO.getPenaltyPonderation()));
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdRepertory())));
+            calendarEventRepository.save(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        } else if (!calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)&&user.equals(usersadmin)) {
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
+            return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
+        }
 
         //Validation of DTO
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
 
             //validation the date must be later than the current date
-            if(LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now())||
-                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())){
+            if (LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now()) ||
+                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())) {
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
-                return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
+                return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
             }
+
 
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
@@ -155,6 +180,12 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
+        //retorno de todos los eventos para el superusuario
+        if (user.equals(useradmin)){
+            return ResponseEntity.ok(calendarEventRepository.findAll());
+        }
+
         //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
                 user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
@@ -230,18 +261,28 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
 
         CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
+
+        if(user.equals(useradmin)){
+            List<ExternalMusician> externalMusicianList = externalMusicianRepository.findAllByCalendarId(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
+            for (ExternalMusician m :externalMusicianList){
+                externalMusicianRepository.delete(m);
+            }
+            calendarEventRepository.deleteById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent()));
+            return new ResponseEntity(new ResponseStringDTO("Event deleted"),HttpStatus.OK);
+        }
 
         //validar los roles dentro de la formacion
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
                         userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
-                .collect(Collectors.toList()).stream().filter(userFormationRole
+                        .toList().stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).toList();
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot delete events");
@@ -286,6 +327,7 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
 
         //verify data of dto
         if(!calendarEventService.VerifyCalendarEventUpdateDTO(cEUpdateDTO)||
@@ -296,14 +338,31 @@ public class CalendarEventController {
         //get calendar event objet
         CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdCalendarEvent()));
 
+        //validacion del superadmin y update
+        if(user.equals(useradmin)){
+            boolean pagado = false;
+            if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
+            calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
+            calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
+            calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
+            calendarEvent.setDescription(cEUpdateDTO.getDescription());
+            calendarEvent.setPaid(pagado);
+            calendarEvent.setPlace(cEUpdateDTO.getPlace());
+            calendarEvent.setTitle(cEUpdateDTO.getTitle());
+            calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
+            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdRepertory())));
+            calendarEventRepository.save(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        }
+
         //validation, the user must be on the formation and the rol must be owner,President, or director musical
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
                         userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
-                .collect(Collectors.toList()).stream().filter(userFormationRole
+                        .toList().stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
                         userFormationRole.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).collect(Collectors.toList());
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.DIRECTOR_MUSICAL)).toList();
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot update events");
