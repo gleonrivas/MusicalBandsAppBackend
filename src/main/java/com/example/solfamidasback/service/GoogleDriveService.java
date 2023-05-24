@@ -97,7 +97,7 @@ public class GoogleDriveService {
                 .build();
         // Upload file photo.jpg on drive.
         File fileMetadata = new File();
-        fileMetadata.setName("a.jpg");
+        fileMetadata.setName("a.jpeg");
         // File's content.
         java.io.File filePath = new java.io.File("../src/main/java/com/example/solfamidasback/configSecurity/driveCredentials/a.png");
         // Specify media type and file-path for file.
