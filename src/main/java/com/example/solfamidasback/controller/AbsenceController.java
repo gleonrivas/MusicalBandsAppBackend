@@ -81,6 +81,7 @@ public class AbsenceController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail = jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
 
         // validacion de datos del body
 
@@ -121,38 +122,47 @@ public class AbsenceController {
 
         }
 
-        //verificar que el evento es hoy
-        if (!calendarEvent.getDate().equals(LocalDate.now())){
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
-            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        //validar que los usuarios introducidos pertenecen a la formacion
+        for (String s: registerAbsenceDTO.getListOfUserId()){
+            Users  u = userRepository.getById(Integer.parseInt(s));
+            List<UserFormationRole> userFormationRoles = u.getUserFormationRole().stream().filter(userFormationRole ->
+                    userFormationRole.getFormation().equals(calendarEvent.getFormation())).toList();
+
+            if(userFormationRoles.isEmpty()){
+                ResponseStringDTO responseStringDTO = new ResponseStringDTO("There is a user who does not belong to the formation");
+                return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
+            }
+        }
+
+        //si el usuario es administrador se guardan los registros
+        if(user.equals(useradmin)){
+            for(String s:registerAbsenceDTO.getListOfUserId()){
+                Absence absence = new Absence();
+                absence.setCalendar(calendarEvent);
+                absence.setFullDate(LocalDateTime.now());
+                absence.setUsers(userRepository.getReferenceById(Integer.parseInt(s)));
+                absenceRepository.save(absence);
+
+            }
+            return ResponseEntity.ok(new ResponseStringDTO("Success"));
         }
 
         // validacion de que el usuario que registra pertenece a la formacion del evento y su rol es correcto
-        if(!user.getFormationList().contains(calendarEvent.getFormation())){
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
-            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
-        }
         List<UserFormationRole> formationRoleList = user.getUserFormationRole().stream().filter(userFormationRole ->
                         userFormationRole.getFormation().getId()==calendarEvent.getFormation().getId())
-                .collect(Collectors.toList()).stream().filter(userFormationRole
+                .toList().stream().filter(userFormationRole
                         -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.OWNER)||
-                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ASSISTANCE_CONTROL)).collect(Collectors.toList());
+                        userFormationRole.getRole().getType().equals(EnumRolUserFormation.ASSISTANCE_CONTROL)).toList();
 
         if (formationRoleList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You can't register absences");
             return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
 
-        //validar que los usuarios introducidos pertenecen a la formacion
-        for (String s: registerAbsenceDTO.getListOfUserId()){
-            Users  u = userRepository.getById(Integer.parseInt(s));
-            List<UserFormationRole> userFormationRoles = u.getUserFormationRole().stream().filter(userFormationRole ->
-                    userFormationRole.getFormation().equals(calendarEvent.getFormation())).collect(Collectors.toList());
-
-            if(userFormationRoles.isEmpty()){
-                ResponseStringDTO responseStringDTO = new ResponseStringDTO("There is a user who does not belong to the formation");
-                return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
-            }
+        //verificar que el evento es hoy
+        if (!calendarEvent.getDate().equals(LocalDate.now())){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
 
         //guardamos los registros en bbdd
@@ -190,19 +200,13 @@ public class AbsenceController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail = jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
+        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventIdDTO.getCalendarEventId()));
+
 
         //sanear la entrada
         if (!calendarEventService.verifyInteger(calendarEventIdDTO.getCalendarEventId())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Form error");
-            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
-        }
-
-        //verificar que el usuario pertenece a la formacion
-        CalendarEvent calendarEvent = calendarEventRepository.getReferenceById(Integer.parseInt(calendarEventIdDTO.getCalendarEventId()));
-        List<UserFormationRole> userFormationRole = user.getUserFormationRole().stream().filter(userFormationRole1 ->
-                userFormationRole1.getFormation().equals(calendarEvent.getFormation())).toList();
-        if (userFormationRole.isEmpty()){
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
             return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
 
@@ -213,6 +217,25 @@ public class AbsenceController {
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("Nobody absence");
             return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
+
+        if(user.equals(useradmin)){
+            //pasar los ausentes a dto para filtrar la salida
+            List<UserDTO> userDTOList = new ArrayList<>();
+            for (Absence a:absences){
+                UserDTO userDTO = userConverter.toDTO(a.getUsers());
+                userDTOList.add(userDTO);
+            }
+            return ResponseEntity.ok(userDTOList);
+        }
+
+        //verificar que el usuario pertenece a la formacion
+        List<UserFormationRole> userFormationRole = user.getUserFormationRole().stream().filter(userFormationRole1 ->
+                userFormationRole1.getFormation().equals(calendarEvent.getFormation())).toList();
+        if (userFormationRole.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You do not belong to that formation");
+            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+        }
+
         //pasar los ausentes a dto para filtrar la salida
         List<UserDTO> userDTOList = new ArrayList<>();
         for (Absence a:absences){
@@ -221,4 +244,5 @@ public class AbsenceController {
         }
         return ResponseEntity.ok(userDTOList);
     }
+
 }
