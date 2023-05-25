@@ -26,7 +26,7 @@ public interface MusicalPieceRepository extends JpaRepository<MusicalPiece,Integ
 
     List<MusicalPiece> findAllByAuthorAndActiveIsTrue(String author);
 
-    MusicalPiece findByIdAndActiveIsTrue(Long id);
+    MusicalPiece findByIdAndActiveIsTrue(Integer id);
 
     MusicalPiece findFirstByActiveIsTrueOrderByIdDesc();
 

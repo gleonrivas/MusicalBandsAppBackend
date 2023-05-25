@@ -139,8 +139,9 @@ public class UserController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = UserDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @PostMapping("/editProfile")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request ) throws DbxException {
+
+    @PostMapping("/editProfile/{path}")
+    public ResponseEntity<String> registerUser(@RequestBody UserDTO user, HttpServletRequest request,@PathVariable String path ) throws DbxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
@@ -151,7 +152,7 @@ public class UserController {
         userSession.setEmail(user.getEmail());
         userSession.setBirthDate(user.getBirthDate() != null ? LocalDate.parse(user.getBirthDate()).atStartOfDay() : null);
         userSession.setDni(user.getDni());
-        userSession.setUrl(DropboxConfig.UploadFile(user.getUrl(), user.getEmail()));
+        userSession.setUrl(DropboxConfig.UploadFile(user.getUrl(), user.getEmail(), path));
 
 
         userRepository.save(userSession);

@@ -20,8 +20,7 @@ public interface RepertoryRepository extends JpaRepository<Repertory,Integer> {
 
     Repertory findByIdAndActiveIsTrue(Integer id);
 
-    @Query(value = "select * from repertory mp \n" +
-            "where calendar_event_id =? and mp.active =true and active=true", nativeQuery = true)
+    @Query(value = "select mp.* from repertory mp join calendar c on c.id_repertory = mp.id where c.id=? and mp.active =true", nativeQuery = true)
     Repertory getRepertoryByIdCalendar(@Param("calendar_event_id")Integer CalendarId);
 
 }

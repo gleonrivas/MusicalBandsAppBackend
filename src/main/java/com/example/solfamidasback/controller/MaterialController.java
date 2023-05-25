@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialDTO;
 import com.example.solfamidasback.controller.DTO.BorrowedMaterialUpdateDTO;
 import com.example.solfamidasback.controller.DTO.MaterialDTO;
+import com.example.solfamidasback.controller.DTO.UserDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Material;
 import com.example.solfamidasback.model.Users;
@@ -25,6 +26,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -213,23 +217,65 @@ public class MaterialController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
     }
-    /*
-    @GetMapping("/listMaterialUser/{idUser}")
-    public ResponseEntity<List<MaterialDTO>> getListMaterialIdFormation(@PathVariable Integer User){
+
+  @GetMapping("/getAllMaterialBorroweUser")
+    ResponseEntity<List<MaterialDTO>> getAllMaterialUser(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
+        Users users = userRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getUserId());
+        List<Integer> listMaterialId = materialRepository.getAllMateriaLWhereUserId(borrowedMaterialDTO.getUserId());
+        if (users == null){
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity(users,httpHeaders, HttpStatus.BAD_REQUEST);
+        }
+        List<Material> materialList = new ArrayList<>();
+        List<MaterialDTO> materialDTOS = new ArrayList<>();
+        for (Integer id : listMaterialId){
+            Material material = materialRepository.findByIdAndActiveIsTrue(id);
+            materialList.add(material);
+        }
+        for (Material material : materialList){
+            MaterialDTO materialDTO = materialConverter.toDTO(material);
+            materialDTOS.add(materialDTO);
+        }
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+      return new ResponseEntity(materialDTOS,httpHeaders, HttpStatus.OK);
+    }
+    public String convertDate(LocalDateTime date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+        String formattedString = date.format(formatter);
+        return  formattedString;
+    }
+
+    @GetMapping("/getAllUserBorrorwedMaterial")
+    ResponseEntity<List<UserDTO>> getAllUserMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
+        Material material = materialRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getMaterialId());
+        if (material == null){
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity(material,httpHeaders, HttpStatus.BAD_REQUEST);
+        }
+        List<Integer> listUserId = materialRepository.getAllUserWhereMaterialId(borrowedMaterialDTO.getMaterialId());
+        List<Users> usersList = new ArrayList<>();
+        List<UserDTO> userDTOList = new ArrayList<>();
+
+        for (Integer id : listUserId){
+            Users users = userRepository.findByIdAndActiveIsTrue(id);
+            usersList.add(users);
+        }
+        for (Users users : usersList){
+            UserDTO  userDTO = new UserDTO();
+            userDTO.setId(users.getId());
+            userDTO.setEmail(users.getEmail());
+            userDTO.setName(users.getName());
+            userDTO.setSurName(users.getSurName());
+            userDTOList.add(userDTO);
+        }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(idFormation);
-        List<MaterialDTO> listMaterialDTO = new ArrayList<>();
-        if (formation != null){
-            List<Material> listMaterial = materialRepository.getAllByIdFormation(idFormation);
-            for (Material material : listMaterial){
-                MaterialDTO materialDTO = materialConverter.toDTO(material);
-                listMaterialDTO.add(materialDTO);
-            }
-        }
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(userDTOList,httpHeaders, HttpStatus.OK);
     }
-    */
+
+
 }
 

@@ -448,4 +448,46 @@ public class CalendarEventController {
         return ResponseEntity.ok(calendarEventList);
     }
 
+    @Operation(summary = "Event by id",
+            description = "find event by id",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = CalendarEvent.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = String.class))}),
+    })
+    @GetMapping("findEvent/{idEvent}")
+    public ResponseEntity<CalendarEvent> createCalendarEvent(@PathVariable Integer idEvent) {
+
+        CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(idEvent);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        if(calendarEvent == null){
+            return new ResponseEntity(new CalendarEvent(), headers, HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity(calendarEvent, headers, HttpStatus.OK);
+        }
+    }
+
+    @Operation(summary = "Formation byy calendar",
+            description = "Formation byy calendar",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Formation.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = String.class))}),
+    })
+    @GetMapping("findFormation/{idEvent}")
+    public ResponseEntity<Formation> fromationsbyCalendar(@PathVariable Integer idEvent) {
+
+        CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(idEvent);
+        Formation formation = calendarEventService.findFormationbyCalendar(calendarEvent);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        if(calendarEvent == null || formation == null){
+            return new ResponseEntity(new Formation(), headers, HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity(formation, headers, HttpStatus.OK);
+        }
+    }
+
+
 }

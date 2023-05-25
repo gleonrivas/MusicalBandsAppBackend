@@ -49,7 +49,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = musicalPieceRepository.findAllByActiveIsTrue();
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            MusicalPieceDTO musicalPieceDTO = new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(), musicalPiece.getLength(), null);
+            MusicalPieceDTO musicalPieceDTO = new MusicalPieceDTO(musicalPiece.getId(),musicalPiece.getName(),musicalPiece.getAuthor(), musicalPiece.getLength(), null);
             musicalPieceDTOList.add(musicalPieceDTO);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -70,7 +70,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getId(),musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -92,7 +92,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getId(),musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -114,7 +114,7 @@ public class MusicalPieceController {
         List<MusicalPiece> musicalPieceList = new ArrayList<>(musicalPieceSet);
         List<MusicalPieceDTO> musicalPieceDTOList = new ArrayList<>();
         for(MusicalPiece musicalPiece: musicalPieceList){
-            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
+            musicalPieceDTOList.add(new MusicalPieceDTO(musicalPiece.getId(),musicalPiece.getName(),musicalPiece.getAuthor(),musicalPiece.getLength(), null));
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -155,7 +155,7 @@ public class MusicalPieceController {
 
     })
     @PutMapping("/update")
-    public ResponseEntity<MusicalPiece> updateMusicalPiece(@RequestBody MusicalPieceUpdateDTO musicalPieceUpdateDTO) {
+    public ResponseEntity<MusicalPiece> updateMusicalPiece(@RequestBody MusicalPieceDTO musicalPieceUpdateDTO) {
         MusicalPiece musicalPiece = musicalPieceRepository.findByIdAndActiveIsTrue(musicalPieceUpdateDTO.getId());
         musicalPiece.setName(musicalPieceUpdateDTO.getName());
         musicalPiece.setAuthor(musicalPieceUpdateDTO.getAuthor());
@@ -175,7 +175,7 @@ public class MusicalPieceController {
     })
 
     @DeleteMapping("/delete/{idMusicalPiece}")
-    public ResponseEntity<String> deleteFormation(@PathVariable Long idMusicalPiece) {
+    public ResponseEntity<String> deleteFormation(@PathVariable Integer idMusicalPiece) {
         MusicalPiece musicalPiece = musicalPieceRepository.findByIdAndActiveIsTrue(idMusicalPiece);
         musicalPiece.setActive(false);
         musicalPieceRepository.save(musicalPiece);
