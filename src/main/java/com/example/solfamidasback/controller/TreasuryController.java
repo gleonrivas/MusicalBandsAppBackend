@@ -152,7 +152,7 @@ public class TreasuryController {
     @Operation(summary = "Pay a user who unsubscribes",
             description = "Go through all the events that the user has attended, check if they have penalties and get the total amount that the user receives and stays in the formation")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = UserPaidDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payLow")
@@ -174,7 +174,7 @@ public class TreasuryController {
     @Operation(summary = "Makes the annual account of training",
             description = "It makes the annual account of the training, distributing to all the users the amounts that belong to it and shows it in json")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PayFormationDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payFormationJson")
@@ -195,7 +195,7 @@ public class TreasuryController {
     @Operation(summary = "Makes the annual account of training",
             description = "It makes the annual account of the training, distributing to all the users the amounts that belong to it and shows it in pdf")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PayFormationDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payFormationPdf")
@@ -251,7 +251,7 @@ public class TreasuryController {
     @Operation(summary = "Shows the money that the formation has",
             description = "Shows the money that the formation has, with the date and if the total amount has increased or decreased")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Treasury.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @GetMapping("/getAllMoney")
