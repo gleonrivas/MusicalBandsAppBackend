@@ -218,6 +218,12 @@ public class MaterialController {
         return new ResponseEntity(listMaterialDTO,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Receives one bill of materials per person",
+            description = "Receive all the materials of a training using the id of a user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MaterialDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
   @GetMapping("/getAllMaterialBorroweUser")
     ResponseEntity<List<MaterialDTO>> getAllMaterialUser(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         Users users = userRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getUserId());
@@ -247,6 +253,12 @@ public class MaterialController {
         return  formattedString;
     }
 
+    @Operation(summary = "Receives one bill of users per material",
+            description = "Receive all the users of a training using the id of a material")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MaterialDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @GetMapping("/getAllUserBorrorwedMaterial")
     ResponseEntity<List<UserDTO>> getAllUserMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         Material material = materialRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getMaterialId());
