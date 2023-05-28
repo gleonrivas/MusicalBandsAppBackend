@@ -18,64 +18,71 @@ public class CalendarEventService {
     @Autowired
     private FormationRepository formationRepository;
 
-    public boolean VerifyCalendarEventDTO(CalendarEventDTO calendarEventDTO){
+    public boolean VerifyCalendarEventDTO(CalendarEventDTO calendarEventDTO) {
         String regexid = "\\d+"; //expresion regular para verificar si es un digito
         String regextype = "PRACTICE|CONCERT";
         String regexpaid = "0|1";
-        if(calendarEventDTO.getIdFormation().matches(regexid)&&
-                calendarEventDTO.getEnumTypeActuation().matches(regextype)&&
-                calendarEventDTO.getPaid().matches(regexpaid)&&
-                verifyDate(calendarEventDTO.getDate())&&
-                verifyDouble(calendarEventDTO.getAmount())&&
-                verifyDouble(calendarEventDTO.getPenaltyPonderation())&&
+        if (calendarEventDTO.getIdFormation().matches(regexid) &&
+                calendarEventDTO.getEnumTypeActuation().matches(regextype) &&
+                calendarEventDTO.getPaid().matches(regexpaid) &&
+                verifyDate(calendarEventDTO.getDate()) &&
+                verifyDouble(calendarEventDTO.getAmount()) &&
+                verifyDouble(calendarEventDTO.getPenaltyPonderation()) &&
                 verifyInteger(calendarEventDTO.getIdRepertory())
-        ){
+        ) {
             return true;
         }
         return false;
-   }
-    public boolean VerifyCalendarEventUpdateDTO(CalendarEventUpdateDTO calendarEventDTO){
+    }
+
+    public boolean VerifyCalendarEventUpdateDTO(CalendarEventUpdateDTO calendarEventDTO) {
 
         String regextype = "PRACTICE|CONCERT";
         String regexpaid = "0|1";
-        if(calendarEventDTO.getEnumTypeActuation().matches(regextype)&&
-                calendarEventDTO.getPaid().matches(regexpaid)&&
-                verifyDate(calendarEventDTO.getDate())&&
-                verifyDouble(calendarEventDTO.getAmount())&&
-                verifyDouble(calendarEventDTO.getPenaltyPonderation())&&
+        if (calendarEventDTO.getEnumTypeActuation().matches(regextype) &&
+                calendarEventDTO.getPaid().matches(regexpaid) &&
+                verifyDate(calendarEventDTO.getDate()) &&
+                verifyDouble(calendarEventDTO.getAmount()) &&
+                verifyDouble(calendarEventDTO.getPenaltyPonderation()) &&
                 verifyInteger(calendarEventDTO.getIdRepertory())
-        ){
+        ) {
             return true;
         }
         return false;
     }
-   public boolean verifyDate(String fecha){
-       try {
-           LocalDate.parse(fecha);
-       }catch (Exception e){
-           return false;
-       }
-       return true;
-   }
-    public boolean verifyDouble(String doble){
+
+    public boolean verifyDate(String fecha) {
+        try {
+            LocalDate.parse(fecha);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean verifyDouble(String doble) {
         try {
             Double.parseDouble(doble);
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
     }
-    public boolean verifyInteger(String integer){
+
+    public boolean verifyInteger(String integer) {
         try {
-            Integer.parseInt(integer);
-        }catch (Exception e){
+            if (integer != "") {
+                Integer.parseInt(integer);
+            }
+        } catch (Exception e) {
             return false;
         }
         return true;
     }
-    public boolean verifyFormation(List<Formation> formationList,Integer idFormation){
-        for (Formation formation:formationList){
-            if(formation.getId()==idFormation){
+
+    public boolean verifyFormation(List<Formation> formationList, Integer idFormation) {
+        for (Formation formation : formationList) {
+            if (formation.getId() == idFormation) {
                 return true;
             }
         }
@@ -83,8 +90,8 @@ public class CalendarEventService {
 
     }
 
-    public Formation findFormationbyCalendar (CalendarEvent calendarEvent){
-        Formation formation= formationRepository.findFirstByCalendarEventsAndActiveIsTrue(calendarEvent);
+    public Formation findFormationbyCalendar(CalendarEvent calendarEvent) {
+        Formation formation = formationRepository.findFirstByCalendarEventsAndActiveIsTrue(calendarEvent);
         return formation;
     }
 }

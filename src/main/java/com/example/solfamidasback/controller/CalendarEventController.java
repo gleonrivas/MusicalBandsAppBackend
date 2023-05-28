@@ -368,17 +368,16 @@ public class CalendarEventController {
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You cannot update events");
             return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
-
-        //validation the date must be later than the current date
-        if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
-                LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
-            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
-        }
+//        //validation the date must be later than the current date
+//        if(LocalDate.parse(cEUpdateDTO.getDate()).isBefore(LocalDate.now())||
+//                LocalDate.parse(cEUpdateDTO.getDate()).isEqual(LocalDate.now())) {
+//            ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
+//            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+//        }
 
         //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
         if (calendarEvent.getDate().isBefore(LocalDate.now())||calendarEvent.getDate().equals(LocalDate.now())){
-            if (cEUpdateDTO.getPaid().contains("1")){
+            if (cEUpdateDTO.getPaid()== "1"){
                 calendarEvent.setPaid(true);
             }
             calendarEvent.setDescription(cEUpdateDTO.getDescription());
@@ -398,7 +397,9 @@ public class CalendarEventController {
             calendarEvent.setPlace(cEUpdateDTO.getPlace());
             calendarEvent.setTitle(cEUpdateDTO.getTitle());
             calendarEvent.setPenaltyPonderation(Double.parseDouble(cEUpdateDTO.getPenaltyPonderation()));
-            calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdRepertory())));
+            if(cEUpdateDTO.getIdRepertory()!= ""){
+                calendarEvent.setRepertory(repertoryRepository.getReferenceById(Integer.parseInt(cEUpdateDTO.getIdRepertory())));
+            }
             calendarEventRepository.save(calendarEvent);
             return ResponseEntity.ok(calendarEvent);
         }
