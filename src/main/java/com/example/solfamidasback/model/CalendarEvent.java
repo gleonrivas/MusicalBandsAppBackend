@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -28,7 +29,7 @@ public class CalendarEvent {
     private String place;
 
     @JoinColumn(name = "full_date")
-    private LocalDate date;
+    private LocalDateTime date;
 
     @JoinColumn(name = "title")
     private String title;

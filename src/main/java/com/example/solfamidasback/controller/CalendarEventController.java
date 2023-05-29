@@ -30,6 +30,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,8 @@ public class CalendarEventController {
         Users user = userRepository.findByEmailAndActiveTrue(mail);
         Users usersadmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
 
+        System.out.println("FECHAAA---- "+LocalDateTime.now());
+
         //creacion por el super admin
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)&&user.equals(usersadmin)) {
             boolean pagado = false;
@@ -95,7 +98,7 @@ public class CalendarEventController {
 
             var formation = formationRepository.findById(Integer.valueOf(calendarEventDTO.getIdFormation()));
             calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
-            calendarEvent.setDate(LocalDate.parse(calendarEventDTO.getDate()));
+            calendarEvent.setDate(LocalDateTime.parse(calendarEventDTO.getDate()));
             calendarEvent.setAmount(Double.parseDouble(calendarEventDTO.getAmount()));
             calendarEvent.setDescription(calendarEventDTO.getDescription());
             calendarEvent.setPaid(pagado);
@@ -142,7 +145,7 @@ public class CalendarEventController {
 
             var formation = formationRepository.findById(Integer.valueOf(calendarEventDTO.getIdFormation()));
             calendarEvent.setType(calendarEventDTO.getEnumTypeActuation().toString());
-            calendarEvent.setDate(LocalDate.parse(calendarEventDTO.getDate()));
+            calendarEvent.setDate(LocalDateTime.parse(calendarEventDTO.getDate()));
             calendarEvent.setAmount(Double.parseDouble(calendarEventDTO.getAmount()));
             calendarEvent.setDescription(calendarEventDTO.getDescription());
             calendarEvent.setPaid(pagado);
@@ -290,8 +293,8 @@ public class CalendarEventController {
         }
 
         //validacion si ha sucedido el evento
-        if(calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().isBefore(LocalDate.now())||
-                calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().equals(LocalDate.now())){
+        if(calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().isBefore(LocalDateTime.now())||
+                calendarEventRepository.getById(Integer.parseInt(calendarEventDTO.getIdCalendarEvent())).getDate().equals(LocalDateTime.now())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event has already occurred, it is not possible to delete it.");
             return new ResponseEntity(responseStringDTO , HttpStatus.BAD_REQUEST );
         }
@@ -343,7 +346,7 @@ public class CalendarEventController {
             boolean pagado = false;
             if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
             calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
-            calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
+            calendarEvent.setDate(LocalDateTime.parse(cEUpdateDTO.getDate()));
             calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
             calendarEvent.setDescription(cEUpdateDTO.getDescription());
             calendarEvent.setPaid(pagado);
@@ -377,7 +380,7 @@ public class CalendarEventController {
         }
 
         //si ha sucedido o es hoy solo se puede cambiar el campo pagado a true, y la descripcion
-        if (calendarEvent.getDate().isBefore(LocalDate.now())||calendarEvent.getDate().equals(LocalDate.now())){
+        if (calendarEvent.getDate().isBefore(LocalDateTime.now())||calendarEvent.getDate().equals(LocalDateTime.now())){
             if (cEUpdateDTO.getPaid().contains("1")){
                 calendarEvent.setPaid(true);
             }
@@ -387,11 +390,11 @@ public class CalendarEventController {
         }
 
         //si no ha sucedido
-        if (calendarEvent.getDate().isAfter(LocalDate.now())){
+        if (calendarEvent.getDate().isAfter(LocalDateTime.now())){
             boolean pagado = false;
             if (cEUpdateDTO.getPaid().contains("1")){ pagado = true ;}
-            calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation().toString());
-            calendarEvent.setDate(LocalDate.parse(cEUpdateDTO.getDate()));
+            calendarEvent.setType(cEUpdateDTO.getEnumTypeActuation());
+            calendarEvent.setDate(LocalDateTime.parse(cEUpdateDTO.getDate()));
             calendarEvent.setAmount(Double.parseDouble(cEUpdateDTO.getAmount()));
             calendarEvent.setDescription(cEUpdateDTO.getDescription());
             calendarEvent.setPaid(pagado);
