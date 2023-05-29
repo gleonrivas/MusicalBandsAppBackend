@@ -116,8 +116,8 @@ public class CalendarEventController {
         if(calendarEventService.VerifyCalendarEventDTO(calendarEventDTO)) {
 
             //validation the date must be later than the current date
-            if (LocalDate.parse(calendarEventDTO.getDate()).isBefore(LocalDate.now()) ||
-                    LocalDate.parse(calendarEventDTO.getDate()).isEqual(LocalDate.now())) {
+            if (LocalDateTime.parse(calendarEventDTO.getDate()).isBefore(LocalDateTime.now()) ||
+                    LocalDateTime.parse(calendarEventDTO.getDate()).isEqual(LocalDateTime.now())) {
                 ResponseStringDTO responseStringDTO = new ResponseStringDTO("No earlier date than the current date is possible");
                 return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
             }
@@ -440,7 +440,7 @@ public class CalendarEventController {
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
                         user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList()).stream()
                 .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).
-                collect(Collectors.toList()).stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDate.now())).collect(Collectors.toList());
+                collect(Collectors.toList()).stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDateTime.now())).collect(Collectors.toList());
 
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
