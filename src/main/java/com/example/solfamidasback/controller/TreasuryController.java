@@ -1,6 +1,7 @@
 package com.example.solfamidasback.controller;
 
 
+import com.example.solfamidasback.controller.DTO.MaterialDTO;
 import com.example.solfamidasback.controller.DTO.PayFormationDTO;
 
 import com.example.solfamidasback.controller.DTO.PayFormationResponse;
@@ -16,6 +17,11 @@ import com.example.solfamidasback.service.TreasuryService;
 import com.example.solfamidasback.utilities.Utilities;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -59,6 +65,12 @@ public class TreasuryController {
     @Autowired
     JwtService jwtService;
 
+    @Operation(summary = "Shows a list of events",
+            description = "Shows all the events of a formation that are paid")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = CalendarEvent.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @GetMapping("/getAllEvents")
     public ResponseEntity<List<CalendarEvent>> getAllEvents (@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
@@ -74,6 +86,12 @@ public class TreasuryController {
         return new ResponseEntity(calendarEventList,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Shows a list of musicians",
+            description = "Shows all the external musicians that the group has had in the different performances")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = ExternalMusician.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @GetMapping("/getAllExternalMusician")
     public ResponseEntity<List<ExternalMusician>> getAllExternalMusician (@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
@@ -89,6 +107,12 @@ public class TreasuryController {
         return new ResponseEntity(externalMusicianList,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Action of paying an external musician",
+            description = "Pay the external musician the amount of the gig, subtracting it from the total money of the formation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @PostMapping("/payMusician")
     public ResponseEntity<ExternalMusician> payExternalMusician(@RequestBody ExternalMusicianDTO externalMusicianDTO){
         ExternalMusician externalMusician = externalMusicianRepository.findExternalMusicianByIdAndActiveIsTrue(externalMusicianDTO.getExternalMusicianId());
@@ -104,6 +128,12 @@ public class TreasuryController {
         return new ResponseEntity("Se ha pagado al músico",httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Action to collect a performance",
+            description = "Sets the event as paid and adds it to the total amount of the training")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @PostMapping("/payEvent")
     public ResponseEntity<CalendarEvent> payEvent(@RequestBody CalendarDTO calendarDTO){
         CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(calendarDTO.getCalendarId());
@@ -119,6 +149,12 @@ public class TreasuryController {
         return new ResponseEntity("Se ha recibido el dinero del evento",httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Pay a user who unsubscribes",
+            description = "Go through all the events that the user has attended, check if they have penalties and get the total amount that the user receives and stays in the formation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = UserPaidDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @PostMapping("/payLow")
     public ResponseEntity<UserPaidDTO> payLowUser(@NotNull @RequestBody PayLowDTO payLowDTO){
         Users users = userRepository.findByIdAndActiveIsTrue(payLowDTO.getUserId());
@@ -135,6 +171,12 @@ public class TreasuryController {
         return new ResponseEntity(userPaid,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Makes the annual account of training",
+            description = "It makes the annual account of the training, distributing to all the users the amounts that belong to it and shows it in json")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PayFormationDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @PostMapping("/payFormationJson")
     public ResponseEntity<PayFormationDTO> payFormation(@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
@@ -150,6 +192,12 @@ public class TreasuryController {
         return new ResponseEntity(payFormationDTO,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Makes the annual account of training",
+            description = "It makes the annual account of the training, distributing to all the users the amounts that belong to it and shows it in pdf")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PayFormationDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @PostMapping("/payFormationPdf")
     public ResponseEntity<byte[]> payFormation2(@RequestBody PayLowDTO payLowDTO) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
@@ -200,6 +248,12 @@ public class TreasuryController {
         }
     }
 
+    @Operation(summary = "Shows the money that the formation has",
+            description = "Shows the money that the formation has, with the date and if the total amount has increased or decreased")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Treasury.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @GetMapping("/getAllMoney")
     ResponseEntity<List<Treasury>> getAllMoney(@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
@@ -214,6 +268,12 @@ public class TreasuryController {
         return new ResponseEntity(treasuryList,httpHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Shows if the user is super admin",
+            description = "Through a token, check if the user is super admin")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
+    })
     @GetMapping("/isSuperAdmin")
     ResponseEntity<String> isSuperAdmin(HttpServletRequest request){
         boolean isSuper = Utilities.isSuperAdministrador(request,jwtService,userRepository);
