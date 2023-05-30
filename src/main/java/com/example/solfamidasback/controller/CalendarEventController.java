@@ -495,7 +495,6 @@ public class CalendarEventController {
     public ResponseEntity<CalendarEvent> joinRepertoryToEvent(@RequestParam Integer idCalendar,@RequestParam Integer idRepertory){
 
         CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(idCalendar);
-        System.out.println("holaohoa" +calendarEvent);
         Repertory repertory = repertoryRepository.findById(idRepertory).get();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
