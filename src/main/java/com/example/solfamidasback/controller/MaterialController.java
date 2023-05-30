@@ -1,9 +1,6 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.BorrowedMaterialDTO;
-import com.example.solfamidasback.controller.DTO.BorrowedMaterialUpdateDTO;
-import com.example.solfamidasback.controller.DTO.MaterialDTO;
-import com.example.solfamidasback.controller.DTO.UserDTO;
+import com.example.solfamidasback.controller.DTO.*;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Material;
 import com.example.solfamidasback.model.Users;
@@ -63,13 +60,13 @@ public class MaterialController {
         Users users = userRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getUserId());
 
         if (material == null || users == null){
-            return new ResponseEntity("material or user not exists or error",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("material or user not exists or error"),headers, HttpStatus.OK);
         }
         if (bm.isEmpty()){
             materialRepository.createBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
-            return new ResponseEntity("successfully created borrowed material",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("successfully created borrowed material"),headers, HttpStatus.OK);
         }
-        return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("borrowed material it already exists or error"),headers, HttpStatus.OK);
     }
 
 
@@ -259,7 +256,7 @@ public class MaterialController {
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MaterialDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
-    @GetMapping("/getAllUserBorrorwedMaterial")
+    @PostMapping("/getAllUserBorrorwedMaterial")
     ResponseEntity<List<UserDTO>> getAllUserMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         Material material = materialRepository.findByIdAndActiveIsTrue(borrowedMaterialDTO.getMaterialId());
         if (material == null){
