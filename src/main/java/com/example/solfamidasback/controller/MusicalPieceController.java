@@ -1,6 +1,7 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.RepertoryMusicalPieceDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.MusicalPieceDTO;
 import com.example.solfamidasback.model.DTO.MusicalPieceUpdateDTO;
@@ -179,7 +180,9 @@ public class MusicalPieceController {
         MusicalPiece musicalPiece = musicalPieceRepository.findByIdAndActiveIsTrue(idMusicalPiece);
         musicalPiece.setActive(false);
         musicalPieceRepository.save(musicalPiece);
-        return ResponseEntity.ok("musical piece deleted");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(new ResponseStringDTO("Musical piece deleted"),headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a musical piece by id",
@@ -191,11 +194,11 @@ public class MusicalPieceController {
     })
 
     @DeleteMapping("/delete/{idMusicalPiece}/{idRepertory}")
-    public ResponseEntity<String> deleteRelation(@PathVariable Integer idMusicalPiece, @PathVariable Integer idRepertory) {
+    public ResponseEntity<ResponseStringDTO> deleteRelation(@PathVariable Integer idMusicalPiece, @PathVariable Integer idRepertory) {
         musicalPieceRepository.updateRelation(idRepertory,idMusicalPiece);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("Musical piece deleted",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("Musical piece deleted"),headers, HttpStatus.OK);
 
     }
 }

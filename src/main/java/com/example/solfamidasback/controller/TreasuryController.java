@@ -1,11 +1,8 @@
 package com.example.solfamidasback.controller;
 
 
-import com.example.solfamidasback.controller.DTO.MaterialDTO;
-import com.example.solfamidasback.controller.DTO.PayFormationDTO;
+import com.example.solfamidasback.controller.DTO.*;
 
-import com.example.solfamidasback.controller.DTO.PayFormationResponse;
-import com.example.solfamidasback.controller.DTO.UsersPaidDTO;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.CalendarDTO;
 import com.example.solfamidasback.model.DTO.ExternalMusicianDTO;
@@ -125,7 +122,7 @@ public class TreasuryController {
         treasuryService.externalMusicianPaid(externalMusician);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("Se ha pagado al músico",httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("Se ha pagado al músico"),httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Action to collect a performance",
@@ -146,7 +143,7 @@ public class TreasuryController {
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("Se ha recibido el dinero del evento",httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("Se ha recibido el dinero del evento"),httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Pay a user who unsubscribes",

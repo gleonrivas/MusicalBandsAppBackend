@@ -1,6 +1,7 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.FormationRoleUserDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.DTO.RoleDTO;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
@@ -120,7 +121,7 @@ public class RoleController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("role deleted",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("role deleted"),headers, HttpStatus.OK);
     }
 
 

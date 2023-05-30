@@ -124,8 +124,6 @@ public class FormationController {
         return ResponseEntity.ok(formationRepository.findFormationByIdAndActiveIsTrue(formationId));
     }
 
-
-
     @Operation(summary = "Create a formation",
             description = "Create formation with user_id as administrator of the formation",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -227,7 +225,6 @@ public class FormationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(result,headers, HttpStatus.OK);
-
     }
 
     @Operation(summary = "Insert a user in a formation",

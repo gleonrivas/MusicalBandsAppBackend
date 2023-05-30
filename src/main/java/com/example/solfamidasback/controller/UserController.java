@@ -156,7 +156,7 @@ public class UserController {
 
 
         userRepository.save(userSession);
-        return new ResponseEntity("user edited successfully",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("user edited successfully"),headers, HttpStatus.OK);
 
     }
     @Operation(summary = "See your profile",
@@ -192,7 +192,7 @@ public class UserController {
         userRepository.save(user);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("user deleted successfully",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("user deleted successfully"),headers, HttpStatus.OK);
 
     }
 
@@ -209,7 +209,7 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         userRepository.save(userConverter.fromAdmintoEntity(user));
-        return new ResponseEntity("admin created successfully",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("admin created successfully"),headers, HttpStatus.OK);
 
     }
 
@@ -229,7 +229,7 @@ public class UserController {
         userRepository.save(user);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity("admin deleted successfully",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("admin deleted successfully"),headers, HttpStatus.OK);
 
     }
     @Operation(summary = "Change your password",

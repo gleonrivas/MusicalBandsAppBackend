@@ -52,7 +52,7 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/createBorrowedMaterial")
-    public ResponseEntity<String> saveBorrowedMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
+    public ResponseEntity<ResponseStringDTO> saveBorrowedMaterial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         List<Integer> bm = materialRepository.findBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
@@ -77,7 +77,7 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/updateMaterialBorrowedMaterial")
-    public ResponseEntity<String> updateBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
+    public ResponseEntity<ResponseStringDTO> updateBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         Optional<Material> material = materialRepository.findById(borrowedMaterialDTO.getMaterialId());
@@ -87,16 +87,16 @@ public class MaterialController {
 
 
         if (material.isEmpty() || users == null || material2.isEmpty()){
-            return new ResponseEntity("material or user not exists or error",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("material or user not exists or error"),headers, HttpStatus.OK);
         }
 
         if (borrowedMaterialDTO.getNewMaterialId() != null ){
             materialRepository.changeMaterial(borrowedMaterialDTO.getNewMaterialId(), borrowedMaterialDTO.getUserId(), borrowedMaterialDTO.getMaterialId());
-            return new ResponseEntity("successfully update borrowed material",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("successfully update borrowed material"),headers, HttpStatus.OK);
         }
 
 
-        return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("borrowed material it already exists or error"),headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Modify the material borrowed passing old user id, new user id and the material id",
@@ -106,7 +106,7 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/updateUserBorrowedMaterial")
-    public ResponseEntity<String> updateUserBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
+    public ResponseEntity<ResponseStringDTO> updateUserBorrowedMaterial(@RequestBody BorrowedMaterialUpdateDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         Optional<Material> material = materialRepository.findById(borrowedMaterialDTO.getMaterialId());
@@ -117,16 +117,16 @@ public class MaterialController {
 
 
         if (material.isEmpty() || users == null || users2 == null){
-            return new ResponseEntity("material or user not exists or error",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("material or user not exists or error"),headers, HttpStatus.OK);
         }
 
         if (borrowedMaterialDTO.getNewUserId() != null ){
             materialRepository.changeUser(borrowedMaterialDTO.getNewUserId(), borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
-            return new ResponseEntity("successfully update borrowed material",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("successfully update borrowed material"),headers, HttpStatus.OK);
         }
 
 
-        return new ResponseEntity("borrowed material it already exists or error",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("borrowed material it already exists or error"),headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Delete the material borrowed passing user id and the material id",
@@ -136,16 +136,16 @@ public class MaterialController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @DeleteMapping("/deleteBorrowedMaterial")
-    public ResponseEntity<String> deleteBorrrowedMarial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
+    public ResponseEntity<ResponseStringDTO> deleteBorrrowedMarial(@RequestBody BorrowedMaterialDTO borrowedMaterialDTO){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         List<Integer> bm = materialRepository.findBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
         if (bm.isEmpty()){
-            return new ResponseEntity("borrowed material not exist",headers, HttpStatus.OK);
+            return new ResponseEntity(new ResponseStringDTO("borrowed material not exist"),headers, HttpStatus.OK);
         }
         materialRepository.deleteBorrowedMaterial(borrowedMaterialDTO.getMaterialId(), borrowedMaterialDTO.getUserId());
 
-        return new ResponseEntity("successfully delete borrowed material",headers, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("successfully delete borrowed material"),headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Create a material",
