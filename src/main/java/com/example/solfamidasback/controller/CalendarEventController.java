@@ -491,5 +491,22 @@ public class CalendarEventController {
         }
     }
 
+    @GetMapping("joinrepertorytoevent")
+    public ResponseEntity<CalendarEvent> joinRepertoryToEvent(@RequestParam Integer idCalendar,@RequestParam Integer idRepertory){
+
+        CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(idCalendar);
+        System.out.println("holaohoa" +calendarEvent);
+        Repertory repertory = repertoryRepository.findById(idRepertory).get();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        if(calendarEvent == null || repertory == null){
+            return new ResponseEntity(new ResponseStringDTO("Not found"), headers, HttpStatus.NOT_FOUND);
+        }else{
+            calendarEvent.setRepertory(repertory);
+            calendarEventRepository.save(calendarEvent);
+            return ResponseEntity.ok(calendarEvent);
+        }
+    }
 
 }
