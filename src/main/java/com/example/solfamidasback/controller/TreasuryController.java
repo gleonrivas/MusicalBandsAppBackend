@@ -68,7 +68,7 @@ public class TreasuryController {
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = CalendarEvent.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
-    @GetMapping("/getAllEvents")
+    @PostMapping("/getAllEvents")
     public ResponseEntity<List<CalendarEvent>> getAllEvents (@RequestBody PayLowDTO payLowDTO){
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
         if (formation == null){

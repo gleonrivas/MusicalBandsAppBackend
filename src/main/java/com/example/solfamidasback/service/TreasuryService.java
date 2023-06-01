@@ -109,6 +109,9 @@ public class TreasuryService {
         treasuryNew.setReceiveMoneyDate(LocalDate.now());
         treasuryNew.setActive(true);
         treasuryRepository.save(treasuryNew);
+        calendarEvent.setPaid(true);
+
+        calendarEventRepository.save(calendarEvent);
     }
 
     public UserPaidDTO paidUserFormation (Users users,Formation formation){
