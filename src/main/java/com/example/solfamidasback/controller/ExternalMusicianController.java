@@ -2,6 +2,7 @@ package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.controller.DTO.ExternalMusicianDTO;
 import com.example.solfamidasback.controller.DTO.ExternalMusicianUpdateDTO;
+import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.ExternalMusician;
 import com.example.solfamidasback.service.ExternalMusicianService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,15 +109,16 @@ public class ExternalMusicianController {
             description = "the external musician is deletec",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = ResponseStringDTO.class),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> deleteExternalMusician(@PathVariable @NotNull Integer id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseStringDTO> deleteExternalMusician(@PathVariable @NotNull Integer id){
         String response = externalMusicianService.deleteById(id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(response,httpHeaders, HttpStatus.OK);
+        ResponseStringDTO responseStringDTO = new ResponseStringDTO(response);
+        return new ResponseEntity(responseStringDTO,httpHeaders, HttpStatus.OK);
     }
 
 }
