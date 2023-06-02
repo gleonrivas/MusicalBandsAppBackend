@@ -54,6 +54,7 @@ public class ExternalMusicianService {
         externalMusician.setBankAccount(externalMusicianDTO.getBankAccount());
         externalMusician.setCalendar(calendarEvent);
         externalMusician.setPhone(externalMusicianDTO.getPhone());
+        externalMusician.setActive(true);
         externalMusicianRepository.save(externalMusician);
         return externalMusician;
     }
