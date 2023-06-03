@@ -220,11 +220,9 @@ public class FormationController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @DeleteMapping("/deleteUserFormation")
-    public ResponseEntity<String> deleteUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
+    public ResponseEntity<ResponseEntity> deleteUserFormation(@NotNull @RequestBody FormationUserDeleteDTO formationUserDeleteDTO){
         String result = formationService.deleteUserFormation(formationUserDeleteDTO.getFormationId(),formationUserDeleteDTO.getUserId());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(result,headers, HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Operation(summary = "Insert a user in a formation",
