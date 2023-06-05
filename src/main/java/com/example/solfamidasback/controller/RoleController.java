@@ -3,6 +3,7 @@ package com.example.solfamidasback.controller;
 import com.example.solfamidasback.controller.DTO.FormationRoleUserDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
 import com.example.solfamidasback.model.DTO.RoleDTO;
+import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
 import com.example.solfamidasback.model.Formation;
 import com.example.solfamidasback.model.Role;
 import com.example.solfamidasback.model.UserFormationRole;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -89,18 +91,34 @@ public class RoleController {
     })
     @PostMapping("/create")
     public ResponseEntity<Role> createRole(@RequestBody FormationRoleUserDTO roleUserFormationDTO) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         //buscar el user
         Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
-        //crear rol
         Role role = new Role(true,roleUserFormationDTO.getType());
+        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
+        //comprobar si solo hay un rol especial
+        List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation)).toList();
+        if (!userFormationRoleCheck.isEmpty()){
+            for(UserFormationRole ufr:userFormationRoleCheck){
+                if(ufr.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
+                        ufr.getRole().getType().equals(EnumRolUserFormation.OWNER)||
+                        ufr.getRole().getType().equals(EnumRolUserFormation.TREASURER)||
+                        ufr.getRole().getType().equals(EnumRolUserFormation.ADMINISTRATOR)||
+                        ufr.getRole().getType().equals(EnumRolUserFormation.ARCHIVIST)||
+                        ufr.getRole().getType().equals(EnumRolUserFormation.ASSISTANCE_CONTROL
+                        )){
+                    return new ResponseEntity(new ResponseStringDTO("Ya existe ese rol"),headers, HttpStatus.BAD_REQUEST );
+                }
+            }
+        }
+        //crear rol
         roleRepository.save(role);
         role = roleRepository.findFirstOrderByIdDesc();
-        Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
         //crear relacion
         UserFormationRole userFormationRole= new UserFormationRole(user,formation,role,true);
         userFormationRoleRepository.save(userFormationRole);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         return new ResponseEntity(role,headers, HttpStatus.OK);
     }
 
