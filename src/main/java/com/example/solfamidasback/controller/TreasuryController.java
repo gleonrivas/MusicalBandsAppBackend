@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.codec.binary.Base64;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 
@@ -36,12 +37,12 @@ import org.springframework.web.bind.annotation.*;
 import com.itextpdf.text.pdf.PdfWriter;
 
 
-
 import java.io.ByteArrayOutputStream;
 
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "Treasury", description = "Treasury logic")
 @RestController
@@ -69,18 +70,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/getAllEvents")
-    public ResponseEntity<List<CalendarEvent>> getAllEvents (@RequestBody PayLowDTO payLowDTO){
+    public ResponseEntity<List<CalendarEvent>> getAllEvents(@RequestBody PayLowDTO payLowDTO) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        if (formation == null){
+        if (formation == null) {
             List<CalendarEvent> calendarEventList = new ArrayList<>();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(calendarEventList,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(calendarEventList, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         List<CalendarEvent> calendarEventList = treasuryService.eventsWithMoney(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(calendarEventList,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(calendarEventList, httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Shows a list of musicians",
@@ -90,18 +91,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/getAllExternalMusician")
-    public ResponseEntity<List<ExternalMusician>> getAllExternalMusician (@RequestBody PayLowDTO payLowDTO){
+    public ResponseEntity<List<ExternalMusician>> getAllExternalMusician(@RequestBody PayLowDTO payLowDTO) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        if (formation == null){
+        if (formation == null) {
             List<ExternalMusician> externalMusicians = new ArrayList<>();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(externalMusicians,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(externalMusicians, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         List<ExternalMusician> externalMusicianList = treasuryService.externalMusicianEvents(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(externalMusicianList,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(externalMusicianList, httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Action of paying an external musician",
@@ -111,18 +112,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payMusician")
-    public ResponseEntity<ExternalMusician> payExternalMusician(@RequestBody ExternalMusicianDTO externalMusicianDTO){
+    public ResponseEntity<ExternalMusician> payExternalMusician(@RequestBody ExternalMusicianDTO externalMusicianDTO) {
         ExternalMusician externalMusician = externalMusicianRepository.findExternalMusicianByIdAndActiveIsTrue(externalMusicianDTO.getExternalMusicianId());
-        if (externalMusician == null){
+        if (externalMusician == null) {
             ExternalMusician externalMusicians = new ExternalMusician();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(externalMusicians,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(externalMusicians, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         treasuryService.externalMusicianPaid(externalMusician);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(new ResponseStringDTO("Se ha pagado al músico"),httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("Se ha pagado al músico"), httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Action to collect a performance",
@@ -132,18 +133,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payEvent")
-    public ResponseEntity<CalendarEvent> payEvent(@RequestBody CalendarDTO calendarDTO){
+    public ResponseEntity<CalendarEvent> payEvent(@RequestBody CalendarDTO calendarDTO) {
         CalendarEvent calendarEvent = calendarEventRepository.findCalendarEventById(calendarDTO.getCalendarId());
         treasuryService.calendarEventPaid(calendarEvent);
-        if (calendarEvent == null){
+        if (calendarEvent == null) {
             CalendarEvent calendarEvent1 = new CalendarEvent();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(calendarEvent1,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(calendarEvent1, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(new ResponseStringDTO("Se ha recibido el dinero del evento"),httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(new ResponseStringDTO("Se ha recibido el dinero del evento"), httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Pay a user who unsubscribes",
@@ -153,19 +154,19 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payLow")
-    public ResponseEntity<UserPaidDTO> payLowUser(@NotNull @RequestBody PayLowDTO payLowDTO){
+    public ResponseEntity<UserPaidDTO> payLowUser(@NotNull @RequestBody PayLowDTO payLowDTO) {
         Users users = userRepository.findByIdAndActiveIsTrue(payLowDTO.getUserId());
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        if (users == null || formation == null){
+        if (users == null || formation == null) {
             UserPaidDTO userPaidDTO = new UserPaidDTO();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(userPaidDTO,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(userPaidDTO, httpHeaders, HttpStatus.BAD_REQUEST);
         }
-        UserPaidDTO userPaid = treasuryService.paidUserFormation(users,formation);
+        UserPaidDTO userPaid = treasuryService.paidUserFormation(users, formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(userPaid,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(userPaid, httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Makes the annual account of training",
@@ -175,18 +176,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @PostMapping("/payFormationJson")
-    public ResponseEntity<PayFormationDTO> payFormation(@RequestBody PayLowDTO payLowDTO){
+    public ResponseEntity<PayFormationDTO> payFormation(@RequestBody PayLowDTO payLowDTO) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        if (formation == null){
+        if (formation == null) {
             PayFormationDTO payFormationDTO = new PayFormationDTO();
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(payFormationDTO,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(payFormationDTO, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         PayFormationDTO payFormationDTO = treasuryService.calculatePaidFormation(formation);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(payFormationDTO,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(payFormationDTO, httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Makes the annual account of training",
@@ -251,18 +252,18 @@ public class TreasuryController {
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Treasury.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
-    @GetMapping("/getAllMoney")
-    ResponseEntity<List<Treasury>> getAllMoney(@RequestBody PayLowDTO payLowDTO){
+    @PostMapping("/getAllMoney")
+    ResponseEntity<List<Treasury>> getAllMoney(@RequestBody PayLowDTO payLowDTO) {
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(payLowDTO.getFormationId());
-        if (formation==null){
+        if (formation == null) {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(formation,httpHeaders, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(formation, httpHeaders, HttpStatus.BAD_REQUEST);
         }
         List<Treasury> treasuryList = treasuryRepository.getAllTreasuryFormation(payLowDTO.getFormationId());
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity(treasuryList,httpHeaders, HttpStatus.OK);
+        return new ResponseEntity(treasuryList, httpHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Shows if the user is super admin",
@@ -272,10 +273,26 @@ public class TreasuryController {
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
     })
     @GetMapping("/isSuperAdmin")
-    ResponseEntity<String> isSuperAdmin(HttpServletRequest request){
-        boolean isSuper = Utilities.isSuperAdministrador(request,jwtService,userRepository);
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity(isSuper,httpHeaders, HttpStatus.OK);
+    ResponseEntity<String> isSuperAdmin(HttpServletRequest request) {
+        boolean isSuper = Utilities.isSuperAdministrador(request, jwtService, userRepository);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(isSuper, httpHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener Treasury por ID", description = "Obtiene una entidad Treasury por su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK - Treasury encontrado"),
+            @ApiResponse(responseCode = "404", description = "No encontrado - Treasury no existe")
+    })
+    public ResponseEntity<Treasury> getTreasuryById(@PathVariable Integer idFormation) {
+        Treasury treasury = treasuryRepository.findFirstByFormationIdAndActiveOrderByReceiveMoneyDateDesc(idFormation, true);
+
+        if (treasury != null) {
+            return ResponseEntity.ok(treasury); // Retorna 200 OK con la entidad Treasury encontrada
+        }
+        return ResponseEntity.notFound().build(); // Retorna 404 Not Found si el Treasury no existe
+
     }
 }

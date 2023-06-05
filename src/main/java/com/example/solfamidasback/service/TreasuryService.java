@@ -153,8 +153,6 @@ public class TreasuryService {
         userPaidDTO.setPenalty(formatearDecimales(totalPenalty,2));
         userPaidDTO.setAmount(formatearDecimales(howMuchBelongPenalty,2));
 
-        //Se pone inactivo ya que se da de baja de la formación
-        users.setActive(false);
         userRepository.save(users);
 
 
