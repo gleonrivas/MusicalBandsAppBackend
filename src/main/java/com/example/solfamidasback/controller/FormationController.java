@@ -1,9 +1,6 @@
 package com.example.solfamidasback.controller;
 
-import com.example.solfamidasback.controller.DTO.FormationLikeDTO;
-import com.example.solfamidasback.controller.DTO.FormationUserDeleteDTO;
-import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
-import com.example.solfamidasback.controller.DTO.UsersFormationRoleDTO;
+import com.example.solfamidasback.controller.DTO.*;
 import com.example.solfamidasback.model.*;
 import com.example.solfamidasback.model.DTO.FormationDTO;
 import com.example.solfamidasback.model.DTO.FormationUpdateDTO;
@@ -21,6 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -292,7 +290,26 @@ public class FormationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(usersList,headers, HttpStatus.OK);
+    }
+    @GetMapping("/listUsers2/{idFormation}")
+    public ResponseEntity<List<UsersFormationRoleDTO2>> usersByAFormation2(@NotNull @PathVariable Integer idFormation){
+        List<UserFormationRole> userFormationRole = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().getId().equals(idFormation))
+                .filter(userFormationRole1 -> userFormationRole1.getUsers().getActive().equals(true)).toList();
+        Set<Users> users = new HashSet<>(userFormationRole.stream().map(UserFormationRole::getUsers).toList());
+        List<UsersFormationRoleDTO2> usersList = new ArrayList<>();
+        for(Users u:users){
+            List<RoleDTO2> rdto = new ArrayList<>();
+            userFormationRole.stream().filter(userFormationRole1 -> userFormationRole1.getUsers().equals(u)).toList()
+                    .stream().map(UserFormationRole::getRole).toList()
+                    .forEach(i ->rdto.add(new RoleDTO2(i.getId(),i.getType())) );
+            UsersFormationRoleDTO2 ufrdto = new UsersFormationRoleDTO2(u.getId(),u.getName(),u.getUrl(),u.getSurName(),u.getEmail(),"",rdto);
+        usersList.add(ufrdto);
+        }
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+//        return new ResponseEntity(new ResponseStringDTO("hola"),headers, HttpStatus.OK);
+        return new ResponseEntity(usersList,headers, HttpStatus.OK);
     }
 
 
