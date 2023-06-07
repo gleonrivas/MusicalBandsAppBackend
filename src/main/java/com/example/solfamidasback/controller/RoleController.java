@@ -96,8 +96,11 @@ public class RoleController {
         //buscar el user
         Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
         Role role = new Role(true,roleUserFormationDTO.getType());
+        if(role==null){
+            return new ResponseEntity(new ResponseStringDTO("error enum"),headers, HttpStatus.BAD_REQUEST );
+        }
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
-        System.out.println("holaolaolaola"+formation.getId());
+
         //comprobar si solo hay un rol especial
         List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation))
                 .filter(userFormationRole -> userFormationRole.getRole().getType().equals(roleUserFormationDTO.getType()))
