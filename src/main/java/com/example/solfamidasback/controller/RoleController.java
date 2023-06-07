@@ -97,8 +97,11 @@ public class RoleController {
         Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
         Role role = new Role(true,roleUserFormationDTO.getType());
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
+        System.out.println("holaolaolaola"+formation.getId());
         //comprobar si solo hay un rol especial
-        List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation)).toList();
+        List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation))
+                .filter(userFormationRole -> userFormationRole.getRole().getType().equals(roleUserFormationDTO.getType()))
+                .filter(userFormationRole -> userFormationRole.getRole().isActive()).toList();
         if (!userFormationRoleCheck.isEmpty()){
             for(UserFormationRole ufr:userFormationRoleCheck){
                 if(ufr.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
