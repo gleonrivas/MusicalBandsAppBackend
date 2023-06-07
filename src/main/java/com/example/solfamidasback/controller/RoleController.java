@@ -95,16 +95,12 @@ public class RoleController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         //buscar el user
         Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
-
-        Role role = new Role(true,EnumRolUserFormation.valueOf(roleUserFormationDTO.getType()));
-        if(role==null){
-            return new ResponseEntity(new ResponseStringDTO("error enum"),headers, HttpStatus.BAD_REQUEST );
-        }
+        Role role = new Role(true,roleUserFormationDTO.getType());
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
 
         //comprobar si solo hay un rol especial
         List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation))
-                .filter(userFormationRole -> userFormationRole.getRole().getType().equals(EnumRolUserFormation.valueOf(roleUserFormationDTO.getType())))
+                .filter(userFormationRole -> userFormationRole.getRole().getType().equals(roleUserFormationDTO.getType()))
                 .filter(userFormationRole -> userFormationRole.getRole().isActive()).toList();
         if (!userFormationRoleCheck.isEmpty()){
             for(UserFormationRole ufr:userFormationRoleCheck){

@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FormationRoleUserDTO {
-    String type;
+    EnumRolUserFormation type;
     Integer userId;
     Integer formationId;
 }
