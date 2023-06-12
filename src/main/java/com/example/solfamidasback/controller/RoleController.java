@@ -142,7 +142,7 @@ public class RoleController {
         Role role = roleRepository.findByActiveIsTrueAndId(idRole);
         System.out.println("rol+++++"+role);
         if(role==null){
-            return new ResponseEntity(new ResponseStringDTO("rol borrado"),headers, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ResponseStringDTO("rol no existe"),headers, HttpStatus.BAD_REQUEST);
         }
         role.setActive(false);
         roleRepository.save(role);
