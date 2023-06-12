@@ -136,12 +136,18 @@ public class RoleController {
 
     @PutMapping("/delete/{idRole}")
     public ResponseEntity<String> rolActiveFalse(@PathVariable Integer idRole) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         Role role = roleRepository.findByActiveIsTrueAndId(idRole);
+        System.out.println("rol+++++"+role);
+        if(role==null){
+            return new ResponseEntity(new ResponseStringDTO("rol borrado"),headers, HttpStatus.BAD_REQUEST);
+        }
         role.setActive(false);
         roleRepository.save(role);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         return new ResponseEntity(new ResponseStringDTO("role deleted"),headers, HttpStatus.OK);
     }
 
