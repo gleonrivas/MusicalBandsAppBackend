@@ -300,7 +300,7 @@ public class FormationController {
         for(Users u:users){
             List<RoleDTO2> rdto = new ArrayList<>();
             userFormationRole.stream().filter(userFormationRole1 -> userFormationRole1.getUsers().equals(u)).toList()
-                    .stream().map(UserFormationRole::getRole).toList()
+                    .stream().map(UserFormationRole::getRole).toList().stream().filter(Role::isActive).toList()
                     .forEach(i ->rdto.add(new RoleDTO2(i.getId(),i.getType())) );
             UsersFormationRoleDTO2 ufrdto = new UsersFormationRoleDTO2(u.getId(),u.getName(),u.getUrl(),u.getSurName(),u.getEmail(),"",rdto);
         usersList.add(ufrdto);
