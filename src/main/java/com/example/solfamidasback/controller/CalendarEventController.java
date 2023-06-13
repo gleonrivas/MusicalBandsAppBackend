@@ -167,8 +167,38 @@ public class CalendarEventController {
             @ApiResponse(responseCode = "200",content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CalendarEvent.class)),mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema(implementation = String.class)) }),
     })
-    @GetMapping("AllMyEvents")
+    @PostMapping("AllMyEvents")
     public ResponseEntity<List<CalendarEvent>> listAllMyEvents(HttpServletRequest request){
+
+        //token validation
+        try {
+            String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        }catch (Exception e){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("Token error");
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
+        }
+
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        Users useradmin = userRepository.findByEmailAndActiveTrueAndSuperadminTrue(mail);
+        //retorno de todos los eventos para el superusuario
+        if (user.equals(useradmin)){
+            return ResponseEntity.ok(calendarEventRepository.findAll());
+        }
+
+        //filter the list of caledar event by list of user formation
+        List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
+                user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
+        if(calendarEventList.isEmpty()){
+            ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
+            return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
+        }
+
+        return ResponseEntity.ok(calendarEventList);
+    }
+    @GetMapping("AllMyEvents2")
+    public ResponseEntity<List<CalendarEvent>> listAllMyEvents2(HttpServletRequest request){
 
         //token validation
         try {
