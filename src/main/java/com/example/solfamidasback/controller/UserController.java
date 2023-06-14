@@ -5,6 +5,7 @@ import com.example.solfamidasback.configSecurity.driveCredentials.GoogleDriveBas
 import com.example.solfamidasback.configSecurity.dropbox.DropboxConfig;
 import com.example.solfamidasback.controller.DTO.PasswordDTO;
 import com.example.solfamidasback.controller.DTO.ResponseStringDTO;
+import com.example.solfamidasback.controller.DTO.UserDTO2;
 import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.DTO.SuperAdminDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
@@ -175,6 +176,16 @@ public class UserController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         UserDTO userDTO = userConverter.toDTO(user);
         return new ResponseEntity(userDTO,headers, HttpStatus.OK);
+    }
+    @GetMapping("/profile2")
+    public ResponseEntity<Users> profile2(HttpServletRequest request) throws IOException {
+        String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
+        String mail =  jwtService.extractUsername(jwtToken);
+        Users user = userRepository.findByEmailAndActiveTrue(mail);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UserDTO2 userDTO2 = userConverter.toDTO2(user);
+        return new ResponseEntity(userDTO2,headers, HttpStatus.OK);
     }
     @Operation(summary = "Delete your user",
             description = "Delete your user",
