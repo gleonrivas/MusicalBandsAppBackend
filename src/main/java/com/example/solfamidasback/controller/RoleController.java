@@ -97,8 +97,11 @@ public class RoleController {
         Users user = userRepository.findByIdAndActiveIsTrue(roleUserFormationDTO.getUserId());
         Role role = new Role(true,roleUserFormationDTO.getType());
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(roleUserFormationDTO.getFormationId());
+
         //comprobar si solo hay un rol especial
-        List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation)).toList();
+        List<UserFormationRole> userFormationRoleCheck = userFormationRoleRepository.findAll().stream().filter(userFormationRole1 -> userFormationRole1.getFormation().equals(formation))
+                .filter(userFormationRole -> userFormationRole.getRole().getType().equals(roleUserFormationDTO.getType()))
+                .filter(userFormationRole -> userFormationRole.getRole().isActive()).toList();
         if (!userFormationRoleCheck.isEmpty()){
             for(UserFormationRole ufr:userFormationRoleCheck){
                 if(ufr.getRole().getType().equals(EnumRolUserFormation.PRESIDENT)||
@@ -133,12 +136,18 @@ public class RoleController {
 
     @PutMapping("/delete/{idRole}")
     public ResponseEntity<String> rolActiveFalse(@PathVariable Integer idRole) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         Role role = roleRepository.findByActiveIsTrueAndId(idRole);
+        System.out.println("rol+++++"+role);
+        if(role==null){
+            return new ResponseEntity(new ResponseStringDTO("rol no existe"),headers, HttpStatus.BAD_REQUEST);
+        }
         role.setActive(false);
         roleRepository.save(role);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         return new ResponseEntity(new ResponseStringDTO("role deleted"),headers, HttpStatus.OK);
     }
 
