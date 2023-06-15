@@ -80,7 +80,7 @@ public class MusicSheetController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @GetMapping("/listMs/{id_formation}")
-    public ResponseEntity<List<MusicSheetDTO>> profile(HttpServletRequest request, Integer id_formation) throws IOException {
+    public ResponseEntity<List<MusicSheetDTO>> profile(HttpServletRequest request,@PathVariable Integer id_formation) throws IOException {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
@@ -99,10 +99,10 @@ public class MusicSheetController {
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
     @PostMapping("/create")
-    public ResponseEntity<List<MusicSheet>> profile(HttpServletRequest request, @RequestBody MusicSheetDTO msDTO) throws IOException {
+    public ResponseEntity<List<MusicSheet>> profile(HttpServletRequest request,  @RequestBody MusicSheetDTO msDTO) throws IOException {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
-        Users user = userRepository.findByEmailAndActiveTrue(mail);
+
         HttpHeaders headers = new HttpHeaders();
 
         Role role = new Role(true, EnumRolUserFormation.ARCHIVIST);
@@ -110,7 +110,7 @@ public class MusicSheetController {
         role = roleRepository.findFirstOrderByIdDesc();
         Formation formation = formationRepository.findFormationByIdAndActiveIsTrue(msDTO.getFormationId());
         //crear relacion
-        UserFormationRole userFormationRole= new UserFormationRole(user,formation,role,true);
+        UserFormationRole userFormationRole= new UserFormationRole(userRepository.findByIdAndActiveIsTrue(msDTO.getUserId()) ,formation,role,true);
         UserFormationRole userFR = userFormationRoleRepository.save(userFormationRole);
 
         MusicSheet ms = new MusicSheet();

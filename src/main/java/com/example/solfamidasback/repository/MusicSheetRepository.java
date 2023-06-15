@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MusicSheetRepository extends JpaRepository<MusicSheet,Integer> {
 
-    @Query(value = "select * from music_sheet ms \n" +
+    @Query(value = "select ms.* from music_sheet ms \n" +
             "join user_formation_role ufr on ms.id_user_formation_role = ufr.id\n" +
             "join formation f on ufr.id_formation = f.id\n" +
             "where f.id = ?", nativeQuery = true)

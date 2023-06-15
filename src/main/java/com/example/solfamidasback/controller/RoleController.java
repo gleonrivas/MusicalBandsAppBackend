@@ -108,7 +108,7 @@ public class RoleController {
                         ufr.getRole().getType().equals(EnumRolUserFormation.ARCHIVIST)||
                         ufr.getRole().getType().equals(EnumRolUserFormation.ASSISTANCE_CONTROL
                         )){
-                    return new ResponseEntity(new ResponseStringDTO("Ya existe ese rol"),headers, HttpStatus.BAD_REQUEST );
+                    return new ResponseEntity(new ResponseStringDTO("Ya existe ese rol"),headers, HttpStatus.BAD_REQUEST);
                 }
             }
         }
@@ -128,7 +128,7 @@ public class RoleController {
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema())}),
     })
 
     @PutMapping("/delete/{idRole}")
