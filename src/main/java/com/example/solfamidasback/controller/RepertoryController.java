@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -156,6 +157,25 @@ public class RepertoryController {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(new ResponseStringDTO("the repertory has been deleted"),httpHeaders, HttpStatus.OK);
     }
+
+    @Operation(summary = "vinculate a repertory to a calendar",
+            description = "vinculate a repertory to a calendar",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema(implementation = String.class),mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+
+    @PostMapping("/vinculate/{idRepertory}/{idCalendar}")
+    public ResponseEntity<Repertory> vinculateRepertoryToACalendar(@PathVariable Integer idRepertory, @PathVariable Integer idCalendar) {
+        Repertory repertory = repertoryService.vinculate(idRepertory, idCalendar);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(repertory,httpHeaders, HttpStatus.OK);
+    }
+
+
+
 
 
 }

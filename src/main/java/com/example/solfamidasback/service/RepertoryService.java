@@ -106,4 +106,13 @@ public class RepertoryService {
         return repertoryDTO;
     }
 
+    public Repertory vinculate(Integer idRepertory, Integer idCalendar){
+        Repertory repertory = repertoryRepository.findByIdAndActiveIsTrue(idRepertory);
+        if(repertory!=null){
+            CalendarEvent calendarEvent = calendarRepository.findCalendarEventById(idCalendar);
+            calendarEvent.setRepertory(repertory);
+            calendarRepository.save(calendarEvent);
+        }
+        return repertory;
+    }
 }
