@@ -186,11 +186,11 @@ public class CalendarEventController {
         if (user.equals(useradmin)){
             return ResponseEntity.ok(calendarEventRepository.findAll());
         }
-
+        // listar formaciones
+        List<Formation> formationList = user.getUserFormationRole().stream().map(UserFormationRole::getFormation).toList();
         //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-              user.getUserFormationRole().stream().allMatch(userFormationRole ->
-                      userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList();
+                        formationList.contains(calendarEvent.getFormation())).toList();
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
             return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
@@ -218,10 +218,11 @@ public class CalendarEventController {
             return ResponseEntity.ok(calendarEventRepository.findAll());
         }
 
+        // listar formaciones
+        List<Formation> formationList = user.getUserFormationRole().stream().map(UserFormationRole::getFormation).toList();
         //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getUserFormationRole().stream().allMatch(userFormationRole ->
-                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList();
+                formationList.contains(calendarEvent.getFormation())).toList();
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
             return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
@@ -256,6 +257,7 @@ public class CalendarEventController {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
+
 
         //filter the list of caledar event by list of user by formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
