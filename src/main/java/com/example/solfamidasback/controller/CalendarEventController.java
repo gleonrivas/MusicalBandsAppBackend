@@ -259,10 +259,11 @@ public class CalendarEventController {
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
 
-        //filter the list of caledar event by list of user by formation
+        // listar formaciones
+        List<Formation> formationList = user.getUserFormationRole().stream().map(UserFormationRole::getFormation).toList();
+        //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getUserFormationRole().stream().allMatch(userFormationRole ->
-                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList().stream()
+                formationList.contains(calendarEvent.getFormation())).toList().stream()
                 .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).collect(Collectors.toList());
 
         if(calendarEventList.isEmpty()){
@@ -471,10 +472,11 @@ public class CalendarEventController {
         String mail = jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
 
-        //filter the list of caledar event by list of user by formation
+        // listar formaciones
+        List<Formation> formationList = user.getUserFormationRole().stream().map(UserFormationRole::getFormation).toList();
+        //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getUserFormationRole().stream().allMatch(userFormationRole ->
-                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList().stream()
+                formationList.contains(calendarEvent.getFormation())).toList().stream()
                 .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).
                 toList().stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDateTime.now())).collect(Collectors.toList());
 
