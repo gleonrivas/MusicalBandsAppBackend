@@ -189,7 +189,8 @@ public class CalendarEventController {
 
         //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
+              user.getUserFormationRole().stream().allMatch(userFormationRole ->
+                      userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList();
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
             return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
@@ -219,7 +220,8 @@ public class CalendarEventController {
 
         //filter the list of caledar event by list of user formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList());
+                user.getUserFormationRole().stream().allMatch(userFormationRole ->
+                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList();
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
             return new ResponseEntity(responseStringDTO  , HttpStatus.BAD_REQUEST );
@@ -257,7 +259,8 @@ public class CalendarEventController {
 
         //filter the list of caledar event by list of user by formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList()).stream()
+                user.getUserFormationRole().stream().allMatch(userFormationRole ->
+                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList().stream()
                 .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).collect(Collectors.toList());
 
         if(calendarEventList.isEmpty()){
@@ -468,9 +471,10 @@ public class CalendarEventController {
 
         //filter the list of caledar event by list of user by formation
         List<CalendarEvent> calendarEventList = calendarEventRepository.findAll().stream().filter(calendarEvent ->
-                        user.getFormationList().contains(calendarEvent.getFormation())).collect(Collectors.toList()).stream()
+                user.getUserFormationRole().stream().allMatch(userFormationRole ->
+                        userFormationRole.getFormation().equals(calendarEvent.getFormation()))).toList().stream()
                 .filter(calendarEvent -> calendarEvent.getFormation().getId().equals(Integer.parseInt(formationId.getFormationId()))).
-                collect(Collectors.toList()).stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDateTime.now())).collect(Collectors.toList());
+                toList().stream().filter(calendarEvent -> calendarEvent.getDate().equals(LocalDateTime.now())).collect(Collectors.toList());
 
         if(calendarEventList.isEmpty()){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("You don't have any events");
