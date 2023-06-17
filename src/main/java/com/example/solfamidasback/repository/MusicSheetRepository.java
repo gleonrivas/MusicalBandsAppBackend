@@ -19,4 +19,6 @@ public interface MusicSheetRepository extends JpaRepository<MusicSheet,Integer> 
             "and u.id = ?", nativeQuery = true)
     List<MusicSheet> getMusicSheetByidFormationAndUser(@Param("id_formation")Integer formationId, @Param("id_user")Integer idUser);
 
+    MusicSheet findTopById(Integer id);
+
 }
