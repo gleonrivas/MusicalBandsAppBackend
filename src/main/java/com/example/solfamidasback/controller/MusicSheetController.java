@@ -1,6 +1,7 @@
 package com.example.solfamidasback.controller;
 
 import com.example.solfamidasback.model.*;
+import com.example.solfamidasback.model.DTO.InvitationLinkDTO;
 import com.example.solfamidasback.model.DTO.MusicSheetDTO;
 import com.example.solfamidasback.model.DTO.UserConverter;
 import com.example.solfamidasback.model.Enums.EnumRolUserFormation;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -72,8 +74,8 @@ public class MusicSheetController {
     AuthenticationService authenticateService;
 
 
-    @Operation(summary = "See the musicSheet by formation",
-            description = "See the musicSheet See the musicSheet by formation",
+    @Operation(summary = "See the musicSheet by formation and user",
+            description = "See the musicSheet See the musicSheet by formation and user",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
@@ -120,6 +122,24 @@ public class MusicSheetController {
         musicSheetRepository.save(ms);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity(ms,headers, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Delete a musicSheet",
+            description = "Delete a musicSheet",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
+    })
+    @DeleteMapping("delete/{idMs}")
+    public ResponseEntity<InvitationLinkDTO> deleteLink(@NotNull @PathVariable Integer idMs) {
+
+        MusicSheet ms = musicSheetRepository.findTopById(idMs);
+        musicSheetRepository.delete(ms);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new ResponseEntity("deleted",headers, HttpStatus.OK);
     }
 
 }

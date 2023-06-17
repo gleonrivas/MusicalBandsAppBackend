@@ -30,6 +30,7 @@ public class MusicSheetConverter {
         musicSheets.stream().forEach(musicSheet -> {
             MusicSheetDTO musicSheetDTO = new MusicSheetDTO();
             musicSheetDTO.setMusicSheetPdf(musicSheet.getMusicSheetPdf());
+            musicSheetDTO.setId(musicSheet.getId());
             musicSheetDTOS.add(musicSheetDTO);
         });
 
