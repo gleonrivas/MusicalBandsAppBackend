@@ -79,14 +79,14 @@ public class MusicSheetController {
             @ApiResponse(responseCode = "200",content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
     })
-    @GetMapping("/listMs/{id_formation}")
-    public ResponseEntity<List<MusicSheetDTO>> profile(HttpServletRequest request,@PathVariable Integer id_formation) throws IOException {
+    @GetMapping("/listMs/{id_formation}/{id_user}")
+    public ResponseEntity<List<MusicSheetDTO>> profile(HttpServletRequest request,@PathVariable Integer id_formation, @PathVariable Integer id_user) throws IOException {
         String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
         String mail =  jwtService.extractUsername(jwtToken);
         Users user = userRepository.findByEmailAndActiveTrue(mail);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        List<MusicSheet> musicSheet = musicSheetRepository.getMusicSheetByidFormation(id_formation);
+        List<MusicSheet> musicSheet = musicSheetRepository.getMusicSheetByidFormationAndUser(id_formation,id_user);
 
         return new ResponseEntity(musicSheetConverter.toDTO(musicSheet),headers, HttpStatus.OK);
     }
