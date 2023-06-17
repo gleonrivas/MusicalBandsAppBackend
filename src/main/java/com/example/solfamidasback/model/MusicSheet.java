@@ -28,6 +28,9 @@ public class MusicSheet {
     @Column(name = "ms_pdf", nullable = false, length = 150)
     private String musicSheetPdf;
 
+    @Column(name = "instrument_type", nullable = false, length = 150)
+    private Integer instrumentType;
+
 
     @ManyToOne
     @JoinColumn(name = "id_user_formation_role")

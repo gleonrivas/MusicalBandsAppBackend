@@ -61,6 +61,6 @@ public interface UserFormationRoleRepository extends JpaRepository<UserFormation
     @Query(value = "select id_role from user_formation_role ufr where id_formation  = ? and id_user = ?", nativeQuery = true)
     UserFormationRole getRoleByFormantionAndUser(@Param("id_formation") Integer formationId, @Param("id_user") Integer userId);
 
-
+    UserFormationRole findTopByIdAndActiveTrue(Integer id);
 
 }

@@ -7,16 +7,13 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
-import com.itextpdf.text.pdf.codec.Base64;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 public class DropboxConfig {
-    private static final String ACCESS_TOKEN = "sl.BfA0poK_dZydA7LJyhyNCueutBezrlC8Ob1EQ8Y8-JfHx8GleTupD6ZDJu9JOKCdUx1tc1AvFekM-bnEEmbQQFFv-Pb3sKqcgPlvq-MrUPknbthtY9d_gvTKHnP0VKddOOvfHGvgagdM";
+    private static final String ACCESS_TOKEN = "sl.BfVPwDAklvBw12qjPnJlTPLCnRrXJ20-_nvTTRnzPilesOj-krVg-KjHe2MTR6NU8RkcyVQ9qwCuh8zmrZaubiy95vj3f3rYdwMzpla2lVTI4dBVA1vSvvDdOg030Xk4F0ZRJOGLoaRq";
 
 
     public static void GetCredentials() throws DbxException {
@@ -46,7 +43,6 @@ public class DropboxConfig {
                     .uploadAndFinish(in);
 
             return client.sharing().createSharedLinkWithSettings("/Solfamidas/" + email+ "/" + fakepath.concat("."+file.getAbsoluteFile().toString().split(";")[0].split("image")[1].split("\\\\")[1])).getUrl().replace("dl=0", "raw=1");
-
 
         } catch (IOException e) {
             throw new RuntimeException(e);

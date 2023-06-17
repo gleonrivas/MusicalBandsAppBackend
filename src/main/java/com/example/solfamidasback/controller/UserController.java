@@ -153,8 +153,7 @@ public class UserController {
         userSession.setEmail(user.getEmail());
         userSession.setBirthDate(user.getBirthDate() != null ? LocalDate.parse(user.getBirthDate()).atStartOfDay() : null);
         userSession.setDni(user.getDni());
-        userSession.setUrl(DropboxConfig.UploadFile(user.getUrl(), user.getEmail(), path));
-
+        userSession.setUrl(user.getUrl());
 
         userRepository.save(userSession);
         return new ResponseEntity(new ResponseStringDTO("user edited successfully"),headers, HttpStatus.OK);
