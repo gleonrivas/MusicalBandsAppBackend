@@ -189,7 +189,7 @@ public class TreasuryService {
         List<Users> usersList = new ArrayList<>();
         for (Integer idUser : idsUsers){
             Users user = userRepository.findByIdAndActiveIsTrue(idUser);
-            if (user != null || !usersList.contains(user)){
+            if (user != null && !usersList.contains(user)){
                 usersList.add(user);
             }
 
