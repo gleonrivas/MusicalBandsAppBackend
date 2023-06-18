@@ -160,7 +160,7 @@ public class AbsenceController {
         }
 
         //verificar que el evento es hoy
-        if (!calendarEvent.getDate().equals(LocalDate.now())){
+        if (!calendarEvent.getDate().toLocalDate().equals(LocalDate.now())){
             ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
             return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
         }
