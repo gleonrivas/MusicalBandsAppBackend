@@ -184,7 +184,8 @@ public class TreasuryService {
 
     public PayFormationDTO calculatePaidFormation (Formation formation){
         //Obtenemos todos los usuarios activos que tiene la formación
-        List<Integer> idsUsers = userFormationRoleRepository.getAllUsersIdFormation(formation.getId());
+        List<Integer> idsUsers = userFormationRoleRepository.getAllUsersIdFormation(formation.getId()).stream().distinct().toList();
+
         List<Users> usersList = new ArrayList<>();
         for (Integer idUser : idsUsers){
             Users user = userRepository.findByIdAndActiveIsTrue(idUser);
