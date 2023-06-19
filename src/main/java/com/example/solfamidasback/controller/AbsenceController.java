@@ -160,10 +160,10 @@ public class AbsenceController {
         }
 
         //verificar que el evento es hoy
-        if (!calendarEvent.getDate().toLocalDate().equals(LocalDate.now())){
-            ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
-            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
-        }
+//        if (!calendarEvent.getDate().toLocalDate().equals(LocalDate.now())){
+//            ResponseStringDTO responseStringDTO = new ResponseStringDTO("The event is not today");
+//            return new ResponseEntity(responseStringDTO, HttpStatus.BAD_REQUEST);
+//        }
 
         //guardamos los registros en bbdd
 
